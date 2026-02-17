@@ -11,26 +11,21 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ══════════════════════════════════════════════
-  // 🔥 YOUR FIREBASE CONFIG — Replace with yours
-  // Go to: console.firebase.google.com
-  // → Create project → Add Web App → Copy config
-  // ══════════════════════════════════════════════
   const firebaseConfig = {
-  apiKey: "AIzaSyAz-44QWWH4lcXu9I7Xs56RCsjSbmSHNuo",
-  authDomain: "fir-config-9023d.firebaseapp.com",
-  projectId: "fir-config-9023d",
-  storageBucket: "fir-config-9023d.firebasestorage.app",
-  messagingSenderId: "178665965729",
-  appId: "1:178665965729:web:57fcb0f607a1420c8e08e0"
+    apiKey: "AIzaSyAz-44QWWH4lcXu9I7Xs56RCsjSbmSHNuo",
+    authDomain: "fir-config-9023d.firebaseapp.com",
+    projectId: "fir-config-9023d",
+    storageBucket: "fir-config-9023d.firebasestorage.app",
+    messagingSenderId: "178665965729",
+    appId: "1:178665965729:web:57fcb0f607a1420c8e08e0"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // ── expose globally so non-module scripts can use ──
   window._db = db;
   window._firebase = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp, where };
+  window._dbReady = true;
 
   window.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -52,18 +47,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
-
-/* ── SETUP BANNER ── */
-.setup-banner {
-  background: linear-gradient(90deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
-  border-bottom: 1px solid rgba(212,168,67,0.3);
-  padding: 8px 18px;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12px; color: var(--gold2);
-  flex-shrink: 0;
-}
-.setup-banner a { color: var(--gold); font-weight: 700; text-decoration: underline; cursor: pointer; }
-.setup-banner .dismiss { margin-left: auto; cursor: pointer; color: var(--text3); font-size: 14px; }
 
 /* ── TOPBAR ── */
 .topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0;z-index:100;}
@@ -279,14 +262,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .btn-save:hover{background:var(--gold2);transform:translateY(-1px);}
 .btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 
-/* ── SETUP MODAL ── */
-.setup-modal{width:560px;}
-.setup-step{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;}
-.setup-step-num{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
-.setup-step h4{font-size:14px;font-weight:600;margin-bottom:6px;}
-.setup-step p{font-size:12px;color:var(--text2);line-height:1.6;}
-.setup-step code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg4);padding:2px 6px;border-radius:4px;color:var(--gold2);}
-
 /* ── EMPTY STATE ── */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);gap:12px;flex:1;}
 .empty-state-icon{font-size:52px;opacity:.4;}
@@ -317,14 +292,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 </head>
 <body>
 
-<!-- SETUP BANNER -->
-<div class="setup-banner" id="setupBanner">
-  ⚡ Firebase not configured yet —
-  <a onclick="openSetupModal()">click here to connect your database</a>
-  in 2 minutes (free)
-  <span class="dismiss" onclick="document.getElementById('setupBanner').style.display='none'">✕</span>
-</div>
-
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="logo" onclick="setView('dashboard')">
@@ -338,7 +305,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   <div class="top-right">
     <div class="db-status" id="dbStatus">
       <div class="db-dot" id="dbDot"></div>
-      <span id="dbStatusText">Not connected</span>
+      <span id="dbStatusText">Connecting…</span>
     </div>
     <div class="notif-btn" onclick="setView('followups')">
       <div class="notif-badge" id="todayFuBadge">0</div>
@@ -348,7 +315,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add Lead
     </button>
-    <button class="t-btn" onclick="openSetupModal()">⚙ Config</button>
     <div class="avatar">RK</div>
   </div>
 </div>
@@ -373,11 +339,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Follow-ups
     <span class="nav-badge hot" id="nav-fu-count">0</span>
-  </div>
-  <div class="nav-divider"></div>
-  <div class="nav-item" onclick="openSetupModal()">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Setup Database
   </div>
   <div class="nav-spacer"></div>
   <div class="nav-agent-card">
@@ -704,58 +665,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
 </div>
 
-<!-- ════════ SETUP MODAL ════════ -->
-<div class="modal-overlay" id="setupModalOverlay" onclick="if(event.target===this)closeSetupModal()">
-  <div class="modal setup-modal">
-    <div class="modal-header">
-      <h3>🔥 Connect Firebase Database</h3>
-      <div class="modal-close" onclick="closeSetupModal()">✕</div>
-    </div>
-    <div class="modal-body">
-      <div class="setup-step">
-        <div class="setup-step-num">Step 1</div>
-        <h4>Create a Firebase project (free)</h4>
-        <p>Go to <strong>console.firebase.google.com</strong> → Click <code>Add project</code> → Name it <code>SalesFun</code> → Continue (disable Google Analytics if you want) → Create project.</p>
-      </div>
-      <div class="setup-step">
-        <div class="setup-step-num">Step 2</div>
-        <h4>Add a Web App & get config</h4>
-        <p>In your project → Click <code>&lt;/&gt;</code> (Web) icon → Register app → Copy the <code>firebaseConfig</code> object that appears.</p>
-      </div>
-      <div class="setup-step">
-        <div class="setup-step-num">Step 3</div>
-        <h4>Enable Firestore Database</h4>
-        <p>In left sidebar → <code>Build</code> → <code>Firestore Database</code> → <code>Create database</code> → Choose <code>Start in test mode</code> → Select a region → Done.</p>
-      </div>
-      <div class="setup-step">
-        <div class="setup-step-num">Step 4 — Paste your config below</div>
-        <h4>Enter your Firebase config values</h4>
-        <p style="margin-bottom:12px">Paste the values from your <code>firebaseConfig</code> object:</p>
-        <div class="form-row"><label class="form-label">API Key</label><input class="form-input" id="cfg-apiKey" placeholder="AIzaSy…"></div>
-        <div class="form-2col">
-          <div class="form-row"><label class="form-label">Auth Domain</label><input class="form-input" id="cfg-authDomain" placeholder="your-project.firebaseapp.com"></div>
-          <div class="form-row"><label class="form-label">Project ID</label><input class="form-input" id="cfg-projectId" placeholder="your-project-id"></div>
-        </div>
-        <div class="form-2col">
-          <div class="form-row"><label class="form-label">Storage Bucket</label><input class="form-input" id="cfg-storageBucket" placeholder="your-project.appspot.com"></div>
-          <div class="form-row"><label class="form-label">Messaging Sender ID</label><input class="form-input" id="cfg-messagingSenderId" placeholder="123456789"></div>
-        </div>
-        <div class="form-row"><label class="form-label">App ID</label><input class="form-input" id="cfg-appId" placeholder="1:123456:web:abc123…"></div>
-      </div>
-      <div style="background:var(--gold-dim);border:1px solid rgba(212,168,67,.3);border-radius:8px;padding:12px;font-size:12px;color:var(--gold2)">
-        ⚡ After saving, the page will reload with your database connected. Your leads and follow-ups will persist forever in Firestore — free up to 50,000 reads/day.
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeSetupModal()">Cancel</button>
-      <button class="btn-save" onclick="saveFirebaseConfig()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        Save & Connect
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- TOAST -->
 <div class="toast" id="toast">
   <span id="toastIcon">✨</span>
@@ -775,82 +684,37 @@ let _editingFuId = null;
 let _dbConnected = false;
 
 // ════════════════════════════════════════════
-// FIREBASE CONFIG — saved to localStorage
+// INIT
 // ════════════════════════════════════════════
-function getSavedConfig() {
-  try { return JSON.parse(localStorage.getItem('pfConfig') || 'null'); } catch { return null; }
-}
-
 function initApp() {
-  const cfg = getSavedConfig();
   updateDate();
   buildMiniCal();
 
-  // If no config saved, show demo mode
-  if (!cfg || !cfg.projectId || cfg.projectId === 'YOUR_PROJECT_ID') {
-    setDbStatus(false, 'Demo mode');
-    document.getElementById('setupBanner').style.display = 'flex';
-    useDemoMode();
-    return;
-  }
-
-  // Config exists — try to reinitialize Firebase with saved config
-  loadSavedConfig(cfg);
-}
-
-function loadSavedConfig(cfg) {
-  // Reinitialize Firebase with saved config
-  try {
-    // Dynamic import with saved config
-    const scriptTag = document.createElement('script');
-    scriptTag.type = 'module';
-    scriptTag.textContent = `
-      import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-      const cfg = ${JSON.stringify(cfg)};
-      const existing = getApps();
-      const app = existing.length ? existing[0] : initializeApp(cfg);
-      const db = getFirestore(app);
-      window._db = db;
-      window._firebase = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp };
-      window._dbReady = true;
-      window.dispatchEvent(new Event('dbReady'));
-    `;
-    document.head.appendChild(scriptTag);
-
+  if (window._dbReady && window._db) {
+    setDbStatus(true, 'Connected');
+    _dbConnected = true;
+    loadLeadsFromDB();
+    loadFollowUpsFromDB();
+  } else {
     window.addEventListener('dbReady', () => {
       setDbStatus(true, 'Connected');
-      document.getElementById('setupBanner').style.display = 'none';
       _dbConnected = true;
       loadLeadsFromDB();
       loadFollowUpsFromDB();
     }, { once: true });
 
-    // Timeout fallback
     setTimeout(() => {
       if (!_dbConnected) {
         setDbStatus(false, 'Connection failed');
-        showToast('⚠️ Could not connect. Check your Firebase config.', 'error');
-        useDemoMode();
+        showToast('⚠️ Firebase connection failed. Check network.', 'error');
+        _leads = [];
+        _followups = [];
+        renderLeads();
+        renderFollowUps();
+        renderDashboard();
       }
     }, 8000);
-
-  } catch(e) {
-    setDbStatus(false, 'Config error');
-    useDemoMode();
   }
-}
-
-// ════════════════════════════════════════════
-// DEMO MODE (no Firebase)
-// ════════════════════════════════════════════
-function useDemoMode() {
-  _leads = [];
-  _followups = [];
-  renderLeads();
-  renderFollowUps();
-  renderDashboard();
-  showToast('💡 Demo mode — connect Firebase to save data permanently', 'info');
 }
 
 // ════════════════════════════════════════════
@@ -939,7 +803,6 @@ function renderLeads(filter) {
   let list = _leads;
   if (_currentFilter !== 'all') list = list.filter(l => l.stage === _currentFilter);
 
-  // Update chip counts
   const counts = {};
   _leads.forEach(l => { counts[l.stage] = (counts[l.stage] || 0) + 1; });
   document.getElementById('chip-all').textContent = _leads.length;
@@ -1017,7 +880,6 @@ function renderFollowUps(type) {
     return;
   }
 
-  // Group by date
   const groups = {};
   list.forEach(f => {
     const d = f.date || 'No date';
@@ -1081,11 +943,8 @@ function renderDashboard() {
   document.getElementById('stat-total').textContent = _leads.length;
   document.getElementById('stat-closed').textContent = closed;
   document.getElementById('stat-hot').textContent = hot;
-
-  // Notification badge
   document.getElementById('todayFuBadge').textContent = todayFu;
 
-  // Pipeline
   const stages = ['New','Site Visit','Negotiation','Closed'];
   const stageKeys = ['new','site','nego','closed'];
   stages.forEach((s, i) => {
@@ -1108,7 +967,6 @@ function renderDashboard() {
     }
   });
 
-  // Today's follow-ups in dashboard
   const todayList = _followups.filter(f => f.date === today && f.status !== 'done');
   const dashFuList = document.getElementById('dash-fu-list');
   document.getElementById('dash-fu-subtitle').textContent = todayFu + ' pending today';
@@ -1158,12 +1016,10 @@ async function saveLead() {
 
   try {
     if (_editingLeadId) {
-      if (_dbConnected) await updateLeadInDB(_editingLeadId, data);
-      else { const idx = _leads.findIndex(l=>l.id===_editingLeadId); if(idx>-1) _leads[idx]={..._leads[idx],...data}; renderLeads(); renderDashboard(); }
+      await updateLeadInDB(_editingLeadId, data);
       showToast('✅ Lead updated!', 'success');
     } else {
-      if (_dbConnected) await addLeadToDB(data);
-      else { _leads.unshift({id:'demo-'+Date.now(),...data,createdAt:null}); renderLeads(); renderDashboard(); }
+      await addLeadToDB(data);
       showToast('✅ Lead saved to database!', 'success');
     }
     closeLeadModal();
@@ -1183,8 +1039,7 @@ async function quickAddLead() {
 
   try {
     const data = { name, phone, budget, stage:'New', priority:'Normal', email:'', location:'', source:'', notes:'' };
-    if (_dbConnected) await addLeadToDB(data);
-    else { _leads.unshift({id:'demo-'+Date.now(),...data,createdAt:null}); renderLeads(); renderDashboard(); }
+    await addLeadToDB(data);
     document.getElementById('quick-name').value = '';
     document.getElementById('quick-phone').value = '';
     document.getElementById('quick-budget').value = '';
@@ -1222,16 +1077,12 @@ async function saveFollowUp() {
 
   try {
     if (_editingFuId) {
-      if (_dbConnected) await updateFollowUpInDB(_editingFuId, data);
-      else { const idx = _followups.findIndex(f=>f.id===_editingFuId); if(idx>-1) _followups[idx]={..._followups[idx],...data}; }
+      await updateFollowUpInDB(_editingFuId, data);
       showToast('✅ Follow-up updated!', 'success');
     } else {
-      if (_dbConnected) await addFollowUpToDB(data);
-      else { _followups.push({id:'demo-fu-'+Date.now(),...data}); }
+      await addFollowUpToDB(data);
       showToast('✅ Follow-up scheduled!', 'success');
     }
-    renderFollowUps();
-    renderDashboard();
     closeFuModal();
   } catch(e) {
     showToast('❌ Error: ' + e.message, 'error');
@@ -1243,9 +1094,7 @@ async function saveFollowUp() {
 
 async function markFuDone(id) {
   try {
-    if (_dbConnected) await updateFollowUpInDB(id, { status: 'done' });
-    else { const f = _followups.find(f=>f.id===id); if(f) f.status='done'; }
-    renderFollowUps(); renderDashboard();
+    await updateFollowUpInDB(id, { status: 'done' });
     showToast('✅ Marked as done!', 'success');
   } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
 }
@@ -1259,8 +1108,7 @@ function confirmDeleteLead(id, name) {
 }
 async function deleteLead(id, name) {
   try {
-    if (_dbConnected) await deleteLeadFromDB(id);
-    else { _leads = _leads.filter(l => l.id !== id); renderLeads(); renderDashboard(); }
+    await deleteLeadFromDB(id);
     showToast(`🗑 ${name} deleted`, 'success');
   } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
 }
@@ -1271,8 +1119,7 @@ function confirmDeleteFu(id) {
 }
 async function deleteFu(id) {
   try {
-    if (_dbConnected) await deleteFollowUpFromDB(id);
-    else { _followups = _followups.filter(f => f.id !== id); renderFollowUps(); renderDashboard(); }
+    await deleteFollowUpFromDB(id);
     showToast('🗑 Follow-up deleted', 'success');
   } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
 }
@@ -1306,12 +1153,10 @@ function openFollowUpModal(fuId, presetLeadId) {
   _editingFuId = fuId || null;
   document.getElementById('fuModalTitle').textContent = fuId ? 'Edit Follow-up' : 'Add Follow-up';
 
-  // Populate lead dropdown
   const sel = document.getElementById('fu-leadId');
   sel.innerHTML = '<option value="">Select a lead</option>' +
     _leads.map(l => `<option value="${l.id}">${esc(l.name)} ${l.phone?'('+l.phone+')':''}</option>`).join('');
 
-  // Reset fields
   ['fu-leadId','fu-type','fu-date','fu-time','fu-priority','fu-notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el && id !== 'fu-type' && id !== 'fu-priority') el.value = '';
@@ -1340,40 +1185,6 @@ function closeFuModal() {
 }
 
 // ════════════════════════════════════════════
-// FIREBASE CONFIG SETUP
-// ════════════════════════════════════════════
-function openSetupModal() {
-  const cfg = getSavedConfig();
-  if (cfg) {
-    ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
-      const el = document.getElementById('cfg-'+k);
-      if (el && cfg[k]) el.value = cfg[k];
-    });
-  }
-  document.getElementById('setupModalOverlay').classList.add('open');
-}
-function closeSetupModal() {
-  document.getElementById('setupModalOverlay').classList.remove('open');
-}
-function saveFirebaseConfig() {
-  const cfg = {
-    apiKey: document.getElementById('cfg-apiKey').value.trim(),
-    authDomain: document.getElementById('cfg-authDomain').value.trim(),
-    projectId: document.getElementById('cfg-projectId').value.trim(),
-    storageBucket: document.getElementById('cfg-storageBucket').value.trim(),
-    messagingSenderId: document.getElementById('cfg-messagingSenderId').value.trim(),
-    appId: document.getElementById('cfg-appId').value.trim()
-  };
-  if (!cfg.apiKey || !cfg.projectId) {
-    showToast('⚠️ API Key and Project ID are required', 'error');
-    return;
-  }
-  localStorage.setItem('pfConfig', JSON.stringify(cfg));
-  showToast('✅ Config saved! Reloading…', 'success');
-  setTimeout(() => location.reload(), 1500);
-}
-
-// ════════════════════════════════════════════
 // SEARCH
 // ════════════════════════════════════════════
 function handleSearch(val) {
@@ -1390,7 +1201,6 @@ function handleSearch(val) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text3)">No leads found for "${val}"</td></tr>`;
     return;
   }
-  // Temporarily set leads and re-render
   const orig = _leads;
   _leads = filtered;
   renderLeads();
@@ -1496,34 +1306,16 @@ function showToast(msg, type = 'success') {
 }
 
 // ════════════════════════════════════════════
-// INIT
+// LOAD
 // ════════════════════════════════════════════
 window.addEventListener('load', () => {
-  const cfg = getSavedConfig();
-  if (cfg && cfg.projectId && cfg.projectId !== 'YOUR_PROJECT_ID') {
-    document.getElementById('setupBanner').style.display = 'none';
-  }
   updateDate();
   buildMiniCal();
-  // If firebase module sets _dbReady before our listener, handle it
-  if (window._dbReady) {
+  if (window._dbReady && window._db) {
     setDbStatus(true, 'Connected');
     _dbConnected = true;
-    document.getElementById('setupBanner').style.display = 'none';
     loadLeadsFromDB();
     loadFollowUpsFromDB();
-  } else {
-    window.addEventListener('dbReady', () => {
-      setDbStatus(true, 'Connected');
-      _dbConnected = true;
-      document.getElementById('setupBanner').style.display = 'none';
-      loadLeadsFromDB();
-      loadFollowUpsFromDB();
-    }, { once: true });
-    // If no config, go demo
-    if (!cfg || !cfg.projectId || cfg.projectId === 'YOUR_PROJECT_ID') {
-      useDemoMode();
-    }
   }
 });
 </script>
