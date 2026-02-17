@@ -5,154 +5,102 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PropFlow — Real Estate CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ══════════════════════════════════════════════
+  // 🔥 YOUR FIREBASE CONFIG — Replace with yours
+  // Go to: console.firebase.google.com
+  // → Create project → Add Web App → Copy config
+  // ══════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ── expose globally so non-module scripts can use ──
+  window._db = db;
+  window._firebase = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp, where };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initApp();
+  });
+</script>
+
 <style>
 :root {
-  --bg:       #0f0e0c;
-  --bg2:      #161410;
-  --bg3:      #1e1b16;
-  --bg4:      #26221b;
-  --bg5:      #2e2920;
-  --border:   rgba(255,220,140,0.08);
-  --border2:  rgba(255,220,140,0.16);
-  --gold:     #d4a843;
-  --gold2:    #f0c96a;
-  --gold-dim: rgba(212,168,67,0.12);
-  --gold-glow:rgba(212,168,67,0.22);
-  --text:     #f0ead8;
-  --text2:    #9a9080;
-  --text3:    #5a5045;
-  --green:    #4caf7d;
-  --green-dim:rgba(76,175,125,0.12);
-  --red:      #e05555;
-  --red-dim:  rgba(224,85,85,0.12);
-  --blue:     #6ba3d6;
-  --blue-dim: rgba(107,163,214,0.12);
-  --orange:   #e8924a;
-  --orange-dim:rgba(232,146,74,0.12);
-  --r:        10px;
-  --r-sm:     7px;
+  --bg:#0f0e0c; --bg2:#161410; --bg3:#1e1b16; --bg4:#26221b; --bg5:#2e2920;
+  --border:rgba(255,220,140,0.08); --border2:rgba(255,220,140,0.16);
+  --gold:#d4a843; --gold2:#f0c96a; --gold-dim:rgba(212,168,67,0.12); --gold-glow:rgba(212,168,67,0.22);
+  --text:#f0ead8; --text2:#9a9080; --text3:#5a5045;
+  --green:#4caf7d; --green-dim:rgba(76,175,125,0.12);
+  --red:#e05555; --red-dim:rgba(224,85,85,0.12);
+  --blue:#6ba3d6; --blue-dim:rgba(107,163,214,0.12);
+  --orange:#e8924a; --orange-dim:rgba(232,146,74,0.12);
+  --r:10px; --r-sm:7px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;flex-direction:column;
-}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 
-/* ═══════════════ TOPBAR ═══════════════ */
-.topbar{
-  height:54px;background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 18px;gap:14px;
-  flex-shrink:0;z-index:100;
+/* ── SETUP BANNER ── */
+.setup-banner {
+  background: linear-gradient(90deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
+  border-bottom: 1px solid rgba(212,168,67,0.3);
+  padding: 8px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: var(--gold2);
+  flex-shrink: 0;
 }
-.logo{
-  font-family:'Cormorant Garamond',serif;
-  font-size:22px;font-weight:700;
-  color:var(--gold2);letter-spacing:0.02em;
-  display:flex;align-items:center;gap:8px;cursor:pointer;
-  flex-shrink:0;
-}
-.logo-icon{
-  width:30px;height:30px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:#0f0e0c;font-weight:700;
-}
-.top-search{
-  flex:1;max-width:340px;margin:0 10px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;display:flex;align-items:center;
-  padding:0 12px;gap:8px;height:34px;
-}
-.top-search input{
-  background:none;border:none;outline:none;
-  color:var(--text);font-family:inherit;font-size:13px;width:100%;
-}
+.setup-banner a { color: var(--gold); font-weight: 700; text-decoration: underline; cursor: pointer; }
+.setup-banner .dismiss { margin-left: auto; cursor: pointer; color: var(--text3); font-size: 14px; }
+
+/* ── TOPBAR ── */
+.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0;z-index:100;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold2);letter-spacing:.02em;display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#0f0e0c;font-weight:700;}
+.top-search{flex:1;max-width:340px;margin:0 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;padding:0 12px;gap:8px;height:34px;}
+.top-search input{background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px;width:100%;}
 .top-search input::placeholder{color:var(--text3);}
 .top-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.t-btn{
-  height:32px;padding:0 14px;
-  background:var(--bg3);border:1px solid var(--border);
-  color:var(--text2);font-family:inherit;font-size:12px;font-weight:500;
-  border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;
-  transition:all .2s;
-}
+.t-btn{height:32px;padding:0 14px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;font-weight:500;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
 .t-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg4);}
 .t-btn.gold{background:var(--gold-dim);border-color:rgba(212,168,67,.3);color:var(--gold);}
 .t-btn.gold:hover{background:var(--gold-glow);}
-.notif-btn{
-  width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--text2);transition:all .2s;position:relative;
-}
-.notif-btn:hover{border-color:var(--border2);color:var(--text);}
-.notif-badge{
-  position:absolute;top:-3px;right:-3px;
-  width:15px;height:15px;background:var(--red);
-  border-radius:50%;font-size:8px;font-weight:700;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  border:2px solid var(--bg2);
-}
-.avatar{
-  width:32px;height:32px;
-  background:linear-gradient(135deg,#8b4513,var(--gold));
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;
-}
+.notif-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .2s;position:relative;}
+.notif-badge{position:absolute;top:-3px;right:-3px;width:15px;height:15px;background:var(--red);border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2);}
+.avatar{width:32px;height:32px;background:linear-gradient(135deg,#8b4513,var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
 
-/* ═══════════════ LAYOUT ═══════════════ */
+/* ── LAYOUT ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
 
-/* ═══════════════ SIDENAV ═══════════════ */
-.sidenav{
-  width:220px;background:var(--bg2);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:14px 10px;gap:2px;flex-shrink:0;overflow-y:auto;
-}
+/* ── SIDENAV ── */
+.sidenav{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 10px;gap:2px;flex-shrink:0;overflow-y:auto;}
 .sidenav::-webkit-scrollbar{width:0;}
-.nav-section-label{
-  font-size:10px;font-weight:600;letter-spacing:.1em;
-  color:var(--text3);text-transform:uppercase;
-  padding:10px 10px 4px;margin-top:4px;
-}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 10px;border-radius:8px;
-  cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;
-  transition:all .15s;position:relative;
-}
+.nav-section-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;padding:10px 10px 4px;margin-top:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .15s;position:relative;}
 .nav-item:hover{background:var(--bg3);color:var(--text);}
 .nav-item.active{background:var(--gold-dim);color:var(--gold);}
-.nav-item.active::before{
-  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
-  width:3px;height:20px;background:var(--gold);border-radius:0 2px 2px 0;
-}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--gold);border-radius:0 2px 2px 0;}
 .nav-item svg{flex-shrink:0;}
-.nav-badge{
-  margin-left:auto;font-size:10px;font-weight:700;
-  background:var(--bg4);color:var(--text2);
-  padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;
-}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--bg4);color:var(--text2);padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;}
 .nav-badge.hot{background:var(--red-dim);color:var(--red);}
 .nav-badge.new{background:var(--green-dim);color:var(--green);}
 .nav-divider{height:1px;background:var(--border);margin:8px 0;}
 .nav-spacer{flex:1;}
-.nav-agent-card{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;padding:10px;margin-top:4px;
-}
-.nac-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.nac-avatar{
-  width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(135deg,#8b4513,var(--gold));
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:#fff;flex-shrink:0;
-}
+.nav-agent-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:4px;}
+.nac-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.nac-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#8b4513,var(--gold));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
 .nac-name{font-size:12px;font-weight:600;color:var(--text);}
 .nac-role{font-size:10px;color:var(--text3);}
 .nac-stats{display:flex;gap:8px;}
@@ -160,537 +108,144 @@ body{
 .nac-stat-val{font-size:14px;font-weight:700;color:var(--gold);}
 .nac-stat-lbl{font-size:9px;color:var(--text3);}
 
-/* ═══════════════ MAIN CONTENT ═══════════════ */
+/* ── VIEWS ── */
 .main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0;}
 .main::-webkit-scrollbar{width:6px;}
 .main::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-
-/* ═══════════════ PAGE HEADER ═══════════════ */
-.page-header{
-  padding:20px 24px 0;display:flex;align-items:center;
-  justify-content:space-between;flex-shrink:0;
-}
-.page-title h1{
-  font-family:'Cormorant Garamond',serif;
-  font-size:26px;font-weight:700;color:var(--text);
-  letter-spacing:.01em;
-}
+.view{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.view.active{display:flex;}
+.page-header{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.page-title h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:.01em;}
 .page-title p{font-size:13px;color:var(--text2);margin-top:2px;}
 .page-actions{display:flex;gap:8px;align-items:center;}
 
-/* ═══════════════ VIEWS ═══════════════ */
-.view{display:none;flex:1;flex-direction:column;overflow:hidden;}
-.view.active{display:flex;}
-
-/* ═══════════════ DASHBOARD ═══════════════ */
+/* ── DASHBOARD ── */
 .dash-content{padding:20px 24px;flex:1;overflow-y:auto;}
 .dash-content::-webkit-scrollbar{width:6px;}
 .dash-content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.stat-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;
-  transition:border-color .2s;cursor:default;
-  animation:fadeUp .4s ease forwards;opacity:0;
-}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:border-color .2s;cursor:default;animation:fadeUp .4s ease forwards;opacity:0;}
 .stat-card:hover{border-color:var(--border2);}
 .stat-card:nth-child(1){animation-delay:.05s;}
 .stat-card:nth-child(2){animation-delay:.1s;}
 .stat-card:nth-child(3){animation-delay:.15s;}
 .stat-card:nth-child(4){animation-delay:.2s;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-
 .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.sc-icon{
-  width:36px;height:36px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-}
-.sc-change{
-  font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;
-}
-.sc-change.up{background:var(--green-dim);color:var(--green);}
-.sc-change.down{background:var(--red-dim);color:var(--red);}
+.sc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
 .sc-val{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.5px;font-family:'Cormorant Garamond',serif;}
 .sc-lbl{font-size:12px;color:var(--text2);margin-top:2px;}
-
 .dash-grid{display:grid;grid-template-columns:1fr 340px;gap:14px;}
-.dash-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden;
-}
-.dc-header{
-  padding:14px 16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.dc-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .dc-title{font-size:14px;font-weight:600;color:var(--text);}
 .dc-subtitle{font-size:11px;color:var(--text3);}
 .dc-action{font-size:12px;color:var(--gold);cursor:pointer;text-decoration:none;}
 .dc-action:hover{text-decoration:underline;}
 
-/* Pipeline */
-.pipeline-cols{display:flex;gap:0;height:100%;}
-.pipeline-col{
-  flex:1;border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-}
+/* pipeline */
+.pipeline-cols{display:flex;gap:0;}
+.pipeline-col{flex:1;border-right:1px solid var(--border);display:flex;flex-direction:column;}
 .pipeline-col:last-child{border-right:none;}
-.pc-header{
-  padding:10px 12px;background:var(--bg3);
-  border-bottom:1px solid var(--border);
-}
+.pc-header{padding:10px 12px;background:var(--bg3);border-bottom:1px solid var(--border);}
 .pc-name{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;}
 .pc-count{font-size:10px;color:var(--text3);margin-top:1px;}
-.pc-leads{padding:8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:220px;}
+.pc-leads{padding:8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:200px;}
 .pc-leads::-webkit-scrollbar{width:3px;}
-.pc-leads::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-.lead-mini{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:6px;padding:8px;cursor:pointer;transition:all .15s;
-}
+.pc-leads::-webkit-scrollbar-thumb{background:var(--bg4);}
+.lead-mini{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px;cursor:pointer;transition:all .15s;}
 .lead-mini:hover{border-color:var(--border2);transform:translateY(-1px);}
 .lm-name{font-size:12px;font-weight:600;color:var(--text);}
 .lm-prop{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lm-budget{font-size:11px;color:var(--gold);font-weight:600;margin-top:4px;}
-.lm-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;}
 
-/* Activity feed */
 .activity-list{padding:10px 0;}
-.act-item{
-  display:flex;gap:12px;padding:10px 16px;
-  border-bottom:1px solid var(--border);
-  transition:background .15s;cursor:pointer;
-}
-.act-item:hover{background:var(--bg3);}
+.act-item{display:flex;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);transition:background .15s;}
 .act-item:last-child{border-bottom:none;}
-.act-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;
-}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
 .act-text{font-size:12px;color:var(--text2);line-height:1.5;}
 .act-text strong{color:var(--text);}
 .act-time{font-size:10px;color:var(--text3);margin-top:2px;}
 
-/* Today's followups */
-.followup-list{padding:8px 0;}
-.fu-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 16px;border-bottom:1px solid var(--border);
-  cursor:pointer;transition:background .15s;
-}
-.fu-item:hover{background:var(--bg3);}
-.fu-item:last-child{border-bottom:none;}
-.fu-avatar{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;flex-shrink:0;
-}
-.fu-info{flex:1;min-width:0;}
-.fu-name{font-size:13px;font-weight:600;color:var(--text);}
-.fu-note{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fu-time{
-  font-size:11px;font-weight:600;
-  padding:3px 8px;border-radius:20px;flex-shrink:0;
-}
-.fu-time.urgent{background:var(--red-dim);color:var(--red);}
-.fu-time.today{background:var(--orange-dim);color:var(--orange);}
-.fu-time.done{background:var(--green-dim);color:var(--green);}
+.fu-dash-list{padding:8px 0;}
+.fu-dash-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.fu-dash-item:hover{background:var(--bg3);}
+.fu-dash-item:last-child{border-bottom:none;}
+.fu-dash-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background:var(--bg4);color:var(--text2);}
+.fu-dash-info{flex:1;min-width:0;}
+.fu-dash-name{font-size:13px;font-weight:600;color:var(--text);}
+.fu-dash-note{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fu-dash-time{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;flex-shrink:0;}
+.fu-dash-time.urgent{background:var(--red-dim);color:var(--red);}
+.fu-dash-time.today{background:var(--orange-dim);color:var(--orange);}
+.fu-dash-time.upcoming{background:var(--blue-dim);color:var(--blue);}
 
-/* ═══════════════ LEADS VIEW ═══════════════ */
+/* ── LEADS VIEW ── */
 .leads-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.leads-toolbar{
-  padding:14px 24px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
-}
-.filter-chip{
-  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
-  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
+.leads-toolbar{padding:14px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
 .filter-chip:hover{border-color:var(--border2);color:var(--text);}
 .filter-chip.active{background:var(--gold-dim);border-color:rgba(212,168,67,.3);color:var(--gold);}
-
 .leads-table-wrap{flex:1;overflow-y:auto;padding:0 24px 20px;}
 .leads-table-wrap::-webkit-scrollbar{width:6px;}
 .leads-table-wrap::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
 table{width:100%;border-collapse:collapse;margin-top:14px;}
-thead th{
-  font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--text3);padding:8px 12px;text-align:left;
-  border-bottom:1px solid var(--border);white-space:nowrap;
-}
+thead th{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
 tbody tr:hover{background:var(--bg2);}
 tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:middle;}
 .td-name{color:var(--text);font-weight:600;}
 .td-phone{font-family:'JetBrains Mono',monospace;font-size:12px;}
 .td-budget{color:var(--gold);font-weight:600;}
+.td-actions{display:flex;gap:6px;}
+.row-btn{height:26px;padding:0 10px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:inherit;font-size:11px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.row-btn:hover{border-color:var(--border2);color:var(--text);}
+.row-btn.del:hover{border-color:rgba(224,85,85,.4);color:var(--red);}
 
-/* ═══════════════ PROPERTIES VIEW ═══════════════ */
-.props-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.props-toolbar{
-  padding:14px 24px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.props-grid{
-  flex:1;overflow-y:auto;padding:20px 24px;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
-  align-content:start;
-}
-.props-grid::-webkit-scrollbar{width:6px;}
-.props-grid::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-.prop-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden;cursor:pointer;
-  transition:all .2s;animation:fadeUp .35s ease forwards;opacity:0;
-}
-.prop-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-.prop-img{
-  height:150px;background:var(--bg3);
-  display:flex;align-items:center;justify-content:center;
-  font-size:40px;position:relative;overflow:hidden;
-}
-.prop-img-bg{
-  position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--bg3),var(--bg4));
-}
-.prop-status-badge{
-  position:absolute;top:10px;right:10px;
-  font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:1;
-}
-.psb-available{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.3);}
-.psb-sold{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,85,85,.3);}
-.psb-negotiation{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.3);}
-.psb-hold{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(107,163,214,.3);}
-.prop-emoji{position:relative;z-index:1;font-size:44px;}
-.prop-body{padding:14px;}
-.prop-price{
-  font-family:'Cormorant Garamond',serif;
-  font-size:20px;font-weight:700;color:var(--gold2);
-  margin-bottom:4px;
-}
-.prop-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.prop-loc{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px;}
-.prop-specs{
-  display:flex;gap:12px;margin-top:10px;padding-top:10px;
-  border-top:1px solid var(--border);
-}
-.spec{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;}
-.prop-footer{
-  padding:10px 14px;border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.prop-agent{font-size:11px;color:var(--text3);}
-.prop-leads-count{font-size:11px;color:var(--gold);font-weight:600;}
-
-/* ═══════════════ FOLLOWUP VIEW ═══════════════ */
+/* ── FOLLOW-UPS VIEW ── */
 .fu-content{flex:1;display:flex;overflow:hidden;}
-.fu-sidebar{
-  width:260px;border-right:1px solid var(--border);
-  display:flex;flex-direction:column;flex-shrink:0;
-}
-.fu-main{flex:1;overflow-y:auto;padding:20px 24px;}
-.fu-main::-webkit-scrollbar{width:6px;}
-.fu-main::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-
-.fu-cal-header{
-  padding:14px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
+.fu-sidebar{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.fu-main-area{flex:1;overflow-y:auto;padding:20px 24px;}
+.fu-main-area::-webkit-scrollbar{width:6px;}
+.fu-main-area::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+.fu-cal-header{padding:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .fu-cal-title{font-size:13px;font-weight:600;}
-.fu-cal-nav{display:flex;gap:4px;}
-.fu-cal-btn{
-  width:26px;height:26px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:6px;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;color:var(--text2);transition:all .15s;
-}
-.fu-cal-btn:hover{border-color:var(--border2);color:var(--text);}
 .mini-cal{padding:12px;}
 .mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
 .mcg-day-name{font-size:9px;color:var(--text3);padding:2px 0;font-weight:600;}
-.mcg-day{
-  font-size:11px;padding:5px 3px;border-radius:5px;cursor:pointer;
-  color:var(--text2);transition:all .15s;
-}
+.mcg-day{font-size:11px;padding:5px 3px;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .15s;}
 .mcg-day:hover{background:var(--bg3);color:var(--text);}
 .mcg-day.today{background:var(--gold-dim);color:var(--gold);font-weight:700;}
-.mcg-day.has-fu::after{
-  content:'';display:block;width:4px;height:4px;
-  background:var(--green);border-radius:50%;margin:2px auto 0;
-}
-.mcg-day.other-month{color:var(--text3);}
-
+.mcg-day.has-fu::after{content:'';display:block;width:4px;height:4px;background:var(--green);border-radius:50%;margin:2px auto 0;}
 .fu-type-list{padding:10px;border-top:1px solid var(--border);}
-.fu-type-item{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 8px;border-radius:7px;cursor:pointer;
-  transition:background .15s;font-size:12px;color:var(--text2);
-}
+.fu-type-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .15s;font-size:12px;color:var(--text2);}
 .fu-type-item:hover{background:var(--bg3);color:var(--text);}
 .fu-type-item.active{background:var(--gold-dim);color:var(--gold);}
 .fu-type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-
-.fu-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;margin-bottom:12px;
-  cursor:pointer;transition:all .2s;
-  animation:fadeUp .3s ease forwards;opacity:0;
-}
-.fu-card:hover{border-color:var(--border2);transform:translateX(3px);}
+.fu-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s;animation:fadeUp .3s ease forwards;opacity:0;}
+.fu-card:hover{border-color:var(--border2);}
 .fu-card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.fu-card-avatar{
-  width:40px;height:40px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;flex-shrink:0;
-}
+.fu-card-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;background:var(--bg4);color:var(--text2);}
 .fu-card-info{flex:1;min-width:0;}
 .fu-card-name{font-size:14px;font-weight:600;color:var(--text);}
 .fu-card-sub{font-size:12px;color:var(--text3);margin-top:1px;}
-.fu-card-badges{display:flex;gap:6px;align-items:center;}
-.fu-body{
-  background:var(--bg3);border-radius:7px;padding:10px;
-  font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;
-}
+.fu-card-badges{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.fu-body{background:var(--bg3);border-radius:7px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;}
 .fu-footer{display:flex;align-items:center;gap:8px;}
-.fu-action-btn{
-  flex:1;height:30px;border-radius:7px;border:1px solid var(--border);
-  background:var(--bg3);color:var(--text2);font-family:inherit;
-  font-size:11px;font-weight:500;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:all .15s;
-}
+.fu-action-btn{flex:1;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:inherit;font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;}
 .fu-action-btn:hover{border-color:var(--border2);color:var(--text);}
 .fu-action-btn.primary{background:var(--gold-dim);border-color:rgba(212,168,67,.3);color:var(--gold);}
 .fu-action-btn.primary:hover{background:var(--gold-glow);}
+.fu-action-btn.danger{background:var(--red-dim);border-color:rgba(224,85,85,.3);color:var(--red);}
 
-/* ═══════════════ INBOX VIEW ═══════════════ */
-.inbox-layout{flex:1;display:flex;overflow:hidden;}
-.inbox-channels{
-  width:180px;background:var(--bg2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;flex-shrink:0;
-}
-.ic-header{padding:14px 12px 8px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;}
-.ic-item{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 12px;cursor:pointer;font-size:12px;color:var(--text2);
-  transition:background .15s;position:relative;
-}
-.ic-item:hover{background:var(--bg3);color:var(--text);}
-.ic-item.active{background:var(--bg3);color:var(--text);}
-.ic-item.active::before{
-  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
-  width:3px;height:20px;background:var(--gold);border-radius:0 2px 2px 0;
-}
-.ic-icon{
-  width:24px;height:24px;border-radius:6px;
-  display:flex;align-items:center;justify-content:center;font-size:11px;
-  flex-shrink:0;
-}
-.ic-count{margin-left:auto;font-size:10px;font-weight:700;
-  background:var(--bg4);color:var(--text2);padding:1px 5px;border-radius:10px;}
-.ic-count.new{background:var(--green-dim);color:var(--green);}
-
-.inbox-list{
-  width:280px;border-right:1px solid var(--border);
-  display:flex;flex-direction:column;flex-shrink:0;
-}
-.il-header{
-  padding:12px 14px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.il-title{font-size:14px;font-weight:600;}
-.il-convs{flex:1;overflow-y:auto;}
-.il-convs::-webkit-scrollbar{width:3px;}
-.il-convs::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-.il-conv{
-  display:flex;gap:10px;padding:11px 14px;
-  border-bottom:1px solid var(--border);cursor:pointer;
-  transition:background .15s;
-}
-.il-conv:hover{background:var(--bg2);}
-.il-conv.active{background:var(--bg3);}
-.il-av{
-  width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;flex-shrink:0;position:relative;
-}
-.il-ch-badge{
-  position:absolute;bottom:-1px;right:-1px;
-  width:14px;height:14px;border-radius:50%;
-  border:2px solid var(--bg);font-size:7px;
-  display:flex;align-items:center;justify-content:center;
-}
-.il-info{flex:1;min-width:0;}
-.il-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
-.il-name{font-size:13px;font-weight:500;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.il-time{font-size:10px;color:var(--text3);flex-shrink:0;}
-.il-row2{display:flex;align-items:center;justify-content:space-between;}
-.il-prev{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.il-unread{
-  width:16px;height:16px;background:var(--gold);color:#000;
-  border-radius:50%;font-size:9px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:5px;
-}
-.il-unread.bold .il-name{color:var(--text);font-weight:600;}
-
-/* Chat area */
-.chat-area{flex:1;display:flex;flex-direction:column;min-width:0;}
-.chat-hdr{
-  height:56px;background:var(--bg2);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;
-}
-.chat-hdr-av{
-  width:36px;height:36px;border-radius:50%;
-  background:linear-gradient(135deg,#4a2800,var(--gold));
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;flex-shrink:0;position:relative;
-}
-.online-dot{
-  position:absolute;bottom:0;right:0;width:10px;height:10px;
-  background:var(--green);border-radius:50%;border:2px solid var(--bg2);
-}
-.chat-hdr-info h3{font-size:14px;font-weight:600;}
-.chat-hdr-info p{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;}
-.chat-hdr-actions{margin-left:auto;display:flex;gap:6px;}
-.c-act-btn{
-  height:28px;padding:0 10px;background:var(--bg3);
-  border:1px solid var(--border);color:var(--text2);
-  font-family:inherit;font-size:11px;font-weight:500;
-  border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:4px;
-  transition:all .15s;white-space:nowrap;
-}
-.c-act-btn:hover{border-color:var(--border2);color:var(--text);}
-.c-act-btn.gold{background:var(--gold-dim);border-color:rgba(212,168,67,.3);color:var(--gold);}
-
-.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:3px;}
-.chat-msgs::-webkit-scrollbar{width:4px;}
-.chat-msgs::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-.date-div{
-  display:flex;align-items:center;gap:10px;margin:10px 0;
-  font-size:10px;color:var(--text3);
-}
-.date-div::before,.date-div::after{content:'';flex:1;height:1px;background:var(--border);}
-.date-div span{background:var(--bg3);padding:3px 10px;border-radius:20px;border:1px solid var(--border);}
-.msg-grp{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;}
-.msg-row{display:flex;align-items:flex-end;gap:7px;}
-.msg-row.out{flex-direction:row-reverse;}
-.msg-av{
-  width:26px;height:26px;border-radius:50%;
-  background:var(--bg4);display:flex;align-items:center;
-  justify-content:center;font-size:10px;font-weight:700;
-  flex-shrink:0;color:var(--text3);
-}
-.bubble{
-  max-width:70%;padding:9px 13px;border-radius:13px;
-  font-size:13px;line-height:1.5;
-}
-.msg-row.in .bubble{
-  background:var(--bg3);border-bottom-left-radius:4px;color:var(--text);
-}
-.msg-row.out .bubble{
-  background:#2d1f00;border-bottom-right-radius:4px;
-  color:#f0d8a0;border:1px solid rgba(212,168,67,.15);
-}
-.msg-meta{font-size:10px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:3px;}
-.msg-row.out .msg-meta{justify-content:flex-end;}
-.tick{color:var(--gold);font-size:10px;}
-
-.sys-msg{
-  align-self:center;font-size:11px;color:var(--text3);
-  background:var(--bg3);border:1px solid var(--border);
-  padding:4px 12px;border-radius:20px;margin:6px 0;
-}
-
-.qr-wrap{padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);}
-.qr{
-  font-size:11px;color:var(--text2);background:var(--bg3);
-  border:1px solid var(--border);padding:4px 10px;border-radius:20px;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.qr:hover{border-color:var(--gold);color:var(--gold);}
-
-.chat-input-wrap{
-  border-top:1px solid var(--border);padding:10px 14px;
-  background:var(--bg2);flex-shrink:0;
-}
-.chat-input-box{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:10px;padding:9px 12px;
-  display:flex;flex-direction:column;gap:8px;transition:border-color .2s;
-}
-.chat-input-box:focus-within{border-color:rgba(212,168,67,.3);}
-.chat-input-box textarea{
-  background:none;border:none;outline:none;
-  color:var(--text);font-family:inherit;font-size:13px;
-  resize:none;min-height:36px;line-height:1.5;
-}
-.chat-input-box textarea::placeholder{color:var(--text3);}
-.input-toolbar{display:flex;align-items:center;gap:5px;}
-.tb-btn{
-  width:28px;height:28px;background:none;border:1px solid var(--border);
-  color:var(--text3);border-radius:6px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:all .15s;
-}
-.tb-btn:hover{border-color:var(--border2);color:var(--text2);}
-.tb-space{flex:1;}
-.send-btn{
-  height:30px;padding:0 16px;background:var(--gold);
-  border:none;color:#000;font-family:inherit;font-size:12px;font-weight:700;
-  border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:5px;
-  transition:all .2s;
-}
-.send-btn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(212,168,67,.3);}
-
-/* right detail panel */
-.chat-detail{
-  width:240px;border-left:1px solid var(--border);
-  background:var(--bg2);overflow-y:auto;flex-shrink:0;
-}
-.chat-detail::-webkit-scrollbar{width:3px;}
-.chat-detail::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-.cd-section{padding:14px;border-bottom:1px solid var(--border);}
-.cd-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
-.cd-contact-top{text-align:center;padding:4px 0 8px;}
-.cd-av{
-  width:50px;height:50px;border-radius:50%;margin:0 auto 8px;
-  background:linear-gradient(135deg,#4a2800,var(--gold));
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;color:#fff;
-  box-shadow:0 0 0 3px var(--bg2),0 0 0 5px rgba(212,168,67,.2);
-}
-.cd-contact-top h4{font-size:14px;font-weight:600;}
-.cd-contact-top p{font-size:11px;color:var(--text3);margin-top:2px;}
-.cd-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.cd-row svg{color:var(--text3);flex-shrink:0;}
-.cd-row span{font-size:12px;color:var(--text2);}
-
-.interest-tag{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:11px;padding:3px 8px;border-radius:5px;margin:2px;
-  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
-}
-
-.cd-prop-card{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:7px;padding:9px;margin-bottom:6px;cursor:pointer;
-  transition:border-color .15s;
-}
-.cd-prop-card:hover{border-color:var(--border2);}
-.cdpc-name{font-size:12px;font-weight:600;color:var(--text);}
-.cdpc-price{font-size:13px;font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif;}
-.cdpc-loc{font-size:11px;color:var(--text3);margin-top:2px;}
-
-/* ═══════════════ SHARED TAGS/BADGES ═══════════════ */
+/* ── TAGS & BADGES ── */
 .tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
 .tag-hot{background:var(--red-dim);color:var(--red);}
 .tag-warm{background:var(--orange-dim);color:var(--orange);}
 .tag-cold{background:var(--blue-dim);color:var(--blue);}
 .tag-vip{background:var(--gold-dim);color:var(--gold);}
 .tag-new{background:var(--green-dim);color:var(--green);}
-
-.status-pill{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;
-}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;}
 .pill-new{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.2);}
 .pill-contacted{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(107,163,214,.2);}
 .pill-site{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2);}
@@ -698,88 +253,77 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .pill-closed{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.2);}
 .pill-lost{background:rgba(90,80,69,.3);color:var(--text3);border:1px solid var(--border);}
 
-/* ═══════════════ ADD LEAD MODAL ═══════════════ */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  z-index:1000;display:none;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-}
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
-.modal{
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:14px;width:480px;max-width:95vw;
-  animation:fadeUp .3s ease;
-}
-.modal-header{
-  padding:18px 20px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
+.modal::-webkit-scrollbar{width:4px;}
+.modal::-webkit-scrollbar-thumb{background:var(--bg4);}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1;}
 .modal-header h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;}
-.modal-close{
-  width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  color:var(--text2);transition:all .15s;
-}
+.modal-close{width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;}
 .modal-close:hover{border-color:var(--border2);color:var(--text);}
 .modal-body{padding:20px;}
 .form-row{margin-bottom:14px;}
 .form-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block;}
-.form-input,.form-select{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;padding:9px 12px;color:var(--text);
-  font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;
-}
-.form-input:focus,.form-select:focus{border-color:rgba(212,168,67,.4);}
-.form-input::placeholder{color:var(--text3);}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(212,168,67,.4);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3);}
 .form-select option{background:var(--bg3);}
+.form-textarea{resize:vertical;min-height:72px;line-height:1.5;}
 .form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.modal-footer{
-  padding:14px 20px;border-top:1px solid var(--border);
-  display:flex;gap:8px;justify-content:flex-end;
-}
-.btn-cancel{
-  padding:0 16px;height:34px;background:var(--bg3);border:1px solid var(--border);
-  color:var(--text2);font-family:inherit;font-size:13px;border-radius:8px;cursor:pointer;transition:all .15s;
-}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.btn-cancel{padding:0 16px;height:34px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:13px;border-radius:8px;cursor:pointer;transition:all .15s;}
 .btn-cancel:hover{border-color:var(--border2);color:var(--text);}
-.btn-save{
-  padding:0 20px;height:34px;background:var(--gold);border:none;
-  color:#000;font-family:inherit;font-size:13px;font-weight:700;
-  border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;
-}
+.btn-save{padding:0 20px;height:34px;background:var(--gold);border:none;color:#000;font-family:inherit;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
 .btn-save:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 
-/* ═══════════════ TOAST ═══════════════ */
-.toast{
-  position:fixed;bottom:24px;right:24px;
-  background:var(--bg2);border:1px solid rgba(212,168,67,.3);
-  border-radius:10px;padding:12px 16px;z-index:9999;
-  display:flex;align-items:center;gap:10px;
-  font-size:13px;color:var(--text);
-  transform:translateY(20px);opacity:0;transition:all .3s;
-  pointer-events:none;min-width:200px;
-  box-shadow:0 8px 30px rgba(0,0,0,.5);
-}
+/* ── SETUP MODAL ── */
+.setup-modal{width:560px;}
+.setup-step{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;}
+.setup-step-num{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.setup-step h4{font-size:14px;font-weight:600;margin-bottom:6px;}
+.setup-step p{font-size:12px;color:var(--text2);line-height:1.6;}
+.setup-step code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg4);padding:2px 6px;border-radius:4px;color:var(--gold2);}
+
+/* ── EMPTY STATE ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);gap:12px;flex:1;}
+.empty-state-icon{font-size:52px;opacity:.4;}
+.empty-state h3{font-size:18px;font-weight:600;color:var(--text2);}
+.empty-state p{font-size:13px;text-align:center;max-width:320px;line-height:1.6;}
+
+/* ── LOADING ── */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3);gap:10px;font-size:13px;}
+.spinner{width:18px;height:18px;border:2px solid var(--bg4);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── DB STATUS ── */
+.db-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);}
+.db-dot.connected{background:var(--green);box-shadow:0 0 6px rgba(76,175,125,.5);}
+.db-dot.error{background:var(--red);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid rgba(212,168,67,.3);border-radius:10px;padding:12px 16px;z-index:9999;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;min-width:220px;box-shadow:0 8px 30px rgba(0,0,0,.5);}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast-icon{font-size:16px;}
+.toast.success{border-color:rgba(76,175,125,.3);}
+.toast.error{border-color:rgba(224,85,85,.3);}
 
-/* ═══════════════ EMPTY STATE ═══════════════ */
-.empty{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  color:var(--text3);gap:10px;
-}
-.empty-icon{font-size:48px;opacity:.4;}
-.empty h3{font-size:16px;font-weight:600;color:var(--text2);}
-.empty p{font-size:13px;}
-
-/* scrollbar global */
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
 </style>
 </head>
 <body>
+
+<!-- SETUP BANNER -->
+<div class="setup-banner" id="setupBanner">
+  ⚡ Firebase not configured yet —
+  <a onclick="openSetupModal()">click here to connect your database</a>
+  in 2 minutes (free)
+  <span class="dismiss" onclick="document.getElementById('setupBanner').style.display='none'">✕</span>
+</div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -789,17 +333,22 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
   <div class="top-search">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" placeholder="Search leads, properties, conversations…">
+    <input type="text" id="globalSearch" placeholder="Search leads, follow-ups…" oninput="handleSearch(this.value)">
   </div>
   <div class="top-right">
-    <div class="notif-btn">
-      <div class="notif-badge">5</div>
+    <div class="db-status" id="dbStatus">
+      <div class="db-dot" id="dbDot"></div>
+      <span id="dbStatusText">Not connected</span>
+    </div>
+    <div class="notif-btn" onclick="setView('followups')">
+      <div class="notif-badge" id="todayFuBadge">0</div>
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
-    <button class="t-btn gold" onclick="openModal()">
+    <button class="t-btn gold" onclick="openLeadModal()">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add Lead
     </button>
+    <button class="t-btn" onclick="openSetupModal()">⚙ Config</button>
     <div class="avatar">RK</div>
   </div>
 </div>
@@ -814,68 +363,45 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     Dashboard
   </div>
-
   <div class="nav-section-label">Work</div>
   <div class="nav-item" id="nav-leads" onclick="setView('leads')">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     Leads
-    <span class="nav-badge hot">12</span>
-  </div>
-  <div class="nav-item" id="nav-properties" onclick="setView('properties')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Properties
-    <span class="nav-badge new">8</span>
+    <span class="nav-badge hot" id="nav-leads-count">0</span>
   </div>
   <div class="nav-item" id="nav-followups" onclick="setView('followups')">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Follow-ups
-    <span class="nav-badge hot">4</span>
+    <span class="nav-badge hot" id="nav-fu-count">0</span>
   </div>
-  <div class="nav-item" id="nav-inbox" onclick="setView('inbox')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Inbox
-    <span class="nav-badge new">7</span>
-  </div>
-
-  <div class="nav-section-label">Reports</div>
-  <div class="nav-item" id="nav-analytics" onclick="setView('analytics')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    Analytics
-  </div>
-
   <div class="nav-divider"></div>
-  <div class="nav-section-label">Settings</div>
-  <div class="nav-item">
+  <div class="nav-item" onclick="openSetupModal()">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Settings
+    Setup Database
   </div>
-
   <div class="nav-spacer"></div>
   <div class="nav-agent-card">
     <div class="nac-top">
       <div class="nac-avatar">RK</div>
-      <div><div class="nac-name">Rohit Kumar</div><div class="nac-role">Senior Agent</div></div>
+      <div><div class="nac-name">Your Name</div><div class="nac-role">Real Estate Agent</div></div>
     </div>
     <div class="nac-stats">
-      <div class="nac-stat"><div class="nac-stat-val">34</div><div class="nac-stat-lbl">Leads</div></div>
-      <div class="nac-stat"><div class="nac-stat-val">6</div><div class="nac-stat-lbl">Closed</div></div>
-      <div class="nac-stat"><div class="nac-stat-val">₹2.4Cr</div><div class="nac-stat-lbl">Value</div></div>
+      <div class="nac-stat"><div class="nac-stat-val" id="stat-total">0</div><div class="nac-stat-lbl">Leads</div></div>
+      <div class="nac-stat"><div class="nac-stat-val" id="stat-closed">0</div><div class="nac-stat-lbl">Closed</div></div>
+      <div class="nac-stat"><div class="nac-stat-val" id="stat-hot">0</div><div class="nac-stat-lbl">Hot</div></div>
     </div>
   </div>
 </nav>
+
+<!-- MAIN -->
+<div class="main">
 
 <!-- ═══ DASHBOARD ═══ -->
 <div class="view active" id="view-dashboard">
   <div class="page-header">
     <div class="page-title">
-      <h1>Good morning, Rohit ☀️</h1>
-      <p>Tuesday, 17 February 2026 · Mumbai Real Estate</p>
-    </div>
-    <div class="page-actions">
-      <button class="t-btn">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        This Month
-      </button>
+      <h1 id="dashGreeting">Good morning ☀️</h1>
+      <p id="dashDate">Loading…</p>
     </div>
   </div>
   <div class="dash-content">
@@ -883,42 +409,38 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <div class="stat-card">
         <div class="sc-top">
           <div class="sc-icon" style="background:var(--gold-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           </div>
-          <span class="sc-change up">+8%</span>
         </div>
-        <div class="sc-val">134</div>
+        <div class="sc-val" id="dash-total">—</div>
         <div class="sc-lbl">Total Leads</div>
       </div>
       <div class="stat-card">
         <div class="sc-top">
-          <div class="sc-icon" style="background:var(--green-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <div class="sc-icon" style="background:var(--red-dim)">
+            <svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
-          <span class="sc-change up">+3</span>
         </div>
-        <div class="sc-val">24</div>
-        <div class="sc-lbl">Properties Listed</div>
+        <div class="sc-val" id="dash-hot">—</div>
+        <div class="sc-lbl">Hot Leads</div>
       </div>
       <div class="stat-card">
         <div class="sc-top">
           <div class="sc-icon" style="background:var(--orange-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
-          <span class="sc-change up">+12%</span>
         </div>
-        <div class="sc-val">18</div>
-        <div class="sc-lbl">Deals Closed</div>
+        <div class="sc-val" id="dash-today-fu">—</div>
+        <div class="sc-lbl">Follow-ups Today</div>
       </div>
       <div class="stat-card">
         <div class="sc-top">
-          <div class="sc-icon" style="background:var(--blue-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <div class="sc-icon" style="background:var(--green-dim)">
+            <svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           </div>
-          <span class="sc-change up">+22%</span>
         </div>
-        <div class="sc-val" style="font-size:22px">₹8.2Cr</div>
-        <div class="sc-lbl">Revenue This Month</div>
+        <div class="sc-val" id="dash-closed">—</div>
+        <div class="sc-lbl">Deals Closed</div>
       </div>
     </div>
 
@@ -926,98 +448,50 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <!-- Pipeline -->
       <div class="dash-card">
         <div class="dc-header">
-          <div><div class="dc-title">Lead Pipeline</div><div class="dc-subtitle">Active leads by stage</div></div>
-          <a href="#" class="dc-action" onclick="setView('leads');return false">View all →</a>
+          <div><div class="dc-title">Lead Pipeline</div><div class="dc-subtitle">Live from database</div></div>
+          <a class="dc-action" onclick="setView('leads')">View all →</a>
         </div>
-        <div class="pipeline-cols" style="min-height:240px">
+        <div class="pipeline-cols" style="min-height:200px" id="pipelineCols">
           <div class="pipeline-col">
-            <div class="pc-header"><div class="pc-name" style="color:var(--blue)">New</div><div class="pc-count">4 leads</div></div>
-            <div class="pc-leads">
-              <div class="lead-mini"><div class="lm-name">Priya Sharma</div><div class="lm-prop">2BHK · Bandra West</div><div class="lm-budget">₹1.8Cr</div></div>
-              <div class="lead-mini"><div class="lm-name">Arun Mehta</div><div class="lm-prop">Villa · Juhu</div><div class="lm-budget">₹4.5Cr</div></div>
-              <div class="lead-mini"><div class="lm-name">Kavya Reddy</div><div class="lm-prop">3BHK · Powai</div><div class="lm-budget">₹2.1Cr</div></div>
-              <div class="lead-mini"><div class="lm-name">Suresh Nair</div><div class="lm-prop">Plot · Thane</div><div class="lm-budget">₹85L</div></div>
-            </div>
+            <div class="pc-header"><div class="pc-name" style="color:var(--blue)">New</div><div class="pc-count" id="pc-new">0 leads</div></div>
+            <div class="pc-leads" id="pc-leads-new"><div class="loading"><div class="spinner"></div></div></div>
           </div>
           <div class="pipeline-col">
-            <div class="pc-header"><div class="pc-name" style="color:var(--orange)">Site Visit</div><div class="pc-count">3 leads</div></div>
-            <div class="pc-leads">
-              <div class="lead-mini"><div class="lm-name">Deepa Joshi</div><div class="lm-prop">2BHK · Andheri E</div><div class="lm-budget">₹1.4Cr</div><div class="lm-tags"><span class="tag tag-hot">🔥 Hot</span></div></div>
-              <div class="lead-mini"><div class="lm-name">Raj Patel</div><div class="lm-prop">3BHK · Worli</div><div class="lm-budget">₹3.2Cr</div></div>
-              <div class="lead-mini"><div class="lm-name">Anita Singh</div><div class="lm-prop">Studio · Lower Parel</div><div class="lm-budget">₹95L</div></div>
-            </div>
+            <div class="pc-header"><div class="pc-name" style="color:var(--orange)">Site Visit</div><div class="pc-count" id="pc-site">0 leads</div></div>
+            <div class="pc-leads" id="pc-leads-site"></div>
           </div>
           <div class="pipeline-col">
-            <div class="pc-header"><div class="pc-name" style="color:var(--gold)">Negotiation</div><div class="pc-count">3 leads</div></div>
-            <div class="pc-leads">
-              <div class="lead-mini"><div class="lm-name">Vikram Chopra</div><div class="lm-prop">4BHK · Malabar Hill</div><div class="lm-budget">₹8.5Cr</div><div class="lm-tags"><span class="tag tag-vip">VIP</span></div></div>
-              <div class="lead-mini"><div class="lm-name">Meena Rao</div><div class="lm-prop">2BHK · Goregaon W</div><div class="lm-budget">₹1.6Cr</div></div>
-              <div class="lead-mini"><div class="lm-name">Farhan Qureshi</div><div class="lm-prop">Office · BKC</div><div class="lm-budget">₹2.8Cr</div></div>
-            </div>
+            <div class="pc-header"><div class="pc-name" style="color:var(--gold)">Negotiation</div><div class="pc-count" id="pc-nego">0 leads</div></div>
+            <div class="pc-leads" id="pc-leads-nego"></div>
           </div>
           <div class="pipeline-col">
-            <div class="pc-header"><div class="pc-name" style="color:var(--green)">Closed</div><div class="pc-count">2 this week</div></div>
-            <div class="pc-leads">
-              <div class="lead-mini" style="border-color:rgba(76,175,125,.25)"><div class="lm-name">Neha Gupta</div><div class="lm-prop">3BHK · Kandivali W</div><div class="lm-budget" style="color:var(--green)">✓ ₹1.9Cr</div></div>
-              <div class="lead-mini" style="border-color:rgba(76,175,125,.25)"><div class="lm-name">Amit Kulkarni</div><div class="lm-prop">Villa · Navi Mumbai</div><div class="lm-budget" style="color:var(--green)">✓ ₹3.1Cr</div></div>
-            </div>
+            <div class="pc-header"><div class="pc-name" style="color:var(--green)">Closed</div><div class="pc-count" id="pc-closed">0 leads</div></div>
+            <div class="pc-leads" id="pc-leads-closed"></div>
           </div>
         </div>
       </div>
 
       <!-- Right column -->
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <!-- Today's follow-ups -->
+      <div style="display:flex;flex-direction:column;gap:14px">
         <div class="dash-card">
           <div class="dc-header">
-            <div><div class="dc-title">Today's Follow-ups</div><div class="dc-subtitle">4 pending</div></div>
-            <a href="#" class="dc-action" onclick="setView('followups');return false">See all →</a>
+            <div><div class="dc-title">Today's Follow-ups</div><div class="dc-subtitle" id="dash-fu-subtitle">Loading…</div></div>
+            <a class="dc-action" onclick="setView('followups')">See all →</a>
           </div>
-          <div class="followup-list">
-            <div class="fu-item">
-              <div class="fu-avatar" style="background:linear-gradient(135deg,#4a1010,var(--red))">DJ</div>
-              <div class="fu-info"><div class="fu-name">Deepa Joshi</div><div class="fu-note">Site visit confirmation call</div></div>
-              <span class="fu-time urgent">10:30 AM</span>
-            </div>
-            <div class="fu-item">
-              <div class="fu-avatar" style="background:linear-gradient(135deg,#1a3a10,var(--green))">VC</div>
-              <div class="fu-info"><div class="fu-name">Vikram Chopra</div><div class="fu-note">Share revised price quote</div></div>
-              <span class="fu-time today">12:00 PM</span>
-            </div>
-            <div class="fu-item">
-              <div class="fu-avatar" style="background:linear-gradient(135deg,#102a4a,var(--blue))">RP</div>
-              <div class="fu-info"><div class="fu-name">Raj Patel</div><div class="fu-note">WhatsApp property brochure</div></div>
-              <span class="fu-time today">3:00 PM</span>
-            </div>
-            <div class="fu-item">
-              <div class="fu-avatar" style="background:linear-gradient(135deg,#3a2a10,var(--gold))">PS</div>
-              <div class="fu-info"><div class="fu-name">Priya Sharma</div><div class="fu-note">Send shortlisted listings</div></div>
-              <span class="fu-time done">✓ Done</span>
-            </div>
+          <div id="dash-fu-list" class="fu-dash-list">
+            <div class="loading"><div class="spinner"></div>Loading…</div>
           </div>
         </div>
-
-        <!-- Recent Activity -->
         <div class="dash-card">
-          <div class="dc-header">
-            <div class="dc-title">Recent Activity</div>
-          </div>
-          <div class="activity-list">
-            <div class="act-item">
-              <div class="act-dot" style="background:var(--green)"></div>
-              <div><div class="act-text"><strong>Amit Kulkarni</strong> deal closed · ₹3.1 Cr</div><div class="act-time">2 hours ago</div></div>
+          <div class="dc-header"><div class="dc-title">Quick Add Lead</div></div>
+          <div style="padding:14px">
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <input class="form-input" style="flex:1" id="quick-name" placeholder="Full name">
+              <input class="form-input" style="flex:1" id="quick-phone" placeholder="+91 phone">
             </div>
-            <div class="act-item">
-              <div class="act-dot" style="background:var(--blue)"></div>
-              <div><div class="act-text"><strong>Kavya Reddy</strong> — new lead added via website</div><div class="act-time">4 hours ago</div></div>
-            </div>
-            <div class="act-item">
-              <div class="act-dot" style="background:var(--gold)"></div>
-              <div><div class="act-text"><strong>Vikram Chopra</strong> viewed brochure (3 times)</div><div class="act-time">5 hours ago</div></div>
-            </div>
-            <div class="act-item">
-              <div class="act-dot" style="background:var(--orange)"></div>
-              <div><div class="act-text"><strong>New property</strong> listed at Bandra West</div><div class="act-time">Yesterday</div></div>
+            <div style="display:flex;gap:8px">
+              <input class="form-input" style="flex:1" id="quick-budget" placeholder="Budget (e.g. ₹1.5 Cr)">
+              <button class="btn-save" style="flex-shrink:0" onclick="quickAddLead()">Add →</button>
             </div>
           </div>
         </div>
@@ -1029,243 +503,39 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 <!-- ═══ LEADS VIEW ═══ -->
 <div class="view" id="view-leads">
   <div class="page-header">
-    <div class="page-title"><h1>Leads</h1><p>134 total leads · 12 hot this week</p></div>
+    <div class="page-title">
+      <h1>Leads</h1>
+      <p id="leads-subtitle">Loading from database…</p>
+    </div>
     <div class="page-actions">
-      <button class="t-btn gold" onclick="openModal()">
+      <button class="t-btn gold" onclick="openLeadModal()">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Lead
       </button>
     </div>
   </div>
   <div class="leads-content">
-    <div class="leads-toolbar">
-      <div class="filter-chip active">All (134)</div>
-      <div class="filter-chip">🔥 Hot (12)</div>
-      <div class="filter-chip">New (28)</div>
-      <div class="filter-chip">Site Visit (15)</div>
-      <div class="filter-chip">Negotiation (9)</div>
-      <div class="filter-chip">Closed (18)</div>
-      <div class="filter-chip">Lost (6)</div>
+    <div class="leads-toolbar" id="leadsToolbar">
+      <div class="filter-chip active" data-filter="all">All (<span id="chip-all">0</span>)</div>
+      <div class="filter-chip" data-filter="New">New (<span id="chip-new">0</span>)</div>
+      <div class="filter-chip" data-filter="Contacted">Contacted (<span id="chip-contacted">0</span>)</div>
+      <div class="filter-chip" data-filter="Site Visit">Site Visit (<span id="chip-site">0</span>)</div>
+      <div class="filter-chip" data-filter="Negotiation">Negotiation (<span id="chip-nego">0</span>)</div>
+      <div class="filter-chip" data-filter="Closed">Closed (<span id="chip-closed">0</span>)</div>
+      <div class="filter-chip" data-filter="Lost">Lost (<span id="chip-lost">0</span>)</div>
     </div>
     <div class="leads-table-wrap">
       <table>
         <thead>
           <tr>
             <th>Name</th><th>Phone</th><th>Budget</th><th>Interest</th>
-            <th>Source</th><th>Stage</th><th>Last Contact</th><th>Agent</th>
+            <th>Source</th><th>Stage</th><th>Priority</th><th>Added</th><th>Actions</th>
           </tr>
         </thead>
         <tbody id="leadsTableBody">
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Deepa Joshi</span></td>
-            <td><span class="td-phone">+91 98800 12345</span></td>
-            <td><span class="td-budget">₹1.4 Cr</span></td>
-            <td>2BHK · Andheri E</td>
-            <td>99acres</td>
-            <td><span class="status-pill pill-site">Site Visit</span></td>
-            <td>Today, 9 AM</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Vikram Chopra</span><span class="tag tag-vip" style="margin-left:6px">VIP</span></td>
-            <td><span class="td-phone">+91 99910 88720</span></td>
-            <td><span class="td-budget">₹8.5 Cr</span></td>
-            <td>4BHK · Malabar Hill</td>
-            <td>Referral</td>
-            <td><span class="status-pill pill-nego">Negotiation</span></td>
-            <td>Yesterday</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Priya Sharma</span></td>
-            <td><span class="td-phone">+91 90000 55432</span></td>
-            <td><span class="td-budget">₹1.8 Cr</span></td>
-            <td>2BHK · Bandra West</td>
-            <td>Housing.com</td>
-            <td><span class="status-pill pill-contacted">Contacted</span></td>
-            <td>2 days ago</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Raj Patel</span><span class="tag tag-hot" style="margin-left:6px">Hot</span></td>
-            <td><span class="td-phone">+91 87654 32100</span></td>
-            <td><span class="td-budget">₹3.2 Cr</span></td>
-            <td>3BHK · Worli</td>
-            <td>Instagram Ad</td>
-            <td><span class="status-pill pill-site">Site Visit</span></td>
-            <td>3 hours ago</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Kavya Reddy</span></td>
-            <td><span class="td-phone">+91 97777 44321</span></td>
-            <td><span class="td-budget">₹2.1 Cr</span></td>
-            <td>3BHK · Powai</td>
-            <td>Website</td>
-            <td><span class="status-pill pill-new">New</span></td>
-            <td>Just now</td>
-            <td>Unassigned</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Farhan Qureshi</span></td>
-            <td><span class="td-phone">+91 92200 88765</span></td>
-            <td><span class="td-budget">₹2.8 Cr</span></td>
-            <td>Office · BKC</td>
-            <td>Referral</td>
-            <td><span class="status-pill pill-nego">Negotiation</span></td>
-            <td>4 hours ago</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Neha Gupta</span></td>
-            <td><span class="td-phone">+91 93333 21098</span></td>
-            <td><span class="td-budget">₹1.9 Cr</span></td>
-            <td>3BHK · Kandivali W</td>
-            <td>Facebook Ad</td>
-            <td><span class="status-pill pill-closed">Closed ✓</span></td>
-            <td>2 days ago</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Meena Rao</span></td>
-            <td><span class="td-phone">+91 88800 77654</span></td>
-            <td><span class="td-budget">₹1.6 Cr</span></td>
-            <td>2BHK · Goregaon W</td>
-            <td>MagicBricks</td>
-            <td><span class="status-pill pill-nego">Negotiation</span></td>
-            <td>1 day ago</td>
-            <td>Rohit K.</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Suresh Nair</span></td>
-            <td><span class="td-phone">+91 95500 33210</span></td>
-            <td><span class="td-budget">₹85 L</span></td>
-            <td>Plot · Thane</td>
-            <td>99acres</td>
-            <td><span class="status-pill pill-new">New</span></td>
-            <td>5 hours ago</td>
-            <td>Unassigned</td>
-          </tr>
-          <tr onclick="setView('inbox')">
-            <td><span class="td-name">Anita Singh</span></td>
-            <td><span class="td-phone">+91 96600 44310</span></td>
-            <td><span class="td-budget">₹95 L</span></td>
-            <td>Studio · Lower Parel</td>
-            <td>Google Ad</td>
-            <td><span class="status-pill pill-site">Site Visit</span></td>
-            <td>6 hours ago</td>
-            <td>Rohit K.</td>
-          </tr>
+          <tr><td colspan="9"><div class="loading"><div class="spinner"></div>Connecting to database…</div></td></tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ PROPERTIES VIEW ═══ -->
-<div class="view" id="view-properties">
-  <div class="page-header">
-    <div class="page-title"><h1>Property Listings</h1><p>24 active properties across Mumbai</p></div>
-    <div class="page-actions">
-      <button class="t-btn gold" onclick="showToast('➕ Add Property feature coming soon!')">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Property
-      </button>
-    </div>
-  </div>
-  <div class="props-content">
-    <div class="props-toolbar">
-      <div class="filter-chip active">All (24)</div>
-      <div class="filter-chip">Available (14)</div>
-      <div class="filter-chip">Negotiation (5)</div>
-      <div class="filter-chip">Sold (4)</div>
-      <div class="filter-chip">On Hold (1)</div>
-    </div>
-    <div class="props-grid">
-      <div class="prop-card" style="animation-delay:.05s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg"></div><span class="prop-status-badge psb-available">Available</span><span class="prop-emoji">🏙️</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹1.85 Cr</div>
-          <div class="prop-name">Sea View 2BHK — Bandra West</div>
-          <div class="prop-loc">📍 Hill Road, Bandra West, Mumbai</div>
-          <div class="prop-specs">
-            <div class="spec">🛏️ 2 BHK</div>
-            <div class="spec">🚿 2 Bath</div>
-            <div class="spec">📐 980 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count">👥 4 interested</span></div>
-      </div>
-      <div class="prop-card" style="animation-delay:.1s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg" style="background:linear-gradient(135deg,#1a1a2e,#2d2d5e)"></div><span class="prop-status-badge psb-negotiation">Negotiation</span><span class="prop-emoji">🏢</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹8.5 Cr</div>
-          <div class="prop-name">Luxury 4BHK — Malabar Hill</div>
-          <div class="prop-loc">📍 Ridge Road, Malabar Hill, Mumbai</div>
-          <div class="prop-specs">
-            <div class="spec">🛏️ 4 BHK</div>
-            <div class="spec">🚿 4 Bath</div>
-            <div class="spec">📐 2800 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count">👥 2 interested</span></div>
-      </div>
-      <div class="prop-card" style="animation-delay:.15s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg" style="background:linear-gradient(135deg,#1a2e1a,#2d5e2d)"></div><span class="prop-status-badge psb-available">Available</span><span class="prop-emoji">🌳</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹2.1 Cr</div>
-          <div class="prop-name">Garden View 3BHK — Powai</div>
-          <div class="prop-loc">📍 Hiranandani Gardens, Powai</div>
-          <div class="prop-specs">
-            <div class="spec">🛏️ 3 BHK</div>
-            <div class="spec">🚿 2 Bath</div>
-            <div class="spec">📐 1450 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count">👥 6 interested</span></div>
-      </div>
-      <div class="prop-card" style="animation-delay:.2s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg" style="background:linear-gradient(135deg,#2e1a0a,#5e3a14)"></div><span class="prop-status-badge psb-sold">Sold</span><span class="prop-emoji">🏡</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹3.1 Cr</div>
-          <div class="prop-name">Villa — Navi Mumbai</div>
-          <div class="prop-loc">📍 Kharghar, Navi Mumbai</div>
-          <div class="prop-specs">
-            <div class="spec">🛏️ 4 BHK</div>
-            <div class="spec">🚿 3 Bath</div>
-            <div class="spec">📐 2200 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count" style="color:var(--green)">✓ Closed</span></div>
-      </div>
-      <div class="prop-card" style="animation-delay:.25s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg" style="background:linear-gradient(135deg,#0a1a2e,#1a3a5e)"></div><span class="prop-status-badge psb-available">Available</span><span class="prop-emoji">🌊</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹3.2 Cr</div>
-          <div class="prop-name">Sea-facing 3BHK — Worli</div>
-          <div class="prop-loc">📍 Worli Sea Face, Mumbai</div>
-          <div class="prop-specs">
-            <div class="spec">🛏️ 3 BHK</div>
-            <div class="spec">🚿 3 Bath</div>
-            <div class="spec">📐 1700 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count">👥 8 interested</span></div>
-      </div>
-      <div class="prop-card" style="animation-delay:.3s" onclick="showToast('🏠 Opening property details…')">
-        <div class="prop-img"><div class="prop-img-bg" style="background:linear-gradient(135deg,#1e1020,#3d1a4a)"></div><span class="prop-status-badge psb-available">Available</span><span class="prop-emoji">🏬</span></div>
-        <div class="prop-body">
-          <div class="prop-price">₹2.8 Cr</div>
-          <div class="prop-name">Commercial Office — BKC</div>
-          <div class="prop-loc">📍 Bandra Kurla Complex, Mumbai</div>
-          <div class="prop-specs">
-            <div class="spec">💼 Office</div>
-            <div class="spec">🚗 2 Parking</div>
-            <div class="spec">📐 1200 sqft</div>
-          </div>
-        </div>
-        <div class="prop-footer"><span class="prop-agent">Rohit Kumar</span><span class="prop-leads-count">👥 3 interested</span></div>
-      </div>
     </div>
   </div>
 </div>
@@ -1273,414 +543,109 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 <!-- ═══ FOLLOW-UPS VIEW ═══ -->
 <div class="view" id="view-followups">
   <div class="page-header">
-    <div class="page-title"><h1>Follow-up Automation</h1><p>4 due today · 12 this week</p></div>
+    <div class="page-title">
+      <h1>Follow-ups</h1>
+      <p id="fu-subtitle">Loading…</p>
+    </div>
     <div class="page-actions">
-      <button class="t-btn gold" onclick="showToast('⚡ Automation rule created!')">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        New Automation
+      <button class="t-btn gold" onclick="openFollowUpModal()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Follow-up
       </button>
     </div>
   </div>
   <div class="fu-content">
     <div class="fu-sidebar">
       <div class="fu-cal-header">
-        <span class="fu-cal-title">February 2026</span>
-        <div class="fu-cal-nav">
-          <div class="fu-cal-btn">‹</div>
-          <div class="fu-cal-btn">›</div>
-        </div>
+        <span class="fu-cal-title" id="calMonth">February 2026</span>
       </div>
-      <div class="mini-cal">
-        <div class="mini-cal-grid">
-          <div class="mcg-day-name">S</div><div class="mcg-day-name">M</div><div class="mcg-day-name">T</div>
-          <div class="mcg-day-name">W</div><div class="mcg-day-name">T</div><div class="mcg-day-name">F</div><div class="mcg-day-name">S</div>
-          <div class="mcg-day other-month">1</div><div class="mcg-day other-month">2</div><div class="mcg-day has-fu">3</div>
-          <div class="mcg-day has-fu">4</div><div class="mcg-day">5</div><div class="mcg-day has-fu">6</div><div class="mcg-day">7</div>
-          <div class="mcg-day">8</div><div class="mcg-day has-fu">9</div><div class="mcg-day">10</div>
-          <div class="mcg-day">11</div><div class="mcg-day has-fu">12</div><div class="mcg-day">13</div><div class="mcg-day has-fu">14</div>
-          <div class="mcg-day">15</div><div class="mcg-day">16</div><div class="mcg-day today">17</div>
-          <div class="mcg-day">18</div><div class="mcg-day has-fu">19</div><div class="mcg-day">20</div><div class="mcg-day">21</div>
-          <div class="mcg-day">22</div><div class="mcg-day has-fu">23</div><div class="mcg-day">24</div>
-          <div class="mcg-day">25</div><div class="mcg-day">26</div><div class="mcg-day">27</div><div class="mcg-day">28</div>
-        </div>
-      </div>
+      <div class="mini-cal" id="miniCal"></div>
       <div class="fu-type-list">
-        <div class="fu-type-item active">
-          <div class="fu-type-dot" style="background:var(--red)"></div> All Follow-ups
+        <div class="fu-type-item active" data-type="all">
+          <div class="fu-type-dot" style="background:var(--gold)"></div> All Follow-ups
         </div>
-        <div class="fu-type-item">
+        <div class="fu-type-item" data-type="Call">
           <div class="fu-type-dot" style="background:var(--blue)"></div> Calls
         </div>
-        <div class="fu-type-item">
+        <div class="fu-type-item" data-type="WhatsApp">
           <div class="fu-type-dot" style="background:var(--green)"></div> WhatsApp
         </div>
-        <div class="fu-type-item">
+        <div class="fu-type-item" data-type="Site Visit">
           <div class="fu-type-dot" style="background:var(--orange)"></div> Site Visits
         </div>
-        <div class="fu-type-item">
-          <div class="fu-type-dot" style="background:var(--gold)"></div> Documents
+        <div class="fu-type-item" data-type="Document">
+          <div class="fu-type-dot" style="background:var(--red)"></div> Documents
         </div>
       </div>
     </div>
-    <div class="fu-main">
-      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Today — Feb 17</div>
-
-      <div class="fu-card" style="animation-delay:.05s">
-        <div class="fu-card-top">
-          <div class="fu-card-avatar" style="background:linear-gradient(135deg,#4a1010,var(--red))">DJ</div>
-          <div class="fu-card-info"><div class="fu-card-name">Deepa Joshi</div><div class="fu-card-sub">2BHK · Andheri East · ₹1.4 Cr</div></div>
-          <div class="fu-card-badges"><span class="tag tag-hot">🔥 Urgent</span><span class="fu-time urgent" style="font-size:11px;font-weight:600;background:var(--red-dim);color:var(--red);padding:3px 8px;border-radius:20px">10:30 AM</span></div>
-        </div>
-        <div class="fu-body">📞 <strong>Call</strong> — Confirm site visit scheduled for tomorrow. She was interested in the Andheri 2BHK. Remind her about the 3BHK option in Powai as an alternative.</div>
-        <div class="fu-footer">
-          <button class="fu-action-btn primary" onclick="showToast('📞 Dialing Deepa Joshi…')">📞 Call Now</button>
-          <button class="fu-action-btn" onclick="showToast('💬 Opening WhatsApp chat…')">💬 WhatsApp</button>
-          <button class="fu-action-btn" onclick="showToast('✅ Marked as done!')">✓ Done</button>
-          <button class="fu-action-btn" onclick="showToast('⏰ Snoozed for 1 hour')">⏰ Snooze</button>
-        </div>
-      </div>
-
-      <div class="fu-card" style="animation-delay:.1s">
-        <div class="fu-card-top">
-          <div class="fu-card-avatar" style="background:linear-gradient(135deg,#1a3a10,var(--green))">VC</div>
-          <div class="fu-card-info"><div class="fu-card-name">Vikram Chopra</div><div class="fu-card-sub">4BHK · Malabar Hill · ₹8.5 Cr · VIP</div></div>
-          <div class="fu-card-badges"><span class="tag tag-vip">VIP</span><span class="fu-time today" style="font-size:11px;font-weight:600;background:var(--orange-dim);color:var(--orange);padding:3px 8px;border-radius:20px">12:00 PM</span></div>
-        </div>
-        <div class="fu-body">📄 <strong>Share Document</strong> — Send the revised price negotiation sheet and legal documents via WhatsApp. He's been waiting since yesterday. High priority — DO NOT miss.</div>
-        <div class="fu-footer">
-          <button class="fu-action-btn primary" onclick="showToast('📤 Documents sent to Vikram!')">📤 Send Docs</button>
-          <button class="fu-action-btn" onclick="showToast('💬 Opening WhatsApp chat…')">💬 WhatsApp</button>
-          <button class="fu-action-btn" onclick="showToast('✅ Marked as done!')">✓ Done</button>
-          <button class="fu-action-btn" onclick="showToast('⏰ Snoozed for 2 hours')">⏰ Snooze</button>
-        </div>
-      </div>
-
-      <div class="fu-card" style="animation-delay:.15s">
-        <div class="fu-card-top">
-          <div class="fu-card-avatar" style="background:linear-gradient(135deg,#102a4a,var(--blue))">RP</div>
-          <div class="fu-card-info"><div class="fu-card-name">Raj Patel</div><div class="fu-card-sub">3BHK · Worli · ₹3.2 Cr</div></div>
-          <div class="fu-card-badges"><span class="fu-time today" style="font-size:11px;font-weight:600;background:var(--orange-dim);color:var(--orange);padding:3px 8px;border-radius:20px">3:00 PM</span></div>
-        </div>
-        <div class="fu-body">💬 <strong>WhatsApp</strong> — Send the Worli property brochure and a short video tour link. He asked for more pictures after the last call. Include the floor plan PDF.</div>
-        <div class="fu-footer">
-          <button class="fu-action-btn primary" onclick="showToast('📱 Brochure sent on WhatsApp!')">📱 Send Brochure</button>
-          <button class="fu-action-btn" onclick="showToast('📞 Dialing Raj Patel…')">📞 Call</button>
-          <button class="fu-action-btn" onclick="showToast('✅ Marked as done!')">✓ Done</button>
-          <button class="fu-action-btn" onclick="showToast('⏰ Snoozed for 3 hours')">⏰ Snooze</button>
-        </div>
-      </div>
-
-      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px">Tomorrow — Feb 18</div>
-
-      <div class="fu-card" style="animation-delay:.2s;opacity:.7">
-        <div class="fu-card-top">
-          <div class="fu-card-avatar" style="background:linear-gradient(135deg,#1a1060,#4a40c0)">KR</div>
-          <div class="fu-card-info"><div class="fu-card-name">Kavya Reddy</div><div class="fu-card-sub">3BHK · Powai · ₹2.1 Cr</div></div>
-          <div class="fu-card-badges"><span class="tag tag-new">New Lead</span><span style="font-size:11px;font-weight:600;background:var(--blue-dim);color:var(--blue);padding:3px 8px;border-radius:20px">10:00 AM</span></div>
-        </div>
-        <div class="fu-body">🏠 <strong>Site Visit</strong> — First site visit scheduled at Hiranandani Gardens, Powai. Pick up from Powai Lake at 10 AM. Prepare comparison sheet with 2 other options in the same budget range.</div>
-        <div class="fu-footer">
-          <button class="fu-action-btn primary" onclick="showToast('📅 Reminder set for tomorrow!')">📅 Set Reminder</button>
-          <button class="fu-action-btn" onclick="showToast('💬 Opening WhatsApp chat…')">💬 WhatsApp</button>
-          <button class="fu-action-btn" onclick="showToast('✅ Marked as done!')">✓ Done</button>
-        </div>
-      </div>
+    <div class="fu-main-area" id="fuMainArea">
+      <div class="loading"><div class="spinner"></div>Loading follow-ups…</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ INBOX VIEW ═══ -->
-<div class="view" id="view-inbox">
-  <div class="inbox-layout">
-    <!-- Channel filter -->
-    <div class="inbox-channels">
-      <div class="ic-header">Channels</div>
-      <div class="ic-item active">
-        <div class="ic-icon" style="background:rgba(212,168,67,.15)">💬</div>
-        All
-        <span class="ic-count new">7</span>
-      </div>
-      <div class="ic-item">
-        <div class="ic-icon" style="background:rgba(37,211,102,.15)">
-          <svg width="11" height="11" fill="#25d366" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-        </div>
-        WhatsApp
-        <span class="ic-count new">5</span>
-      </div>
-      <div class="ic-item">
-        <div class="ic-icon" style="background:rgba(107,163,214,.15)">📧</div>
-        Email
-        <span class="ic-count">2</span>
-      </div>
-      <div class="ic-item">
-        <div class="ic-icon" style="background:rgba(232,146,74,.15)">📱</div>
-        SMS
-        <span class="ic-count">0</span>
-      </div>
-    </div>
-
-    <!-- Conversation list -->
-    <div class="inbox-list">
-      <div class="il-header">
-        <span class="il-title">Conversations</span>
-        <span style="font-size:11px;color:var(--text3)">Latest ↓</span>
-      </div>
-      <div class="il-convs">
-        <div class="il-conv active" onclick="this.parentElement.querySelectorAll('.il-conv').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
-          <div class="il-av" style="background:linear-gradient(135deg,#4a1010,#c0392b)">
-            DJ
-            <div class="il-ch-badge" style="background:#25d366"><svg width="7" height="7" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></div>
-          </div>
-          <div class="il-info">
-            <div class="il-row1"><span class="il-name" style="color:var(--text);font-weight:600">Deepa Joshi</span><span class="il-time">5m</span></div>
-            <div class="il-row2"><span class="il-prev">When is the site visit?</span><div class="il-unread">2</div></div>
-          </div>
-        </div>
-        <div class="il-conv" onclick="this.parentElement.querySelectorAll('.il-conv').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
-          <div class="il-av" style="background:linear-gradient(135deg,#1a3a10,#27ae60)">
-            VC
-            <div class="il-ch-badge" style="background:#25d366"><svg width="7" height="7" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></div>
-          </div>
-          <div class="il-info">
-            <div class="il-row1"><span class="il-name" style="color:var(--text);font-weight:600">Vikram Chopra</span><span class="il-time">22m</span></div>
-            <div class="il-row2"><span class="il-prev">Send the documents please</span><div class="il-unread">1</div></div>
-          </div>
-        </div>
-        <div class="il-conv" onclick="this.parentElement.querySelectorAll('.il-conv').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
-          <div class="il-av" style="background:linear-gradient(135deg,#102a4a,#2980b9)">
-            RP
-            <div class="il-ch-badge" style="background:#25d366"><svg width="7" height="7" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></div>
-          </div>
-          <div class="il-info">
-            <div class="il-row1"><span class="il-name">Raj Patel</span><span class="il-time">1h</span></div>
-            <div class="il-row2"><span class="il-prev">Can I get more photos of the Worli flat?</span></div>
-          </div>
-        </div>
-        <div class="il-conv" onclick="this.parentElement.querySelectorAll('.il-conv').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
-          <div class="il-av" style="background:linear-gradient(135deg,#3a2a10,#d4a843)">
-            PS
-            <div class="il-ch-badge" style="background:#25d366"><svg width="7" height="7" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></div>
-          </div>
-          <div class="il-info">
-            <div class="il-row1"><span class="il-name">Priya Sharma</span><span class="il-time">2h</span></div>
-            <div class="il-row2"><span class="il-prev">Thank you for the listings! Will check</span></div>
-          </div>
-        </div>
-        <div class="il-conv" onclick="this.parentElement.querySelectorAll('.il-conv').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
-          <div class="il-av" style="background:linear-gradient(135deg,#1a1060,#4a40c0)">
-            KR
-            <div class="il-ch-badge" style="background:var(--blue)">📧</div>
-          </div>
-          <div class="il-info">
-            <div class="il-row1"><span class="il-name">Kavya Reddy</span><span class="il-time">4h</span></div>
-            <div class="il-row2"><span class="il-prev">Re: Site visit confirmation for Powai</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Chat -->
-    <div class="chat-area">
-      <div class="chat-hdr">
-        <div class="chat-hdr-av">
-          DJ
-          <div class="online-dot"></div>
-        </div>
-        <div class="chat-hdr-info">
-          <h3>Deepa Joshi</h3>
-          <p>
-            <svg width="10" height="10" fill="#25d366" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-            WhatsApp · <span style="color:var(--green)">Online</span>
-          </p>
-        </div>
-        <div class="chat-hdr-actions">
-          <button class="c-act-btn gold" onclick="showToast('📅 Scheduling site visit…')">📅 Schedule Visit</button>
-          <button class="c-act-btn" onclick="showToast('📤 Brochure sent!')">📤 Send Brochure</button>
-          <button class="c-act-btn" onclick="showToast('✅ Resolved!')">✓ Resolve</button>
-        </div>
-      </div>
-
-      <div class="chat-msgs" id="chatMsgs">
-        <div class="date-div"><span>Today, Feb 17</span></div>
-
-        <div class="msg-grp">
-          <div class="msg-row in">
-            <div class="msg-av">DJ</div>
-            <div><div class="bubble">Hi! I saw the 2BHK listing in Andheri East. Is it still available?</div><div class="msg-meta">9:14 AM</div></div>
-          </div>
-        </div>
-        <div class="msg-grp">
-          <div class="msg-row out">
-            <div><div class="bubble">Hello Deepa! 😊 Yes, the 2BHK in Andheri East is available. It's a beautiful property — 980 sqft, fully vastu-compliant, great connectivity to metro.</div><div class="msg-meta">9:16 AM <span class="tick">✓✓</span></div></div>
-          </div>
-          <div class="msg-row out">
-            <div><div class="bubble">The asking price is ₹1.4 Cr. Would you like to schedule a site visit? 🏠</div><div class="msg-meta">9:17 AM <span class="tick">✓✓</span></div></div>
-          </div>
-        </div>
-        <div class="msg-grp">
-          <div class="msg-row in">
-            <div class="msg-av">DJ</div>
-            <div><div class="bubble">That sounds great! Can you share the floor plan and more photos?</div><div class="msg-meta">9:22 AM</div></div>
-          </div>
-        </div>
-        <div class="sys-msg">📎 Brochure + Floor Plan sent automatically</div>
-        <div class="msg-grp">
-          <div class="msg-row out">
-            <div><div class="bubble">I've shared the complete brochure, floor plan, and 12 photos 📸<br><br>We also have a <strong>3BHK option in Powai at ₹2.1 Cr</strong> if you'd like more space. Shall I share that too?</div><div class="msg-meta">9:25 AM <span class="tick">✓✓</span></div></div>
-          </div>
-        </div>
-        <div class="msg-grp">
-          <div class="msg-row in">
-            <div class="msg-av">DJ</div>
-            <div><div class="bubble">Yes please! Also — when is the site visit possible? I'm available tomorrow morning.</div><div class="msg-meta">9:30 AM</div></div>
-          </div>
-        </div>
-        <div class="msg-grp">
-          <div class="msg-row in">
-            <div class="msg-av">DJ</div>
-            <div><div class="bubble">When is the site visit?</div><div class="msg-meta">Just now</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="qr-wrap">
-        <div class="qr" onclick="fillChat('🏠 Site visit scheduled for tomorrow Feb 18 at 10:30 AM. I\'ll meet you at the property entrance. Please bring your ID proof.')">📅 Confirm visit tomorrow</div>
-        <div class="qr" onclick="fillChat('Here are 3 shortlisted properties matching your budget of ₹1.4 Cr in Andheri East. Let me know which you\'d like to visit first!')">🏘️ Send shortlist</div>
-        <div class="qr" onclick="fillChat('The price is negotiable. We can discuss further during the site visit. The owner is flexible by ₹5-10 lakhs.')">💰 Negotiate price</div>
-        <div class="qr" onclick="fillChat('Thank you Deepa! I\'ll follow up with you tomorrow morning. Feel free to call me anytime at +91 98765 00000.')">👋 Follow-up note</div>
-      </div>
-
-      <div class="chat-input-wrap">
-        <div class="chat-input-box">
-          <textarea id="chatInput" placeholder="Type a message… use / for templates" rows="2" onkeydown="handleChatKey(event)"></textarea>
-          <div class="input-toolbar">
-            <button class="tb-btn">😊</button>
-            <button class="tb-btn">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-            </button>
-            <button class="tb-btn">🏠</button>
-            <div class="tb-space"></div>
-            <span style="font-size:11px;color:var(--text3)">Enter to send</span>
-            <button class="send-btn" onclick="sendChat()">
-              Send
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact detail panel -->
-    <div class="chat-detail">
-      <div class="cd-section">
-        <div class="cd-label">Contact</div>
-        <div class="cd-contact-top">
-          <div class="cd-av">DJ</div>
-          <h4>Deepa Joshi</h4>
-          <p>+91 98800 12345</p>
-          <div style="display:flex;justify-content:center;gap:6px;margin-top:8px">
-            <span class="tag tag-hot">🔥 Hot</span>
-            <span class="tag tag-warm">Warm</span>
-          </div>
-        </div>
-        <div class="cd-row">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Andheri, Mumbai</span>
-        </div>
-        <div class="cd-row">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>Lead since Jan 14, 2026</span>
-        </div>
-        <div class="cd-row">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>Budget: <strong style="color:var(--gold)">₹1.4 Cr</strong></span>
-        </div>
-        <div style="margin-top:8px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:5px">Interests</div>
-          <div>
-            <span class="interest-tag">2BHK</span>
-            <span class="interest-tag">Andheri</span>
-            <span class="interest-tag">Vastu</span>
-            <span class="interest-tag">Metro Nearby</span>
-          </div>
-        </div>
-      </div>
-      <div class="cd-section">
-        <div class="cd-label">Interested Properties</div>
-        <div class="cd-prop-card">
-          <div class="cdpc-name">2BHK · Andheri East</div>
-          <div class="cdpc-price">₹1.4 Cr</div>
-          <div class="cdpc-loc">📍 Hill Road, Andheri E</div>
-        </div>
-        <div class="cd-prop-card">
-          <div class="cdpc-name">3BHK · Powai</div>
-          <div class="cdpc-price">₹2.1 Cr</div>
-          <div class="cdpc-loc">📍 Hiranandani, Powai</div>
-        </div>
-      </div>
-      <div class="cd-section">
-        <div class="cd-label">Pipeline Stage</div>
-        <div style="margin-bottom:8px"><span class="status-pill pill-site">🏠 Site Visit</span></div>
-        <div style="font-size:12px;color:var(--text3);display:flex;flex-direction:column;gap:5px">
-          <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--green)">✓</span> New Lead</div>
-          <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--green)">✓</span> Contacted</div>
-          <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--gold)">→</span> <strong style="color:var(--text)">Site Visit</strong></div>
-          <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--text3)">○</span> Negotiation</div>
-          <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--text3)">○</span> Closed</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ ANALYTICS VIEW ═══ -->
-<div class="view" id="view-analytics">
-  <div class="page-header" style="padding-bottom:20px">
-    <div class="page-title"><h1>Analytics</h1><p>Performance overview · February 2026</p></div>
-  </div>
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:40px">
-    <div style="font-size:60px">📊</div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text2)">Analytics Coming Soon</h2>
-    <p style="font-size:14px;color:var(--text3);text-align:center;max-width:360px">Revenue charts, lead conversion rates, source tracking, and agent performance reports will appear here.</p>
-    <button class="t-btn gold" onclick="showToast('🔔 You\'ll be notified when Analytics launches!')">Notify Me</button>
-  </div>
-</div>
-
+</div><!-- end main -->
 </div><!-- end app-body -->
 
-<!-- ═══ ADD LEAD MODAL ═══ -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+<!-- ════════ ADD LEAD MODAL ════════ -->
+<div class="modal-overlay" id="leadModalOverlay" onclick="if(event.target===this)closeLeadModal()">
   <div class="modal">
     <div class="modal-header">
-      <h3>Add New Lead</h3>
-      <div class="modal-close" onclick="closeModal()">✕</div>
+      <h3 id="leadModalTitle">Add New Lead</h3>
+      <div class="modal-close" onclick="closeLeadModal()">✕</div>
     </div>
     <div class="modal-body">
+      <input type="hidden" id="editLeadId">
       <div class="form-2col">
-        <div class="form-row"><label class="form-label">First Name</label><input class="form-input" placeholder="Deepa"></div>
-        <div class="form-row"><label class="form-label">Last Name</label><input class="form-input" placeholder="Joshi"></div>
+        <div class="form-row"><label class="form-label">Full Name *</label><input class="form-input" id="f-name" placeholder="e.g. Arjun Sharma"></div>
+        <div class="form-row"><label class="form-label">Phone *</label><input class="form-input" id="f-phone" placeholder="+91 98800 12345"></div>
       </div>
       <div class="form-2col">
-        <div class="form-row"><label class="form-label">Phone</label><input class="form-input" placeholder="+91 98800 12345"></div>
-        <div class="form-row"><label class="form-label">Email</label><input class="form-input" placeholder="deepa@email.com"></div>
+        <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="f-email" placeholder="arjun@email.com"></div>
+        <div class="form-row"><label class="form-label">Budget</label><input class="form-input" id="f-budget" placeholder="₹ 1.5 Cr"></div>
       </div>
       <div class="form-2col">
-        <div class="form-row"><label class="form-label">Budget</label><input class="form-input" placeholder="₹ 1.4 Cr"></div>
         <div class="form-row"><label class="form-label">Property Type</label>
-          <select class="form-select"><option>2BHK Apartment</option><option>3BHK Apartment</option><option>4BHK Apartment</option><option>Villa</option><option>Studio</option><option>Commercial</option><option>Plot</option></select>
+          <select class="form-select" id="f-proptype">
+            <option value="">Select type</option>
+            <option>1BHK Apartment</option><option>2BHK Apartment</option><option>3BHK Apartment</option>
+            <option>4BHK Apartment</option><option>Villa</option><option>Studio</option>
+            <option>Commercial</option><option>Plot</option><option>Penthouse</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">Preferred Location</label><input class="form-input" id="f-location" placeholder="Andheri East, Mumbai"></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Lead Source</label>
+          <select class="form-select" id="f-source">
+            <option value="">Select source</option>
+            <option>99acres</option><option>Housing.com</option><option>MagicBricks</option>
+            <option>Instagram Ad</option><option>Facebook Ad</option><option>Google Ad</option>
+            <option>Referral</option><option>Website</option><option>Walk-in</option><option>Cold Call</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">Pipeline Stage</label>
+          <select class="form-select" id="f-stage">
+            <option value="New">New</option><option value="Contacted">Contacted</option>
+            <option value="Site Visit">Site Visit</option><option value="Negotiation">Negotiation</option>
+            <option value="Closed">Closed</option><option value="Lost">Lost</option>
+          </select>
         </div>
       </div>
       <div class="form-2col">
-        <div class="form-row"><label class="form-label">Preferred Location</label><input class="form-input" placeholder="Andheri East, Mumbai"></div>
-        <div class="form-row"><label class="form-label">Lead Source</label>
-          <select class="form-select"><option>99acres</option><option>Housing.com</option><option>MagicBricks</option><option>Instagram Ad</option><option>Facebook Ad</option><option>Google Ad</option><option>Referral</option><option>Website</option><option>Walk-in</option></select>
+        <div class="form-row"><label class="form-label">Priority</label>
+          <select class="form-select" id="f-priority">
+            <option value="Normal">Normal</option><option value="Hot">🔥 Hot</option>
+            <option value="Warm">Warm</option><option value="Cold">Cold</option><option value="VIP">⭐ VIP</option>
+          </select>
         </div>
+        <div class="form-row"><label class="form-label">WhatsApp Number</label><input class="form-input" id="f-wa" placeholder="Same as phone if same"></div>
       </div>
-      <div class="form-row"><label class="form-label">Notes</label><input class="form-input" placeholder="Looking for vastu-compliant, metro nearby…"></div>
+      <div class="form-row"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Key preferences, requirements, special notes…"></textarea></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveLead()">
+      <button class="btn-cancel" onclick="closeLeadModal()">Cancel</button>
+      <button class="btn-save" id="saveLeadBtn" onclick="saveLead()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         Save Lead
       </button>
@@ -1688,103 +653,878 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
 </div>
 
+<!-- ════════ ADD FOLLOW-UP MODAL ════════ -->
+<div class="modal-overlay" id="fuModalOverlay" onclick="if(event.target===this)closeFuModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="fuModalTitle">Add Follow-up</h3>
+      <div class="modal-close" onclick="closeFuModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editFuId">
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Lead Name *</label>
+          <select class="form-select" id="fu-leadId">
+            <option value="">Select a lead</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">Follow-up Type *</label>
+          <select class="form-select" id="fu-type">
+            <option value="Call">📞 Call</option>
+            <option value="WhatsApp">💬 WhatsApp</option>
+            <option value="Site Visit">🏠 Site Visit</option>
+            <option value="Document">📄 Send Document</option>
+            <option value="Email">📧 Email</option>
+            <option value="Meeting">🤝 Meeting</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Date *</label><input class="form-input" id="fu-date" type="date"></div>
+        <div class="form-row"><label class="form-label">Time</label><input class="form-input" id="fu-time" type="time" value="10:00"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Priority</label>
+        <select class="form-select" id="fu-priority">
+          <option value="Normal">Normal</option>
+          <option value="Urgent">🔴 Urgent</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      <div class="form-row"><label class="form-label">Notes / Reminder *</label>
+        <textarea class="form-textarea" id="fu-notes" placeholder="What do you need to do in this follow-up? Be specific…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeFuModal()">Cancel</button>
+      <button class="btn-save" id="saveFuBtn" onclick="saveFollowUp()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Follow-up
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SETUP MODAL ════════ -->
+<div class="modal-overlay" id="setupModalOverlay" onclick="if(event.target===this)closeSetupModal()">
+  <div class="modal setup-modal">
+    <div class="modal-header">
+      <h3>🔥 Connect Firebase Database</h3>
+      <div class="modal-close" onclick="closeSetupModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="setup-step">
+        <div class="setup-step-num">Step 1</div>
+        <h4>Create a Firebase project (free)</h4>
+        <p>Go to <strong>console.firebase.google.com</strong> → Click <code>Add project</code> → Name it <code>propflow-crm</code> → Continue (disable Google Analytics if you want) → Create project.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">Step 2</div>
+        <h4>Add a Web App & get config</h4>
+        <p>In your project → Click <code>&lt;/&gt;</code> (Web) icon → Register app → Copy the <code>firebaseConfig</code> object that appears.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">Step 3</div>
+        <h4>Enable Firestore Database</h4>
+        <p>In left sidebar → <code>Build</code> → <code>Firestore Database</code> → <code>Create database</code> → Choose <code>Start in test mode</code> → Select a region → Done.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">Step 4 — Paste your config below</div>
+        <h4>Enter your Firebase config values</h4>
+        <p style="margin-bottom:12px">Paste the values from your <code>firebaseConfig</code> object:</p>
+        <div class="form-row"><label class="form-label">API Key</label><input class="form-input" id="cfg-apiKey" placeholder="AIzaSy…"></div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Auth Domain</label><input class="form-input" id="cfg-authDomain" placeholder="your-project.firebaseapp.com"></div>
+          <div class="form-row"><label class="form-label">Project ID</label><input class="form-input" id="cfg-projectId" placeholder="your-project-id"></div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Storage Bucket</label><input class="form-input" id="cfg-storageBucket" placeholder="your-project.appspot.com"></div>
+          <div class="form-row"><label class="form-label">Messaging Sender ID</label><input class="form-input" id="cfg-messagingSenderId" placeholder="123456789"></div>
+        </div>
+        <div class="form-row"><label class="form-label">App ID</label><input class="form-input" id="cfg-appId" placeholder="1:123456:web:abc123…"></div>
+      </div>
+      <div style="background:var(--gold-dim);border:1px solid rgba(212,168,67,.3);border-radius:8px;padding:12px;font-size:12px;color:var(--gold2)">
+        ⚡ After saving, the page will reload with your database connected. Your leads and follow-ups will persist forever in Firestore — free up to 50,000 reads/day.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSetupModal()">Cancel</button>
+      <button class="btn-save" onclick="saveFirebaseConfig()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Save & Connect
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
-  <span class="toast-icon">✨</span>
+  <span id="toastIcon">✨</span>
   <span id="toastMsg">Done!</span>
 </div>
 
 <script>
-// ── Navigation ──
-function setView(name){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
-  const ni=document.getElementById('nav-'+name);
-  if(ni)ni.classList.add('active');
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let _leads = [];
+let _followups = [];
+let _currentFilter = 'all';
+let _currentFuType = 'all';
+let _editingLeadId = null;
+let _editingFuId = null;
+let _dbConnected = false;
+
+// ════════════════════════════════════════════
+// FIREBASE CONFIG — saved to localStorage
+// ════════════════════════════════════════════
+function getSavedConfig() {
+  try { return JSON.parse(localStorage.getItem('pfConfig') || 'null'); } catch { return null; }
 }
 
-// ── Filter chips ──
-document.querySelectorAll('.filter-chip').forEach(c=>{
-  c.addEventListener('click',()=>{
-    c.closest('div').querySelectorAll('.filter-chip').forEach(x=>x.classList.remove('active'));
-    c.classList.add('active');
+function initApp() {
+  const cfg = getSavedConfig();
+  updateDate();
+  buildMiniCal();
+
+  // If no config saved, show demo mode
+  if (!cfg || !cfg.projectId || cfg.projectId === 'YOUR_PROJECT_ID') {
+    setDbStatus(false, 'Demo mode');
+    document.getElementById('setupBanner').style.display = 'flex';
+    useDemoMode();
+    return;
+  }
+
+  // Config exists — try to reinitialize Firebase with saved config
+  loadSavedConfig(cfg);
+}
+
+function loadSavedConfig(cfg) {
+  // Reinitialize Firebase with saved config
+  try {
+    // Dynamic import with saved config
+    const scriptTag = document.createElement('script');
+    scriptTag.type = 'module';
+    scriptTag.textContent = `
+      import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      const cfg = ${JSON.stringify(cfg)};
+      const existing = getApps();
+      const app = existing.length ? existing[0] : initializeApp(cfg);
+      const db = getFirestore(app);
+      window._db = db;
+      window._firebase = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp };
+      window._dbReady = true;
+      window.dispatchEvent(new Event('dbReady'));
+    `;
+    document.head.appendChild(scriptTag);
+
+    window.addEventListener('dbReady', () => {
+      setDbStatus(true, 'Connected');
+      document.getElementById('setupBanner').style.display = 'none';
+      _dbConnected = true;
+      loadLeadsFromDB();
+      loadFollowUpsFromDB();
+    }, { once: true });
+
+    // Timeout fallback
+    setTimeout(() => {
+      if (!_dbConnected) {
+        setDbStatus(false, 'Connection failed');
+        showToast('⚠️ Could not connect. Check your Firebase config.', 'error');
+        useDemoMode();
+      }
+    }, 8000);
+
+  } catch(e) {
+    setDbStatus(false, 'Config error');
+    useDemoMode();
+  }
+}
+
+// ════════════════════════════════════════════
+// DEMO MODE (no Firebase)
+// ════════════════════════════════════════════
+function useDemoMode() {
+  _leads = [];
+  _followups = [];
+  renderLeads();
+  renderFollowUps();
+  renderDashboard();
+  showToast('💡 Demo mode — connect Firebase to save data permanently', 'info');
+}
+
+// ════════════════════════════════════════════
+// FIRESTORE CRUD — LEADS
+// ════════════════════════════════════════════
+async function loadLeadsFromDB() {
+  try {
+    const { collection, onSnapshot, orderBy, query } = window._firebase;
+    const db = window._db;
+    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      _leads = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderLeads();
+      renderDashboard();
+      updateNavCounts();
+    }, (err) => {
+      console.error('Leads listener error:', err);
+      setDbStatus(false, 'Read error');
+    });
+  } catch(e) {
+    showToast('❌ Could not load leads: ' + e.message, 'error');
+  }
+}
+
+async function addLeadToDB(data) {
+  const { collection, addDoc, serverTimestamp } = window._firebase;
+  const db = window._db;
+  await addDoc(collection(db, 'leads'), { ...data, createdAt: serverTimestamp() });
+}
+
+async function updateLeadInDB(id, data) {
+  const { doc, updateDoc } = window._firebase;
+  const db = window._db;
+  await updateDoc(doc(db, 'leads', id), data);
+}
+
+async function deleteLeadFromDB(id) {
+  const { doc, deleteDoc } = window._firebase;
+  const db = window._db;
+  await deleteDoc(doc(db, 'leads', id));
+}
+
+// ════════════════════════════════════════════
+// FIRESTORE CRUD — FOLLOW-UPS
+// ════════════════════════════════════════════
+async function loadFollowUpsFromDB() {
+  try {
+    const { collection, onSnapshot, orderBy, query } = window._firebase;
+    const db = window._db;
+    const q = query(collection(db, 'followups'), orderBy('date', 'asc'));
+    onSnapshot(q, (snapshot) => {
+      _followups = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderFollowUps();
+      renderDashboard();
+      updateNavCounts();
+    });
+  } catch(e) {
+    showToast('❌ Could not load follow-ups: ' + e.message, 'error');
+  }
+}
+
+async function addFollowUpToDB(data) {
+  const { collection, addDoc, serverTimestamp } = window._firebase;
+  const db = window._db;
+  await addDoc(collection(db, 'followups'), { ...data, createdAt: serverTimestamp() });
+}
+
+async function updateFollowUpInDB(id, data) {
+  const { doc, updateDoc } = window._firebase;
+  const db = window._db;
+  await updateDoc(doc(db, 'followups', id), data);
+}
+
+async function deleteFollowUpFromDB(id) {
+  const { doc, deleteDoc } = window._firebase;
+  const db = window._db;
+  await deleteDoc(doc(db, 'followups', id));
+}
+
+// ════════════════════════════════════════════
+// RENDER — LEADS TABLE
+// ════════════════════════════════════════════
+function renderLeads(filter) {
+  if (filter !== undefined) _currentFilter = filter;
+  const tbody = document.getElementById('leadsTableBody');
+  let list = _leads;
+  if (_currentFilter !== 'all') list = list.filter(l => l.stage === _currentFilter);
+
+  // Update chip counts
+  const counts = {};
+  _leads.forEach(l => { counts[l.stage] = (counts[l.stage] || 0) + 1; });
+  document.getElementById('chip-all').textContent = _leads.length;
+  ['new','contacted','site','nego','closed','lost'].forEach((k, i) => {
+    const stages = ['New','Contacted','Site Visit','Negotiation','Closed','Lost'];
+    const el = document.getElementById('chip-' + k);
+    if(el) el.textContent = counts[stages[i]] || 0;
+  });
+
+  document.getElementById('leads-subtitle').textContent =
+    `${_leads.length} total leads · ${counts['New']||0} new · ${counts['Negotiation']||0} in negotiation`;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <div class="empty-state-icon">👥</div>
+        <h3>${_currentFilter==='all' ? 'No leads yet' : 'No '+_currentFilter+' leads'}</h3>
+        <p>${_currentFilter==='all' ? 'Click "Add Lead" to add your first lead and start tracking.' : 'No leads in this stage yet.'}</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(l => {
+    const pillClass = {
+      'New':'pill-new','Contacted':'pill-contacted','Site Visit':'pill-site',
+      'Negotiation':'pill-nego','Closed':'pill-closed','Lost':'pill-lost'
+    }[l.stage] || 'pill-new';
+    const priorityBadge = l.priority === 'Hot' ? '<span class="tag tag-hot">🔥 Hot</span>' :
+      l.priority === 'VIP' ? '<span class="tag tag-vip">⭐ VIP</span>' :
+      l.priority === 'Warm' ? '<span class="tag tag-warm">Warm</span>' :
+      l.priority === 'Cold' ? '<span class="tag tag-cold">Cold</span>' : '—';
+    const date = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : 'Just now';
+    return `<tr>
+      <td><span class="td-name">${esc(l.name)}</span></td>
+      <td><span class="td-phone">${esc(l.phone||'—')}</span></td>
+      <td><span class="td-budget">${esc(l.budget||'—')}</span></td>
+      <td>${esc(l.location||'—')}</td>
+      <td>${esc(l.source||'—')}</td>
+      <td><span class="status-pill ${pillClass}">${l.stage}</span></td>
+      <td>${priorityBadge}</td>
+      <td style="font-size:11px;color:var(--text3)">${date}</td>
+      <td>
+        <div class="td-actions">
+          <button class="row-btn" onclick="openLeadModal('${l.id}')">✏️ Edit</button>
+          <button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button>
+          <button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// RENDER — FOLLOW-UPS
+// ════════════════════════════════════════════
+function renderFollowUps(type) {
+  if (type !== undefined) _currentFuType = type;
+  const container = document.getElementById('fuMainArea');
+  const today = new Date().toISOString().split('T')[0];
+
+  let list = _followups.filter(f => f.status !== 'done');
+  if (_currentFuType !== 'all') list = list.filter(f => f.type === _currentFuType);
+
+  document.getElementById('fu-subtitle').textContent =
+    `${list.filter(f => f.date === today).length} due today · ${list.length} pending total`;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">📅</div>
+      <h3>No follow-ups yet</h3>
+      <p>Add a follow-up reminder for a lead to get started. Stay on top of every client.</p>
+      <button class="btn-save" onclick="openFollowUpModal()">+ Add Follow-up</button>
+    </div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  list.forEach(f => {
+    const d = f.date || 'No date';
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(f);
+  });
+  const sortedDates = Object.keys(groups).sort();
+
+  container.innerHTML = sortedDates.map(date => {
+    const label = date === today ? '🔴 Today — ' + formatDate(date) :
+      date < today ? '⚠️ Overdue — ' + formatDate(date) :
+      formatDate(date);
+    const cards = groups[date].map((f, i) => renderFuCard(f, i)).join('');
+    return `<div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:${date===sortedDates[0]?'0':'16px'} 0 12px">${label}</div>${cards}`;
+  }).join('');
+}
+
+function renderFuCard(f, idx) {
+  const lead = _leads.find(l => l.id === f.leadId);
+  const leadName = lead ? lead.name : (f.leadName || 'Unknown Lead');
+  const initials = leadName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const typeIcon = {Call:'📞',WhatsApp:'💬','Site Visit':'🏠',Document:'📄',Email:'📧',Meeting:'🤝'}[f.type] || '📋';
+  const urgentClass = f.priority === 'Urgent' ? 'tag-hot' : f.priority === 'High' ? 'tag-warm' : '';
+  const timeDisplay = f.time || '';
+  const timeStyle = f.priority === 'Urgent' ? 'background:var(--red-dim);color:var(--red)' : 'background:var(--orange-dim);color:var(--orange)';
+
+  return `<div class="fu-card" style="animation-delay:${idx * 0.05}s">
+    <div class="fu-card-top">
+      <div class="fu-card-avatar">${initials}</div>
+      <div class="fu-card-info">
+        <div class="fu-card-name">${esc(leadName)}</div>
+        <div class="fu-card-sub">${lead ? esc(lead.budget||'') + (lead.location ? ' · '+lead.location : '') : 'Lead details not found'}</div>
+      </div>
+      <div class="fu-card-badges">
+        ${urgentClass ? `<span class="tag ${urgentClass}">${f.priority}</span>` : ''}
+        ${timeDisplay ? `<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;${timeStyle}">${timeDisplay}</span>` : ''}
+      </div>
+    </div>
+    <div class="fu-body">${typeIcon} <strong>${f.type}</strong> — ${esc(f.notes||'No notes')}</div>
+    <div class="fu-footer">
+      <button class="fu-action-btn primary" onclick="markFuDone('${f.id}')">✓ Done</button>
+      <button class="fu-action-btn" onclick="openFollowUpModal('${f.id}')">✏️ Edit</button>
+      <button class="fu-action-btn danger" onclick="confirmDeleteFu('${f.id}')">🗑 Delete</button>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+// RENDER — DASHBOARD
+// ════════════════════════════════════════════
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  const hot = _leads.filter(l => l.priority === 'Hot' || l.priority === 'VIP').length;
+  const closed = _leads.filter(l => l.stage === 'Closed').length;
+  const todayFu = _followups.filter(f => f.date === today && f.status !== 'done').length;
+
+  document.getElementById('dash-total').textContent = _leads.length;
+  document.getElementById('dash-hot').textContent = hot;
+  document.getElementById('dash-today-fu').textContent = todayFu;
+  document.getElementById('dash-closed').textContent = closed;
+  document.getElementById('stat-total').textContent = _leads.length;
+  document.getElementById('stat-closed').textContent = closed;
+  document.getElementById('stat-hot').textContent = hot;
+
+  // Notification badge
+  document.getElementById('todayFuBadge').textContent = todayFu;
+
+  // Pipeline
+  const stages = ['New','Site Visit','Negotiation','Closed'];
+  const stageKeys = ['new','site','nego','closed'];
+  stages.forEach((s, i) => {
+    const filtered = _leads.filter(l => l.stage === s);
+    const key = stageKeys[i];
+    const countEl = document.getElementById('pc-' + key);
+    if(countEl) countEl.textContent = filtered.length + ' lead' + (filtered.length!==1?'s':'');
+    const listEl = document.getElementById('pc-leads-' + key);
+    if(listEl) {
+      if(filtered.length === 0) {
+        listEl.innerHTML = `<div style="font-size:11px;color:var(--text3);padding:8px;text-align:center">No leads</div>`;
+      } else {
+        listEl.innerHTML = filtered.slice(0,4).map(l => `
+          <div class="lead-mini" onclick="setView('leads')">
+            <div class="lm-name">${esc(l.name)}</div>
+            <div class="lm-prop">${esc(l.location||'')}</div>
+            <div class="lm-budget">${esc(l.budget||'—')}</div>
+          </div>`).join('');
+      }
+    }
+  });
+
+  // Today's follow-ups in dashboard
+  const todayList = _followups.filter(f => f.date === today && f.status !== 'done');
+  const dashFuList = document.getElementById('dash-fu-list');
+  document.getElementById('dash-fu-subtitle').textContent = todayFu + ' pending today';
+
+  if (todayList.length === 0) {
+    dashFuList.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">🎉 No follow-ups due today!</div>`;
+  } else {
+    dashFuList.innerHTML = todayList.slice(0,4).map(f => {
+      const lead = _leads.find(l => l.id === f.leadId);
+      const name = lead ? lead.name : (f.leadName || 'Unknown');
+      const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      return `<div class="fu-dash-item" onclick="setView('followups')">
+        <div class="fu-dash-av">${initials}</div>
+        <div class="fu-dash-info">
+          <div class="fu-dash-name">${esc(name)}</div>
+          <div class="fu-dash-note">${f.type}: ${esc(f.notes||'')}</div>
+        </div>
+        <span class="fu-dash-time ${f.priority==='Urgent'?'urgent':'today'}">${f.time||'Today'}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ════════════════════════════════════════════
+// SAVE / ADD LEAD
+// ════════════════════════════════════════════
+async function saveLead() {
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  if (!name || !phone) { showToast('⚠️ Name and phone are required', 'error'); return; }
+
+  const data = {
+    name, phone,
+    email: document.getElementById('f-email').value.trim(),
+    budget: document.getElementById('f-budget').value.trim(),
+    proptype: document.getElementById('f-proptype').value,
+    location: document.getElementById('f-location').value.trim(),
+    source: document.getElementById('f-source').value,
+    stage: document.getElementById('f-stage').value || 'New',
+    priority: document.getElementById('f-priority').value || 'Normal',
+    wa: document.getElementById('f-wa').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+  };
+
+  const btn = document.getElementById('saveLeadBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    if (_editingLeadId) {
+      if (_dbConnected) await updateLeadInDB(_editingLeadId, data);
+      else { const idx = _leads.findIndex(l=>l.id===_editingLeadId); if(idx>-1) _leads[idx]={..._leads[idx],...data}; renderLeads(); renderDashboard(); }
+      showToast('✅ Lead updated!', 'success');
+    } else {
+      if (_dbConnected) await addLeadToDB(data);
+      else { _leads.unshift({id:'demo-'+Date.now(),...data,createdAt:null}); renderLeads(); renderDashboard(); }
+      showToast('✅ Lead saved to database!', 'success');
+    }
+    closeLeadModal();
+  } catch(e) {
+    showToast('❌ Error saving: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Lead';
+  }
+}
+
+async function quickAddLead() {
+  const name = document.getElementById('quick-name').value.trim();
+  const phone = document.getElementById('quick-phone').value.trim();
+  const budget = document.getElementById('quick-budget').value.trim();
+  if (!name || !phone) { showToast('⚠️ Name and phone required', 'error'); return; }
+
+  try {
+    const data = { name, phone, budget, stage:'New', priority:'Normal', email:'', location:'', source:'', notes:'' };
+    if (_dbConnected) await addLeadToDB(data);
+    else { _leads.unshift({id:'demo-'+Date.now(),...data,createdAt:null}); renderLeads(); renderDashboard(); }
+    document.getElementById('quick-name').value = '';
+    document.getElementById('quick-phone').value = '';
+    document.getElementById('quick-budget').value = '';
+    showToast('✅ Lead added!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  }
+}
+
+// ════════════════════════════════════════════
+// SAVE / ADD FOLLOW-UP
+// ════════════════════════════════════════════
+async function saveFollowUp() {
+  const leadId = document.getElementById('fu-leadId').value;
+  const date = document.getElementById('fu-date').value;
+  const notes = document.getElementById('fu-notes').value.trim();
+  if (!leadId) { showToast('⚠️ Please select a lead', 'error'); return; }
+  if (!date) { showToast('⚠️ Please select a date', 'error'); return; }
+  if (!notes) { showToast('⚠️ Please add a note/reminder', 'error'); return; }
+
+  const lead = _leads.find(l => l.id === leadId);
+  const data = {
+    leadId,
+    leadName: lead ? lead.name : '',
+    type: document.getElementById('fu-type').value,
+    date,
+    time: document.getElementById('fu-time').value,
+    priority: document.getElementById('fu-priority').value,
+    notes,
+    status: 'pending'
+  };
+
+  const btn = document.getElementById('saveFuBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    if (_editingFuId) {
+      if (_dbConnected) await updateFollowUpInDB(_editingFuId, data);
+      else { const idx = _followups.findIndex(f=>f.id===_editingFuId); if(idx>-1) _followups[idx]={..._followups[idx],...data}; }
+      showToast('✅ Follow-up updated!', 'success');
+    } else {
+      if (_dbConnected) await addFollowUpToDB(data);
+      else { _followups.push({id:'demo-fu-'+Date.now(),...data}); }
+      showToast('✅ Follow-up scheduled!', 'success');
+    }
+    renderFollowUps();
+    renderDashboard();
+    closeFuModal();
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Follow-up';
+  }
+}
+
+async function markFuDone(id) {
+  try {
+    if (_dbConnected) await updateFollowUpInDB(id, { status: 'done' });
+    else { const f = _followups.find(f=>f.id===id); if(f) f.status='done'; }
+    renderFollowUps(); renderDashboard();
+    showToast('✅ Marked as done!', 'success');
+  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
+}
+
+// ════════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════════
+function confirmDeleteLead(id, name) {
+  if (!confirm(`Delete lead "${name}"? This cannot be undone.`)) return;
+  deleteLead(id, name);
+}
+async function deleteLead(id, name) {
+  try {
+    if (_dbConnected) await deleteLeadFromDB(id);
+    else { _leads = _leads.filter(l => l.id !== id); renderLeads(); renderDashboard(); }
+    showToast(`🗑 ${name} deleted`, 'success');
+  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
+}
+
+function confirmDeleteFu(id) {
+  if (!confirm('Delete this follow-up?')) return;
+  deleteFu(id);
+}
+async function deleteFu(id) {
+  try {
+    if (_dbConnected) await deleteFollowUpFromDB(id);
+    else { _followups = _followups.filter(f => f.id !== id); renderFollowUps(); renderDashboard(); }
+    showToast('🗑 Follow-up deleted', 'success');
+  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
+}
+
+// ════════════════════════════════════════════
+// MODAL HELPERS
+// ════════════════════════════════════════════
+function openLeadModal(leadId) {
+  _editingLeadId = leadId || null;
+  document.getElementById('leadModalTitle').textContent = leadId ? 'Edit Lead' : 'Add New Lead';
+  const fields = ['name','phone','email','budget','proptype','location','source','stage','priority','wa','notes'];
+  fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) el.value = ''; });
+
+  if (leadId) {
+    const lead = _leads.find(l => l.id === leadId);
+    if (lead) {
+      fields.forEach(f => {
+        const el = document.getElementById('f-'+f);
+        if (el && lead[f] !== undefined) el.value = lead[f];
+      });
+    }
+  }
+  document.getElementById('leadModalOverlay').classList.add('open');
+}
+function closeLeadModal() {
+  document.getElementById('leadModalOverlay').classList.remove('open');
+  _editingLeadId = null;
+}
+
+function openFollowUpModal(fuId, presetLeadId) {
+  _editingFuId = fuId || null;
+  document.getElementById('fuModalTitle').textContent = fuId ? 'Edit Follow-up' : 'Add Follow-up';
+
+  // Populate lead dropdown
+  const sel = document.getElementById('fu-leadId');
+  sel.innerHTML = '<option value="">Select a lead</option>' +
+    _leads.map(l => `<option value="${l.id}">${esc(l.name)} ${l.phone?'('+l.phone+')':''}</option>`).join('');
+
+  // Reset fields
+  ['fu-leadId','fu-type','fu-date','fu-time','fu-priority','fu-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && id !== 'fu-type' && id !== 'fu-priority') el.value = '';
+  });
+  document.getElementById('fu-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('fu-time').value = '10:00';
+
+  if (presetLeadId) document.getElementById('fu-leadId').value = presetLeadId;
+
+  if (fuId) {
+    const fu = _followups.find(f => f.id === fuId);
+    if (fu) {
+      document.getElementById('fu-leadId').value = fu.leadId || '';
+      document.getElementById('fu-type').value = fu.type || 'Call';
+      document.getElementById('fu-date').value = fu.date || '';
+      document.getElementById('fu-time').value = fu.time || '10:00';
+      document.getElementById('fu-priority').value = fu.priority || 'Normal';
+      document.getElementById('fu-notes').value = fu.notes || '';
+    }
+  }
+  document.getElementById('fuModalOverlay').classList.add('open');
+}
+function closeFuModal() {
+  document.getElementById('fuModalOverlay').classList.remove('open');
+  _editingFuId = null;
+}
+
+// ════════════════════════════════════════════
+// FIREBASE CONFIG SETUP
+// ════════════════════════════════════════════
+function openSetupModal() {
+  const cfg = getSavedConfig();
+  if (cfg) {
+    ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+      const el = document.getElementById('cfg-'+k);
+      if (el && cfg[k]) el.value = cfg[k];
+    });
+  }
+  document.getElementById('setupModalOverlay').classList.add('open');
+}
+function closeSetupModal() {
+  document.getElementById('setupModalOverlay').classList.remove('open');
+}
+function saveFirebaseConfig() {
+  const cfg = {
+    apiKey: document.getElementById('cfg-apiKey').value.trim(),
+    authDomain: document.getElementById('cfg-authDomain').value.trim(),
+    projectId: document.getElementById('cfg-projectId').value.trim(),
+    storageBucket: document.getElementById('cfg-storageBucket').value.trim(),
+    messagingSenderId: document.getElementById('cfg-messagingSenderId').value.trim(),
+    appId: document.getElementById('cfg-appId').value.trim()
+  };
+  if (!cfg.apiKey || !cfg.projectId) {
+    showToast('⚠️ API Key and Project ID are required', 'error');
+    return;
+  }
+  localStorage.setItem('pfConfig', JSON.stringify(cfg));
+  showToast('✅ Config saved! Reloading…', 'success');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// ════════════════════════════════════════════
+// SEARCH
+// ════════════════════════════════════════════
+function handleSearch(val) {
+  if (!val.trim()) { renderLeads(); return; }
+  const q = val.toLowerCase();
+  const filtered = _leads.filter(l =>
+    (l.name||'').toLowerCase().includes(q) ||
+    (l.phone||'').includes(q) ||
+    (l.location||'').toLowerCase().includes(q) ||
+    (l.budget||'').toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('leadsTableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text3)">No leads found for "${val}"</td></tr>`;
+    return;
+  }
+  // Temporarily set leads and re-render
+  const orig = _leads;
+  _leads = filtered;
+  renderLeads();
+  _leads = orig;
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function setView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const ni = document.getElementById('nav-' + name);
+  if (ni) ni.classList.add('active');
+}
+
+function updateNavCounts() {
+  const hot = _leads.filter(l => l.priority === 'Hot' || l.priority === 'VIP').length;
+  const today = new Date().toISOString().split('T')[0];
+  const todayFu = _followups.filter(f => f.date === today && f.status !== 'done').length;
+  document.getElementById('nav-leads-count').textContent = hot > 0 ? hot + ' hot' : _leads.length;
+  document.getElementById('nav-fu-count').textContent = todayFu;
+  document.getElementById('todayFuBadge').textContent = todayFu;
+}
+
+// ════════════════════════════════════════════
+// FILTER CHIPS
+// ════════════════════════════════════════════
+document.getElementById('leadsToolbar').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('#leadsToolbar .filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  renderLeads(chip.dataset.filter);
+});
+
+document.querySelectorAll('.fu-type-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.fu-type-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    renderFollowUps(item.dataset.type);
   });
 });
 
-// ── Follow-up type ──
-document.querySelectorAll('.fu-type-item').forEach(i=>{
-  i.addEventListener('click',()=>{
-    i.parentElement.querySelectorAll('.fu-type-item').forEach(x=>x.classList.remove('active'));
-    i.classList.add('active');
-  });
-});
+// ════════════════════════════════════════════
+// MINI CALENDAR
+// ════════════════════════════════════════════
+function buildMiniCal() {
+  const now = new Date();
+  document.getElementById('calMonth').textContent = now.toLocaleString('default', {month:'long', year:'numeric'});
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const today = now.getDate();
 
-// ── Channel items ──
-document.querySelectorAll('.ic-item').forEach(i=>{
-  i.addEventListener('click',()=>{
-    i.parentElement.querySelectorAll('.ic-item').forEach(x=>x.classList.remove('active'));
-    i.classList.add('active');
-  });
-});
-
-// ── Chat ──
-function handleChatKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
-}
-function fillChat(text){
-  document.getElementById('chatInput').value=text;
-  document.getElementById('chatInput').focus();
-}
-function sendChat(){
-  const inp=document.getElementById('chatInput');
-  const text=inp.value.trim();
-  if(!text)return;
-  const msgs=document.getElementById('chatMsgs');
-  const g=document.createElement('div');
-  g.className='msg-grp';
-  g.innerHTML=`<div class="msg-row out"><div><div class="bubble">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div><div class="msg-meta">Just now <span class="tick">✓✓</span></div></div></div>`;
-  msgs.appendChild(g);
-  inp.value='';
-  msgs.scrollTop=msgs.scrollHeight;
-  const replies=[
-    'Thank you! 🙏','Understood, will check and get back to you.','Okay, noted!','That sounds good. Will confirm shortly.','Great, looking forward to it! 😊'];
-  setTimeout(()=>{
-    const r=document.createElement('div');
-    r.className='msg-grp';
-    r.innerHTML=`<div class="msg-row in"><div class="msg-av">DJ</div><div><div class="bubble">${replies[Math.floor(Math.random()*replies.length)]}</div><div class="msg-meta">Just now</div></div></div>`;
-    msgs.appendChild(r);
-    msgs.scrollTop=msgs.scrollHeight;
-  },1800);
+  let html = ['S','M','T','W','T','F','S'].map(d => `<div class="mcg-day-name">${d}</div>`).join('');
+  for(let i = 0; i < firstDay; i++) html += '<div></div>';
+  for(let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today;
+    html += `<div class="mcg-day${isToday?' today':''}">${d}</div>`;
+  }
+  document.getElementById('miniCal').innerHTML = `<div class="mini-cal-grid">${html}</div>`;
 }
 
-// ── Modal ──
-function openModal(){document.getElementById('modalOverlay').classList.add('open');}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
-function saveLead(){
-  closeModal();
-  showToast('✅ Lead added successfully!');
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+function setDbStatus(ok, msg) {
+  const dot = document.getElementById('dbDot');
+  const txt = document.getElementById('dbStatusText');
+  dot.className = 'db-dot ' + (ok ? 'connected' : 'error');
+  txt.textContent = msg;
 }
 
-// ── Toast ──
+function updateDate() {
+  const now = new Date();
+  const h = now.getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = greet + ' ☀️';
+  document.getElementById('dashDate').textContent = now.toLocaleDateString('en-IN', {
+    weekday:'long', day:'numeric', month:'long', year:'numeric'
+  }) + ' · Real Estate CRM';
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-IN', {weekday:'long', day:'2-digit', month:'long'});
+}
+
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 let toastTimer;
-function showToast(msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  t.classList.add('show');
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const icon = type === 'error' ? '❌' : type === 'info' ? '💡' : '✅';
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  t.className = 'toast show ' + type;
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ── Scroll chat to bottom ──
-window.addEventListener('load',()=>{
-  const m=document.getElementById('chatMsgs');
-  if(m)m.scrollTop=m.scrollHeight;
-});
-
-// ── Nav links in dash ──
-document.querySelectorAll('.dc-action').forEach(a=>{
-  a.addEventListener('click',e=>{e.preventDefault();});
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+window.addEventListener('load', () => {
+  const cfg = getSavedConfig();
+  if (cfg && cfg.projectId && cfg.projectId !== 'YOUR_PROJECT_ID') {
+    document.getElementById('setupBanner').style.display = 'none';
+  }
+  updateDate();
+  buildMiniCal();
+  // If firebase module sets _dbReady before our listener, handle it
+  if (window._dbReady) {
+    setDbStatus(true, 'Connected');
+    _dbConnected = true;
+    document.getElementById('setupBanner').style.display = 'none';
+    loadLeadsFromDB();
+    loadFollowUpsFromDB();
+  } else {
+    window.addEventListener('dbReady', () => {
+      setDbStatus(true, 'Connected');
+      _dbConnected = true;
+      document.getElementById('setupBanner').style.display = 'none';
+      loadLeadsFromDB();
+      loadFollowUpsFromDB();
+    }, { once: true });
+    // If no config, go demo
+    if (!cfg || !cfg.projectId || cfg.projectId === 'YOUR_PROJECT_ID') {
+      useDemoMode();
+    }
+  }
 });
 </script>
 </body>
