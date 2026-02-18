@@ -42,6 +42,8 @@
   --red:#e05555; --red-dim:rgba(224,85,85,0.12);
   --blue:#6ba3d6; --blue-dim:rgba(107,163,214,0.12);
   --orange:#e8924a; --orange-dim:rgba(232,146,74,0.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
+  --teal:#2dd4bf; --teal-dim:rgba(45,212,191,0.12);
   --r:10px; --r-sm:7px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -79,6 +81,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .nav-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--bg4);color:var(--text2);padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;}
 .nav-badge.hot{background:var(--red-dim);color:var(--red);}
 .nav-badge.new{background:var(--green-dim);color:var(--green);}
+.nav-badge.prop{background:var(--purple-dim);color:var(--purple);}
 .nav-divider{height:1px;background:var(--border);margin:8px 0;}
 .nav-spacer{flex:1;}
 .nav-agent-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:4px;}
@@ -221,6 +224,59 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .fu-action-btn.primary:hover{background:var(--gold-glow);}
 .fu-action-btn.danger{background:var(--red-dim);border-color:rgba(224,85,85,.3);color:var(--red);}
 
+/* ══════════════════════════════════════
+   PROPERTIES VIEW
+══════════════════════════════════════ */
+.props-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.props-toolbar{padding:14px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.props-table-wrap{flex:1;overflow-y:auto;padding:0 24px 20px;}
+.props-table-wrap::-webkit-scrollbar{width:6px;}
+.props-table-wrap::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+
+/* Property card grid */
+.props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding:20px 24px;}
+.prop-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;animation:fadeUp .35s ease forwards;opacity:0;cursor:pointer;}
+.prop-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.prop-card:nth-child(1){animation-delay:.05s;}
+.prop-card:nth-child(2){animation-delay:.1s;}
+.prop-card:nth-child(3){animation-delay:.15s;}
+.prop-card:nth-child(4){animation-delay:.2s;}
+.prop-card:nth-child(5){animation-delay:.25s;}
+.prop-card:nth-child(6){animation-delay:.3s;}
+
+.prop-card-img{height:140px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.prop-card-img-bg{position:absolute;inset:0;opacity:.07;}
+.prop-card-img-icon{font-size:42px;position:relative;z-index:1;}
+.prop-card-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,14,12,.8),transparent);z-index:2;}
+.prop-card-img-badges{position:absolute;top:10px;left:10px;z-index:3;display:flex;gap:6px;flex-wrap:wrap;}
+.prop-card-img-price{position:absolute;bottom:10px;right:10px;z-index:3;font-size:15px;font-weight:700;color:var(--gold2);font-family:'Cormorant Garamond',serif;}
+
+.prop-card-body{padding:14px;}
+.prop-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prop-card-sub{font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:4px;}
+.prop-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.prop-meta{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:3px 7px;}
+.prop-supplier-row{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border);}
+.prop-supplier-av{width:28px;height:28px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text2);flex-shrink:0;}
+.prop-supplier-info{flex:1;min-width:0;}
+.prop-supplier-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prop-supplier-role{font-size:10px;color:var(--text3);}
+.prop-card-actions{display:flex;gap:6px;}
+.prop-action-btn{flex:1;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-family:inherit;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.prop-action-btn:hover{border-color:var(--border2);color:var(--text);}
+.prop-action-btn.del:hover{border-color:rgba(224,85,85,.4);color:var(--red);background:var(--red-dim);}
+
+/* View toggle */
+.view-toggle{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px;}
+.vt-btn{width:28px;height:26px;border-radius:5px;border:none;background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;}
+.vt-btn.active{background:var(--bg4);color:var(--text);}
+
+/* Property status colors */
+.prop-avail{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.2);}
+.prop-nego{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(212,168,67,.2);}
+.prop-sold{background:rgba(90,80,69,.3);color:var(--text3);border:1px solid var(--border);}
+.prop-hold{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2);}
+
 /* ── TAGS & BADGES ── */
 .tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
 .tag-hot{background:var(--red-dim);color:var(--red);}
@@ -239,7 +295,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 /* ── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
+.modal.wide{width:680px;}
 .modal::-webkit-scrollbar{width:4px;}
 .modal::-webkit-scrollbar-thumb{background:var(--bg4);}
 .modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1;}
@@ -247,6 +304,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .modal-close{width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;}
 .modal-close:hover{border-color:var(--border2);color:var(--text);}
 .modal-body{padding:20px;}
+.modal-section{margin-bottom:20px;}
+.modal-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
 .form-row{margin-bottom:14px;}
 .form-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block;}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;}
@@ -255,6 +314,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .form-select option{background:var(--bg3);}
 .form-textarea{resize:vertical;min-height:72px;line-height:1.5;}
 .form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
 .btn-cancel{padding:0 16px;height:34px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:13px;border-radius:8px;cursor:pointer;transition:all .15s;}
 .btn-cancel:hover{border-color:var(--border2);color:var(--text);}
@@ -285,6 +345,18 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .toast.success{border-color:rgba(76,175,125,.3);}
 .toast.error{border-color:rgba(224,85,85,.3);}
 
+/* Property detail modal */
+.prop-detail-header{background:var(--bg3);padding:16px;border-radius:10px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start;}
+.prop-detail-icon{width:56px;height:56px;border-radius:12px;background:var(--purple-dim);border:1px solid rgba(167,139,250,.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.prop-detail-meta{flex:1;}
+.prop-detail-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);}
+.prop-detail-loc{font-size:13px;color:var(--text3);margin-top:3px;}
+.prop-detail-price{font-size:22px;font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif;margin-top:4px;}
+.prop-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.prop-info-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.prop-info-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
+.prop-info-value{font-size:13px;font-weight:600;color:var(--text);}
+
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
@@ -300,7 +372,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
   <div class="top-search">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="globalSearch" placeholder="Search leads, follow-ups…" oninput="handleSearch(this.value)">
+    <input type="text" id="globalSearch" placeholder="Search leads, properties…" oninput="handleSearch(this.value)">
   </div>
   <div class="top-right">
     <div class="db-status" id="dbStatus">
@@ -340,6 +412,11 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     Follow-ups
     <span class="nav-badge hot" id="nav-fu-count">0</span>
   </div>
+  <div class="nav-item" id="nav-properties" onclick="setView('properties')">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Properties
+    <span class="nav-badge prop" id="nav-props-count">0</span>
+  </div>
   <div class="nav-spacer"></div>
   <div class="nav-agent-card">
     <div class="nac-top">
@@ -368,45 +445,24 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   <div class="dash-content">
     <div class="stats-row">
       <div class="stat-card">
-        <div class="sc-top">
-          <div class="sc-icon" style="background:var(--gold-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          </div>
-        </div>
-        <div class="sc-val" id="dash-total">—</div>
-        <div class="sc-lbl">Total Leads</div>
+        <div class="sc-top"><div class="sc-icon" style="background:var(--gold-dim)"><svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div>
+        <div class="sc-val" id="dash-total">—</div><div class="sc-lbl">Total Leads</div>
       </div>
       <div class="stat-card">
-        <div class="sc-top">
-          <div class="sc-icon" style="background:var(--red-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-        </div>
-        <div class="sc-val" id="dash-hot">—</div>
-        <div class="sc-lbl">Hot Leads</div>
+        <div class="sc-top"><div class="sc-icon" style="background:var(--purple-dim)"><svg width="18" height="18" fill="none" stroke="var(--purple)" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div></div>
+        <div class="sc-val" id="dash-props">—</div><div class="sc-lbl">Properties Listed</div>
       </div>
       <div class="stat-card">
-        <div class="sc-top">
-          <div class="sc-icon" style="background:var(--orange-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-        </div>
-        <div class="sc-val" id="dash-today-fu">—</div>
-        <div class="sc-lbl">Follow-ups Today</div>
+        <div class="sc-top"><div class="sc-icon" style="background:var(--orange-dim)"><svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div>
+        <div class="sc-val" id="dash-today-fu">—</div><div class="sc-lbl">Follow-ups Today</div>
       </div>
       <div class="stat-card">
-        <div class="sc-top">
-          <div class="sc-icon" style="background:var(--green-dim)">
-            <svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          </div>
-        </div>
-        <div class="sc-val" id="dash-closed">—</div>
-        <div class="sc-lbl">Deals Closed</div>
+        <div class="sc-top"><div class="sc-icon" style="background:var(--green-dim)"><svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+        <div class="sc-val" id="dash-closed">—</div><div class="sc-lbl">Deals Closed</div>
       </div>
     </div>
 
     <div class="dash-grid">
-      <!-- Pipeline -->
       <div class="dash-card">
         <div class="dc-header">
           <div><div class="dc-title">Lead Pipeline</div><div class="dc-subtitle">Live from database</div></div>
@@ -432,16 +488,13 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
         </div>
       </div>
 
-      <!-- Right column -->
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="dash-card">
           <div class="dc-header">
             <div><div class="dc-title">Today's Follow-ups</div><div class="dc-subtitle" id="dash-fu-subtitle">Loading…</div></div>
             <a class="dc-action" onclick="setView('followups')">See all →</a>
           </div>
-          <div id="dash-fu-list" class="fu-dash-list">
-            <div class="loading"><div class="spinner"></div>Loading…</div>
-          </div>
+          <div id="dash-fu-list" class="fu-dash-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
         </div>
         <div class="dash-card">
           <div class="dc-header"><div class="dc-title">Quick Add Lead</div></div>
@@ -464,10 +517,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 <!-- ═══ LEADS VIEW ═══ -->
 <div class="view" id="view-leads">
   <div class="page-header">
-    <div class="page-title">
-      <h1>Leads</h1>
-      <p id="leads-subtitle">Loading from database…</p>
-    </div>
+    <div class="page-title"><h1>Leads</h1><p id="leads-subtitle">Loading from database…</p></div>
     <div class="page-actions">
       <button class="t-btn gold" onclick="openLeadModal()">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -487,15 +537,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     </div>
     <div class="leads-table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Name</th><th>Phone</th><th>Budget</th><th>Interest</th>
-            <th>Source</th><th>Stage</th><th>Priority</th><th>Added</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="leadsTableBody">
-          <tr><td colspan="9"><div class="loading"><div class="spinner"></div>Connecting to database…</div></td></tr>
-        </tbody>
+        <thead><tr><th>Name</th><th>Phone</th><th>Budget</th><th>Interest</th><th>Source</th><th>Stage</th><th>Priority</th><th>Added</th><th>Actions</th></tr></thead>
+        <tbody id="leadsTableBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>Connecting to database…</div></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -504,10 +547,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 <!-- ═══ FOLLOW-UPS VIEW ═══ -->
 <div class="view" id="view-followups">
   <div class="page-header">
-    <div class="page-title">
-      <h1>Follow-ups</h1>
-      <p id="fu-subtitle">Loading…</p>
-    </div>
+    <div class="page-title"><h1>Follow-ups</h1><p id="fu-subtitle">Loading…</p></div>
     <div class="page-actions">
       <button class="t-btn gold" onclick="openFollowUpModal()">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -517,30 +557,80 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
   <div class="fu-content">
     <div class="fu-sidebar">
-      <div class="fu-cal-header">
-        <span class="fu-cal-title" id="calMonth">February 2026</span>
-      </div>
+      <div class="fu-cal-header"><span class="fu-cal-title" id="calMonth">February 2026</span></div>
       <div class="mini-cal" id="miniCal"></div>
       <div class="fu-type-list">
-        <div class="fu-type-item active" data-type="all">
-          <div class="fu-type-dot" style="background:var(--gold)"></div> All Follow-ups
-        </div>
-        <div class="fu-type-item" data-type="Call">
-          <div class="fu-type-dot" style="background:var(--blue)"></div> Calls
-        </div>
-        <div class="fu-type-item" data-type="WhatsApp">
-          <div class="fu-type-dot" style="background:var(--green)"></div> WhatsApp
-        </div>
-        <div class="fu-type-item" data-type="Site Visit">
-          <div class="fu-type-dot" style="background:var(--orange)"></div> Site Visits
-        </div>
-        <div class="fu-type-item" data-type="Document">
-          <div class="fu-type-dot" style="background:var(--red)"></div> Documents
-        </div>
+        <div class="fu-type-item active" data-type="all"><div class="fu-type-dot" style="background:var(--gold)"></div> All Follow-ups</div>
+        <div class="fu-type-item" data-type="Call"><div class="fu-type-dot" style="background:var(--blue)"></div> Calls</div>
+        <div class="fu-type-item" data-type="WhatsApp"><div class="fu-type-dot" style="background:var(--green)"></div> WhatsApp</div>
+        <div class="fu-type-item" data-type="Site Visit"><div class="fu-type-dot" style="background:var(--orange)"></div> Site Visits</div>
+        <div class="fu-type-item" data-type="Document"><div class="fu-type-dot" style="background:var(--red)"></div> Documents</div>
       </div>
     </div>
-    <div class="fu-main-area" id="fuMainArea">
-      <div class="loading"><div class="spinner"></div>Loading follow-ups…</div>
+    <div class="fu-main-area" id="fuMainArea"><div class="loading"><div class="spinner"></div>Loading follow-ups…</div></div>
+  </div>
+</div>
+
+<!-- ═══ PROPERTIES VIEW ═══ -->
+<div class="view" id="view-properties">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Property Listings</h1>
+      <p id="props-subtitle">Manage supplier land & property inventory</p>
+    </div>
+    <div class="page-actions">
+      <!-- View toggle -->
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vt-grid" onclick="setPropView('grid')" title="Grid view">⊞</button>
+        <button class="vt-btn" id="vt-table" onclick="setPropView('table')" title="Table view">☰</button>
+      </div>
+      <button class="t-btn gold" onclick="openPropertyModal()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Property
+      </button>
+    </div>
+  </div>
+  <div class="props-content">
+    <div class="props-toolbar" id="propsToolbar">
+      <div class="filter-chip active" data-pfilter="all">All (<span id="pchip-all">0</span>)</div>
+      <div class="filter-chip" data-pfilter="Available">Available (<span id="pchip-avail">0</span>)</div>
+      <div class="filter-chip" data-pfilter="Negotiation">Negotiation (<span id="pchip-nego">0</span>)</div>
+      <div class="filter-chip" data-pfilter="On Hold">On Hold (<span id="pchip-hold">0</span>)</div>
+      <div class="filter-chip" data-pfilter="Sold">Sold (<span id="pchip-sold">0</span>)</div>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <select class="form-select" style="height:32px;padding:0 10px;font-size:12px;width:auto" id="propTypeFilter" onchange="renderProperties()">
+          <option value="">All Types</option>
+          <option>Agricultural Land</option>
+          <option>Residential Plot</option>
+          <option>Commercial Plot</option>
+          <option>Apartment</option>
+          <option>Villa / Bungalow</option>
+          <option>Industrial Land</option>
+          <option>Farm Land</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid view -->
+    <div id="propsGridView" style="flex:1;overflow-y:auto;">
+      <div class="props-grid" id="propsGrid">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Loading properties…</div>
+      </div>
+    </div>
+
+    <!-- Table view (hidden by default) -->
+    <div id="propsTableView" style="flex:1;overflow-y:auto;display:none;padding:0 24px 20px;">
+      <table style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>Property Title</th><th>Type</th><th>Location</th><th>Area</th>
+            <th>Asking Price</th><th>Supplier</th><th>Status</th><th>Listed</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="propsTableBody">
+          <tr><td colspan="9"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -625,18 +715,13 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <input type="hidden" id="editFuId">
       <div class="form-2col">
         <div class="form-row"><label class="form-label">Lead Name *</label>
-          <select class="form-select" id="fu-leadId">
-            <option value="">Select a lead</option>
-          </select>
+          <select class="form-select" id="fu-leadId"><option value="">Select a lead</option></select>
         </div>
         <div class="form-row"><label class="form-label">Follow-up Type *</label>
           <select class="form-select" id="fu-type">
-            <option value="Call">📞 Call</option>
-            <option value="WhatsApp">💬 WhatsApp</option>
-            <option value="Site Visit">🏠 Site Visit</option>
-            <option value="Document">📄 Send Document</option>
-            <option value="Email">📧 Email</option>
-            <option value="Meeting">🤝 Meeting</option>
+            <option value="Call">📞 Call</option><option value="WhatsApp">💬 WhatsApp</option>
+            <option value="Site Visit">🏠 Site Visit</option><option value="Document">📄 Send Document</option>
+            <option value="Email">📧 Email</option><option value="Meeting">🤝 Meeting</option>
           </select>
         </div>
       </div>
@@ -646,9 +731,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       </div>
       <div class="form-row"><label class="form-label">Priority</label>
         <select class="form-select" id="fu-priority">
-          <option value="Normal">Normal</option>
-          <option value="Urgent">🔴 Urgent</option>
-          <option value="High">High</option>
+          <option value="Normal">Normal</option><option value="Urgent">🔴 Urgent</option><option value="High">High</option>
         </select>
       </div>
       <div class="form-row"><label class="form-label">Notes / Reminder *</label>
@@ -660,6 +743,212 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <button class="btn-save" id="saveFuBtn" onclick="saveFollowUp()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         Save Follow-up
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ ADD PROPERTY MODAL ════════ -->
+<div class="modal-overlay" id="propModalOverlay" onclick="if(event.target===this)closePropModal()">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3 id="propModalTitle">Add Property Listing</h3>
+      <div class="modal-close" onclick="closePropModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editPropId">
+
+      <!-- SECTION: Property Details -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Property Details
+        </div>
+        <div class="form-row"><label class="form-label">Property Title *</label>
+          <input class="form-input" id="p-title" placeholder="e.g. Green Valley Agricultural Land, Pune">
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Property Type *</label>
+            <select class="form-select" id="p-type">
+              <option value="">Select type</option>
+              <option>Agricultural Land</option>
+              <option>Residential Plot</option>
+              <option>Commercial Plot</option>
+              <option>Apartment</option>
+              <option>Villa / Bungalow</option>
+              <option>Industrial Land</option>
+              <option>Farm Land</option>
+              <option>Warehouse / Godown</option>
+              <option>Office Space</option>
+              <option>Mixed Use</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">Status</label>
+            <select class="form-select" id="p-status">
+              <option value="Available">🟢 Available</option>
+              <option value="Negotiation">🟡 In Negotiation</option>
+              <option value="On Hold">🟠 On Hold</option>
+              <option value="Sold">⚫ Sold</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Location / Address *</label>
+            <input class="form-input" id="p-location" placeholder="e.g. Khed, Pune, Maharashtra">
+          </div>
+          <div class="form-row"><label class="form-label">Survey / Plot Number</label>
+            <input class="form-input" id="p-survey" placeholder="e.g. Survey No. 123/1A">
+          </div>
+        </div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Total Area *</label>
+            <input class="form-input" id="p-area" placeholder="e.g. 5 Acres / 2000 sqft">
+          </div>
+          <div class="form-row"><label class="form-label">Asking Price *</label>
+            <input class="form-input" id="p-price" placeholder="e.g. ₹ 45 Lakhs / Acre">
+          </div>
+          <div class="form-row"><label class="form-label">Price Per Unit</label>
+            <input class="form-input" id="p-ppu" placeholder="e.g. ₹ 450/sqft">
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Zone / Usage</label>
+            <select class="form-select" id="p-zone">
+              <option value="">Select zone</option>
+              <option>Agricultural</option>
+              <option>Residential</option>
+              <option>Commercial</option>
+              <option>Industrial</option>
+              <option>Mixed Use</option>
+              <option>Green Belt</option>
+              <option>NA Plot (Non-Agricultural)</option>
+              <option>SEZ</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">Facing / Vasthu</label>
+            <select class="form-select" id="p-facing">
+              <option value="">Select facing</option>
+              <option>East Facing</option><option>West Facing</option>
+              <option>North Facing</option><option>South Facing</option>
+              <option>North-East</option><option>North-West</option>
+              <option>South-East</option><option>South-West</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Key Features / Highlights</label>
+          <textarea class="form-textarea" id="p-features" placeholder="Water source, road access, electricity, fencing, soil type, nearby landmarks…" style="min-height:60px"></textarea>
+        </div>
+        <div class="form-row"><label class="form-label">Property Description / Remarks</label>
+          <textarea class="form-textarea" id="p-desc" placeholder="Detailed description, investment potential, access road details, legal status…"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION: Supplier / Owner Details -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Supplier / Owner Details
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Supplier / Owner Name *</label>
+            <input class="form-input" id="p-supplier-name" placeholder="e.g. Ramesh Patil">
+          </div>
+          <div class="form-row"><label class="form-label">Supplier Phone *</label>
+            <input class="form-input" id="p-supplier-phone" placeholder="+91 98765 43210">
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Supplier Email</label>
+            <input class="form-input" id="p-supplier-email" placeholder="owner@email.com">
+          </div>
+          <div class="form-row"><label class="form-label">Supplier Type</label>
+            <select class="form-select" id="p-supplier-type">
+              <option value="Direct Owner">Direct Owner</option>
+              <option value="Broker / Agent">Broker / Agent</option>
+              <option value="Builder / Developer">Builder / Developer</option>
+              <option value="Bank / NPA">Bank / NPA</option>
+              <option value="Government">Government</option>
+              <option value="Investor">Investor</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Commission / Brokerage</label>
+            <input class="form-input" id="p-commission" placeholder="e.g. 1% or ₹50,000 fixed">
+          </div>
+          <div class="form-row"><label class="form-label">Negotiable?</label>
+            <select class="form-select" id="p-negotiable">
+              <option value="Yes">Yes — Price Negotiable</option>
+              <option value="No">No — Fixed Price</option>
+              <option value="Partially">Partially Negotiable</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: Legal & Documents -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Legal & Documents
+        </div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Title / Ownership</label>
+            <select class="form-select" id="p-title-status">
+              <option value="">Unknown</option>
+              <option>Clear Title</option>
+              <option>Disputed</option>
+              <option>Joint Ownership</option>
+              <option>Under Litigation</option>
+              <option>NRI Owned</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">7/12 Extract</label>
+            <select class="form-select" id="p-712">
+              <option value="">Not checked</option>
+              <option>Available</option>
+              <option>Not Available</option>
+              <option>Under Process</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">NA Order / Permission</label>
+            <select class="form-select" id="p-na">
+              <option value="">Not applicable</option>
+              <option>Available</option>
+              <option>Applied — Pending</option>
+              <option>Required</option>
+              <option>Not Required</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Additional Legal Notes</label>
+          <textarea class="form-textarea" id="p-legal" placeholder="Any encumbrance, mortgage, court orders, disputed boundaries, pending dues…" style="min-height:60px"></textarea>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closePropModal()">Cancel</button>
+      <button class="btn-save" id="savePropBtn" onclick="saveProperty()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Property
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PROPERTY DETAIL VIEW MODAL ════════ -->
+<div class="modal-overlay" id="propDetailOverlay" onclick="if(event.target===this)closePropDetail()">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3 id="propDetailTitle">Property Details</h3>
+      <div class="modal-close" onclick="closePropDetail()">✕</div>
+    </div>
+    <div class="modal-body" id="propDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closePropDetail()">Close</button>
+      <button class="btn-save" id="propDetailEditBtn" onclick="">
+        ✏️ Edit Property
       </button>
     </div>
   </div>
@@ -677,10 +966,14 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 // ════════════════════════════════════════════
 let _leads = [];
 let _followups = [];
+let _properties = [];
 let _currentFilter = 'all';
 let _currentFuType = 'all';
+let _currentPropFilter = 'all';
+let _propViewMode = 'grid'; // 'grid' or 'table'
 let _editingLeadId = null;
 let _editingFuId = null;
+let _editingPropId = null;
 let _dbConnected = false;
 
 // ════════════════════════════════════════════
@@ -695,104 +988,75 @@ function initApp() {
     _dbConnected = true;
     loadLeadsFromDB();
     loadFollowUpsFromDB();
+    loadPropertiesFromDB();
   } else {
     window.addEventListener('dbReady', () => {
       setDbStatus(true, 'Connected');
       _dbConnected = true;
       loadLeadsFromDB();
       loadFollowUpsFromDB();
+      loadPropertiesFromDB();
     }, { once: true });
-
     setTimeout(() => {
       if (!_dbConnected) {
         setDbStatus(false, 'Connection failed');
         showToast('⚠️ Firebase connection failed. Check network.', 'error');
-        _leads = [];
-        _followups = [];
-        renderLeads();
-        renderFollowUps();
-        renderDashboard();
+        renderLeads(); renderFollowUps(); renderDashboard(); renderProperties();
       }
     }, 8000);
   }
 }
 
 // ════════════════════════════════════════════
-// FIRESTORE CRUD — LEADS
+// FIRESTORE — LEADS
 // ════════════════════════════════════════════
 async function loadLeadsFromDB() {
   try {
     const { collection, onSnapshot, orderBy, query } = window._firebase;
-    const db = window._db;
-    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'));
+    const q = query(collection(window._db, 'leads'), orderBy('createdAt', 'desc'));
     onSnapshot(q, (snapshot) => {
       _leads = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderLeads();
-      renderDashboard();
-      updateNavCounts();
-    }, (err) => {
-      console.error('Leads listener error:', err);
-      setDbStatus(false, 'Read error');
-    });
-  } catch(e) {
-    showToast('❌ Could not load leads: ' + e.message, 'error');
-  }
+      renderLeads(); renderDashboard(); updateNavCounts();
+    }, (err) => { console.error(err); setDbStatus(false, 'Read error'); });
+  } catch(e) { showToast('❌ Could not load leads: ' + e.message, 'error'); }
 }
-
-async function addLeadToDB(data) {
-  const { collection, addDoc, serverTimestamp } = window._firebase;
-  const db = window._db;
-  await addDoc(collection(db, 'leads'), { ...data, createdAt: serverTimestamp() });
-}
-
-async function updateLeadInDB(id, data) {
-  const { doc, updateDoc } = window._firebase;
-  const db = window._db;
-  await updateDoc(doc(db, 'leads', id), data);
-}
-
-async function deleteLeadFromDB(id) {
-  const { doc, deleteDoc } = window._firebase;
-  const db = window._db;
-  await deleteDoc(doc(db, 'leads', id));
-}
+async function addLeadToDB(data) { const { collection, addDoc, serverTimestamp } = window._firebase; await addDoc(collection(window._db, 'leads'), { ...data, createdAt: serverTimestamp() }); }
+async function updateLeadInDB(id, data) { const { doc, updateDoc } = window._firebase; await updateDoc(doc(window._db, 'leads', id), data); }
+async function deleteLeadFromDB(id) { const { doc, deleteDoc } = window._firebase; await deleteDoc(doc(window._db, 'leads', id)); }
 
 // ════════════════════════════════════════════
-// FIRESTORE CRUD — FOLLOW-UPS
+// FIRESTORE — FOLLOW-UPS
 // ════════════════════════════════════════════
 async function loadFollowUpsFromDB() {
   try {
     const { collection, onSnapshot, orderBy, query } = window._firebase;
-    const db = window._db;
-    const q = query(collection(db, 'followups'), orderBy('date', 'asc'));
+    const q = query(collection(window._db, 'followups'), orderBy('date', 'asc'));
     onSnapshot(q, (snapshot) => {
       _followups = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderFollowUps();
-      renderDashboard();
-      updateNavCounts();
+      renderFollowUps(); renderDashboard(); updateNavCounts();
     });
-  } catch(e) {
-    showToast('❌ Could not load follow-ups: ' + e.message, 'error');
-  }
+  } catch(e) { showToast('❌ Could not load follow-ups: ' + e.message, 'error'); }
 }
+async function addFollowUpToDB(data) { const { collection, addDoc, serverTimestamp } = window._firebase; await addDoc(collection(window._db, 'followups'), { ...data, createdAt: serverTimestamp() }); }
+async function updateFollowUpInDB(id, data) { const { doc, updateDoc } = window._firebase; await updateDoc(doc(window._db, 'followups', id), data); }
+async function deleteFollowUpFromDB(id) { const { doc, deleteDoc } = window._firebase; await deleteDoc(doc(window._db, 'followups', id)); }
 
-async function addFollowUpToDB(data) {
-  const { collection, addDoc, serverTimestamp } = window._firebase;
-  const db = window._db;
-  await addDoc(collection(db, 'followups'), { ...data, createdAt: serverTimestamp() });
+// ════════════════════════════════════════════
+// FIRESTORE — PROPERTIES
+// ════════════════════════════════════════════
+async function loadPropertiesFromDB() {
+  try {
+    const { collection, onSnapshot, orderBy, query } = window._firebase;
+    const q = query(collection(window._db, 'properties'), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      _properties = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderProperties(); renderDashboard(); updateNavCounts();
+    }, (err) => { console.error(err); });
+  } catch(e) { showToast('❌ Could not load properties: ' + e.message, 'error'); }
 }
-
-async function updateFollowUpInDB(id, data) {
-  const { doc, updateDoc } = window._firebase;
-  const db = window._db;
-  await updateDoc(doc(db, 'followups', id), data);
-}
-
-async function deleteFollowUpFromDB(id) {
-  const { doc, deleteDoc } = window._firebase;
-  const db = window._db;
-  await deleteDoc(doc(db, 'followups', id));
-}
+async function addPropertyToDB(data) { const { collection, addDoc, serverTimestamp } = window._firebase; await addDoc(collection(window._db, 'properties'), { ...data, createdAt: serverTimestamp() }); }
+async function updatePropertyInDB(id, data) { const { doc, updateDoc } = window._firebase; await updateDoc(doc(window._db, 'properties', id), data); }
+async function deletePropertyFromDB(id) { const { doc, deleteDoc } = window._firebase; await deleteDoc(doc(window._db, 'properties', id)); }
 
 // ════════════════════════════════════════════
 // RENDER — LEADS TABLE
@@ -811,30 +1075,17 @@ function renderLeads(filter) {
     const el = document.getElementById('chip-' + k);
     if(el) el.textContent = counts[stages[i]] || 0;
   });
-
   document.getElementById('leads-subtitle').textContent =
     `${_leads.length} total leads · ${counts['New']||0} new · ${counts['Negotiation']||0} in negotiation`;
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9">
-      <div class="empty-state">
-        <div class="empty-state-icon">👥</div>
-        <h3>${_currentFilter==='all' ? 'No leads yet' : 'No '+_currentFilter+' leads'}</h3>
-        <p>${_currentFilter==='all' ? 'Click "Add Lead" to add your first lead and start tracking.' : 'No leads in this stage yet.'}</p>
-      </div>
-    </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">👥</div><h3>${_currentFilter==='all'?'No leads yet':'No '+_currentFilter+' leads'}</h3><p>${_currentFilter==='all'?'Click "Add Lead" to add your first lead.':'No leads in this stage yet.'}</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = list.map(l => {
-    const pillClass = {
-      'New':'pill-new','Contacted':'pill-contacted','Site Visit':'pill-site',
-      'Negotiation':'pill-nego','Closed':'pill-closed','Lost':'pill-lost'
-    }[l.stage] || 'pill-new';
-    const priorityBadge = l.priority === 'Hot' ? '<span class="tag tag-hot">🔥 Hot</span>' :
-      l.priority === 'VIP' ? '<span class="tag tag-vip">⭐ VIP</span>' :
-      l.priority === 'Warm' ? '<span class="tag tag-warm">Warm</span>' :
-      l.priority === 'Cold' ? '<span class="tag tag-cold">Cold</span>' : '—';
+    const pillClass = {'New':'pill-new','Contacted':'pill-contacted','Site Visit':'pill-site','Negotiation':'pill-nego','Closed':'pill-closed','Lost':'pill-lost'}[l.stage]||'pill-new';
+    const priorityBadge = l.priority==='Hot'?'<span class="tag tag-hot">🔥 Hot</span>':l.priority==='VIP'?'<span class="tag tag-vip">⭐ VIP</span>':l.priority==='Warm'?'<span class="tag tag-warm">Warm</span>':l.priority==='Cold'?'<span class="tag tag-cold">Cold</span>':'—';
     const date = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : 'Just now';
     return `<tr>
       <td><span class="td-name">${esc(l.name)}</span></td>
@@ -845,13 +1096,11 @@ function renderLeads(filter) {
       <td><span class="status-pill ${pillClass}">${l.stage}</span></td>
       <td>${priorityBadge}</td>
       <td style="font-size:11px;color:var(--text3)">${date}</td>
-      <td>
-        <div class="td-actions">
-          <button class="row-btn" onclick="openLeadModal('${l.id}')">✏️ Edit</button>
-          <button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button>
-          <button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button>
-        </div>
-      </td>
+      <td><div class="td-actions">
+        <button class="row-btn" onclick="openLeadModal('${l.id}')">✏️ Edit</button>
+        <button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button>
+        <button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
@@ -863,37 +1112,20 @@ function renderFollowUps(type) {
   if (type !== undefined) _currentFuType = type;
   const container = document.getElementById('fuMainArea');
   const today = new Date().toISOString().split('T')[0];
-
   let list = _followups.filter(f => f.status !== 'done');
   if (_currentFuType !== 'all') list = list.filter(f => f.type === _currentFuType);
-
-  document.getElementById('fu-subtitle').textContent =
-    `${list.filter(f => f.date === today).length} due today · ${list.length} pending total`;
+  document.getElementById('fu-subtitle').textContent = `${list.filter(f=>f.date===today).length} due today · ${list.length} pending total`;
 
   if (list.length === 0) {
-    container.innerHTML = `<div class="empty-state">
-      <div class="empty-state-icon">📅</div>
-      <h3>No follow-ups yet</h3>
-      <p>Add a follow-up reminder for a lead to get started. Stay on top of every client.</p>
-      <button class="btn-save" onclick="openFollowUpModal()">+ Add Follow-up</button>
-    </div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><h3>No follow-ups yet</h3><p>Add a follow-up reminder for a lead to stay on top of every client.</p><button class="btn-save" onclick="openFollowUpModal()">+ Add Follow-up</button></div>`;
     return;
   }
-
   const groups = {};
-  list.forEach(f => {
-    const d = f.date || 'No date';
-    if (!groups[d]) groups[d] = [];
-    groups[d].push(f);
-  });
+  list.forEach(f => { const d=f.date||'No date'; if(!groups[d])groups[d]=[]; groups[d].push(f); });
   const sortedDates = Object.keys(groups).sort();
-
   container.innerHTML = sortedDates.map(date => {
-    const label = date === today ? '🔴 Today — ' + formatDate(date) :
-      date < today ? '⚠️ Overdue — ' + formatDate(date) :
-      formatDate(date);
-    const cards = groups[date].map((f, i) => renderFuCard(f, i)).join('');
-    return `<div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:${date===sortedDates[0]?'0':'16px'} 0 12px">${label}</div>${cards}`;
+    const label = date===today?'🔴 Today — '+formatDate(date):date<today?'⚠️ Overdue — '+formatDate(date):formatDate(date);
+    return `<div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:${date===sortedDates[0]?'0':'16px'} 0 12px">${label}</div>${groups[date].map((f,i)=>renderFuCard(f,i)).join('')}`;
   }).join('');
 }
 
@@ -901,21 +1133,16 @@ function renderFuCard(f, idx) {
   const lead = _leads.find(l => l.id === f.leadId);
   const leadName = lead ? lead.name : (f.leadName || 'Unknown Lead');
   const initials = leadName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  const typeIcon = {Call:'📞',WhatsApp:'💬','Site Visit':'🏠',Document:'📄',Email:'📧',Meeting:'🤝'}[f.type] || '📋';
-  const urgentClass = f.priority === 'Urgent' ? 'tag-hot' : f.priority === 'High' ? 'tag-warm' : '';
-  const timeDisplay = f.time || '';
-  const timeStyle = f.priority === 'Urgent' ? 'background:var(--red-dim);color:var(--red)' : 'background:var(--orange-dim);color:var(--orange)';
-
-  return `<div class="fu-card" style="animation-delay:${idx * 0.05}s">
+  const typeIcon = {Call:'📞',WhatsApp:'💬','Site Visit':'🏠',Document:'📄',Email:'📧',Meeting:'🤝'}[f.type]||'📋';
+  const urgentClass = f.priority==='Urgent'?'tag-hot':f.priority==='High'?'tag-warm':'';
+  const timeStyle = f.priority==='Urgent'?'background:var(--red-dim);color:var(--red)':'background:var(--orange-dim);color:var(--orange)';
+  return `<div class="fu-card" style="animation-delay:${idx*.05}s">
     <div class="fu-card-top">
       <div class="fu-card-avatar">${initials}</div>
-      <div class="fu-card-info">
-        <div class="fu-card-name">${esc(leadName)}</div>
-        <div class="fu-card-sub">${lead ? esc(lead.budget||'') + (lead.location ? ' · '+lead.location : '') : 'Lead details not found'}</div>
-      </div>
+      <div class="fu-card-info"><div class="fu-card-name">${esc(leadName)}</div><div class="fu-card-sub">${lead?esc(lead.budget||'')+(lead.location?' · '+lead.location:''):'Lead not found'}</div></div>
       <div class="fu-card-badges">
-        ${urgentClass ? `<span class="tag ${urgentClass}">${f.priority}</span>` : ''}
-        ${timeDisplay ? `<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;${timeStyle}">${timeDisplay}</span>` : ''}
+        ${urgentClass?`<span class="tag ${urgentClass}">${f.priority}</span>`:''}
+        ${f.time?`<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;${timeStyle}">${f.time}</span>`:''}
       </div>
     </div>
     <div class="fu-body">${typeIcon} <strong>${f.type}</strong> — ${esc(f.notes||'No notes')}</div>
@@ -928,16 +1155,135 @@ function renderFuCard(f, idx) {
 }
 
 // ════════════════════════════════════════════
+// RENDER — PROPERTIES
+// ════════════════════════════════════════════
+function getPropIcon(type) {
+  const icons = {
+    'Agricultural Land':'🌾','Farm Land':'🌻','Residential Plot':'🏡',
+    'Commercial Plot':'🏢','Apartment':'🏬','Villa / Bungalow':'🏠',
+    'Industrial Land':'🏭','Warehouse / Godown':'📦','Office Space':'💼','Mixed Use':'🏙️'
+  };
+  return icons[type] || '🏗️';
+}
+function getPropStatusClass(status) {
+  return {Available:'prop-avail',Negotiation:'prop-nego','On Hold':'prop-hold',Sold:'prop-sold'}[status]||'prop-avail';
+}
+
+function renderProperties(filter) {
+  if (filter !== undefined) _currentPropFilter = filter;
+  const typeFilter = document.getElementById('propTypeFilter')?.value || '';
+
+  let list = _properties;
+  if (_currentPropFilter !== 'all') list = list.filter(p => p.status === _currentPropFilter);
+  if (typeFilter) list = list.filter(p => p.type === typeFilter);
+
+  // Update chips
+  const counts = {};
+  _properties.forEach(p => { counts[p.status] = (counts[p.status]||0)+1; });
+  document.getElementById('pchip-all').textContent = _properties.length;
+  document.getElementById('pchip-avail').textContent = counts['Available']||0;
+  document.getElementById('pchip-nego').textContent = counts['Negotiation']||0;
+  document.getElementById('pchip-hold').textContent = counts['On Hold']||0;
+  document.getElementById('pchip-sold').textContent = counts['Sold']||0;
+  document.getElementById('props-subtitle').textContent =
+    `${_properties.length} listings · ${counts['Available']||0} available · ${counts['Negotiation']||0} in negotiation`;
+
+  if (_propViewMode === 'grid') renderPropsGrid(list);
+  else renderPropsTable(list);
+}
+
+function renderPropsGrid(list) {
+  const grid = document.getElementById('propsGrid');
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">🏗️</div>
+      <h3>No properties listed yet</h3>
+      <p>Click "Add Property" to add your first supplier land or property listing.</p>
+      <button class="btn-save" onclick="openPropertyModal()">+ Add Property</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = list.map((p, i) => {
+    const icon = getPropIcon(p.type);
+    const statusClass = getPropStatusClass(p.status);
+    const supplierInitials = (p.supplierName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="prop-card" style="animation-delay:${i*0.05}s" onclick="viewProperty('${p.id}')">
+      <div class="prop-card-img">
+        <div class="prop-card-img-bg" style="background:radial-gradient(circle at 30% 50%,var(--purple),transparent 70%)"></div>
+        <div class="prop-card-img-icon">${icon}</div>
+        <div class="prop-card-img-overlay"></div>
+        <div class="prop-card-img-badges">
+          <span class="status-pill ${statusClass}">${p.status||'Available'}</span>
+          ${p.zone?`<span class="tag" style="background:var(--bg4);color:var(--text2)">${p.zone}</span>`:''}
+        </div>
+        <div class="prop-card-img-price">${esc(p.price||'Price TBD')}</div>
+      </div>
+      <div class="prop-card-body">
+        <div class="prop-card-title" title="${esc(p.title)}">${esc(p.title||'Untitled Property')}</div>
+        <div class="prop-card-sub">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${esc(p.location||'Location TBD')}
+        </div>
+        <div class="prop-meta-row">
+          ${p.type?`<div class="prop-meta">🏷️ ${esc(p.type)}</div>`:''}
+          ${p.area?`<div class="prop-meta">📐 ${esc(p.area)}</div>`:''}
+          ${p.facing?`<div class="prop-meta">🧭 ${esc(p.facing)}</div>`:''}
+          ${p.negotiable?`<div class="prop-meta" style="${p.negotiable==='Yes'?'color:var(--green)':''}">${p.negotiable==='Yes'?'✓ Negotiable':p.negotiable==='No'?'⚑ Fixed':'≈ Partial'}</div>`:''}
+        </div>
+        <div class="prop-supplier-row">
+          <div class="prop-supplier-av">${supplierInitials}</div>
+          <div class="prop-supplier-info">
+            <div class="prop-supplier-name">${esc(p.supplierName||'No supplier')}</div>
+            <div class="prop-supplier-role">${esc(p.supplierType||'Owner')} ${p.supplierPhone?'· '+p.supplierPhone:''}</div>
+          </div>
+        </div>
+        <div class="prop-card-actions" style="margin-top:10px">
+          <button class="prop-action-btn" onclick="event.stopPropagation();openPropertyModal('${p.id}')">✏️ Edit</button>
+          <button class="prop-action-btn del" onclick="event.stopPropagation();confirmDeleteProp('${p.id}','${esc(p.title||'')}')">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPropsTable(list) {
+  const tbody = document.getElementById('propsTableBody');
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">🏗️</div><h3>No properties</h3></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(p => {
+    const statusClass = getPropStatusClass(p.status);
+    const date = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : 'Just now';
+    return `<tr onclick="viewProperty('${p.id}')">
+      <td><span class="td-name">${esc(p.title||'—')}</span></td>
+      <td>${esc(p.type||'—')}</td>
+      <td>${esc(p.location||'—')}</td>
+      <td>${esc(p.area||'—')}</td>
+      <td><span class="td-budget">${esc(p.price||'—')}</span></td>
+      <td>${esc(p.supplierName||'—')}</td>
+      <td><span class="status-pill ${statusClass}">${p.status||'Available'}</span></td>
+      <td style="font-size:11px;color:var(--text3)">${date}</td>
+      <td><div class="td-actions">
+        <button class="row-btn" onclick="event.stopPropagation();openPropertyModal('${p.id}')">✏️ Edit</button>
+        <button class="row-btn del" onclick="event.stopPropagation();confirmDeleteProp('${p.id}','${esc(p.title||'')}')">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
 // RENDER — DASHBOARD
 // ════════════════════════════════════════════
 function renderDashboard() {
   const today = new Date().toISOString().split('T')[0];
-  const hot = _leads.filter(l => l.priority === 'Hot' || l.priority === 'VIP').length;
-  const closed = _leads.filter(l => l.stage === 'Closed').length;
-  const todayFu = _followups.filter(f => f.date === today && f.status !== 'done').length;
+  const hot = _leads.filter(l=>l.priority==='Hot'||l.priority==='VIP').length;
+  const closed = _leads.filter(l=>l.stage==='Closed').length;
+  const todayFu = _followups.filter(f=>f.date===today&&f.status!=='done').length;
+  const availProps = _properties.filter(p=>p.status==='Available').length;
 
   document.getElementById('dash-total').textContent = _leads.length;
-  document.getElementById('dash-hot').textContent = hot;
+  document.getElementById('dash-props').textContent = _properties.length;
   document.getElementById('dash-today-fu').textContent = todayFu;
   document.getElementById('dash-closed').textContent = closed;
   document.getElementById('stat-total').textContent = _leads.length;
@@ -947,241 +1293,259 @@ function renderDashboard() {
 
   const stages = ['New','Site Visit','Negotiation','Closed'];
   const stageKeys = ['new','site','nego','closed'];
-  stages.forEach((s, i) => {
-    const filtered = _leads.filter(l => l.stage === s);
+  stages.forEach((s,i) => {
+    const filtered = _leads.filter(l=>l.stage===s);
     const key = stageKeys[i];
-    const countEl = document.getElementById('pc-' + key);
-    if(countEl) countEl.textContent = filtered.length + ' lead' + (filtered.length!==1?'s':'');
-    const listEl = document.getElementById('pc-leads-' + key);
+    const countEl = document.getElementById('pc-'+key);
+    if(countEl) countEl.textContent = filtered.length+' lead'+(filtered.length!==1?'s':'');
+    const listEl = document.getElementById('pc-leads-'+key);
     if(listEl) {
-      if(filtered.length === 0) {
-        listEl.innerHTML = `<div style="font-size:11px;color:var(--text3);padding:8px;text-align:center">No leads</div>`;
-      } else {
-        listEl.innerHTML = filtered.slice(0,4).map(l => `
-          <div class="lead-mini" onclick="setView('leads')">
-            <div class="lm-name">${esc(l.name)}</div>
-            <div class="lm-prop">${esc(l.location||'')}</div>
-            <div class="lm-budget">${esc(l.budget||'—')}</div>
-          </div>`).join('');
-      }
+      listEl.innerHTML = filtered.length===0
+        ? `<div style="font-size:11px;color:var(--text3);padding:8px;text-align:center">No leads</div>`
+        : filtered.slice(0,4).map(l=>`<div class="lead-mini" onclick="setView('leads')"><div class="lm-name">${esc(l.name)}</div><div class="lm-prop">${esc(l.location||'')}</div><div class="lm-budget">${esc(l.budget||'—')}</div></div>`).join('');
     }
   });
 
-  const todayList = _followups.filter(f => f.date === today && f.status !== 'done');
+  const todayList = _followups.filter(f=>f.date===today&&f.status!=='done');
   const dashFuList = document.getElementById('dash-fu-list');
-  document.getElementById('dash-fu-subtitle').textContent = todayFu + ' pending today';
-
-  if (todayList.length === 0) {
-    dashFuList.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">🎉 No follow-ups due today!</div>`;
-  } else {
-    dashFuList.innerHTML = todayList.slice(0,4).map(f => {
-      const lead = _leads.find(l => l.id === f.leadId);
-      const name = lead ? lead.name : (f.leadName || 'Unknown');
-      const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      return `<div class="fu-dash-item" onclick="setView('followups')">
-        <div class="fu-dash-av">${initials}</div>
-        <div class="fu-dash-info">
-          <div class="fu-dash-name">${esc(name)}</div>
-          <div class="fu-dash-note">${f.type}: ${esc(f.notes||'')}</div>
-        </div>
-        <span class="fu-dash-time ${f.priority==='Urgent'?'urgent':'today'}">${f.time||'Today'}</span>
-      </div>`;
-    }).join('');
-  }
+  document.getElementById('dash-fu-subtitle').textContent = todayFu+' pending today';
+  dashFuList.innerHTML = todayList.length===0
+    ? `<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">🎉 No follow-ups due today!</div>`
+    : todayList.slice(0,4).map(f=>{
+        const lead=_leads.find(l=>l.id===f.leadId);
+        const name=lead?lead.name:(f.leadName||'Unknown');
+        const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        return `<div class="fu-dash-item" onclick="setView('followups')">
+          <div class="fu-dash-av">${initials}</div>
+          <div class="fu-dash-info"><div class="fu-dash-name">${esc(name)}</div><div class="fu-dash-note">${f.type}: ${esc(f.notes||'')}</div></div>
+          <span class="fu-dash-time ${f.priority==='Urgent'?'urgent':'today'}">${f.time||'Today'}</span>
+        </div>`;
+      }).join('');
 }
 
 // ════════════════════════════════════════════
-// SAVE / ADD LEAD
+// SAVE — LEAD
 // ════════════════════════════════════════════
 async function saveLead() {
   const name = document.getElementById('f-name').value.trim();
   const phone = document.getElementById('f-phone').value.trim();
-  if (!name || !phone) { showToast('⚠️ Name and phone are required', 'error'); return; }
-
-  const data = {
-    name, phone,
-    email: document.getElementById('f-email').value.trim(),
-    budget: document.getElementById('f-budget').value.trim(),
-    proptype: document.getElementById('f-proptype').value,
-    location: document.getElementById('f-location').value.trim(),
-    source: document.getElementById('f-source').value,
-    stage: document.getElementById('f-stage').value || 'New',
-    priority: document.getElementById('f-priority').value || 'Normal',
-    wa: document.getElementById('f-wa').value.trim(),
-    notes: document.getElementById('f-notes').value.trim(),
-  };
-
+  if (!name||!phone) { showToast('⚠️ Name and phone are required', 'error'); return; }
+  const data = { name, phone, email:document.getElementById('f-email').value.trim(), budget:document.getElementById('f-budget').value.trim(), proptype:document.getElementById('f-proptype').value, location:document.getElementById('f-location').value.trim(), source:document.getElementById('f-source').value, stage:document.getElementById('f-stage').value||'New', priority:document.getElementById('f-priority').value||'Normal', wa:document.getElementById('f-wa').value.trim(), notes:document.getElementById('f-notes').value.trim() };
   const btn = document.getElementById('saveLeadBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
-
+  btn.disabled=true; btn.textContent='Saving…';
   try {
-    if (_editingLeadId) {
-      await updateLeadInDB(_editingLeadId, data);
-      showToast('✅ Lead updated!', 'success');
-    } else {
-      await addLeadToDB(data);
-      showToast('✅ Lead saved to database!', 'success');
-    }
+    if(_editingLeadId) { await updateLeadInDB(_editingLeadId,data); showToast('✅ Lead updated!','success'); }
+    else { await addLeadToDB(data); showToast('✅ Lead saved!','success'); }
     closeLeadModal();
-  } catch(e) {
-    showToast('❌ Error saving: ' + e.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Lead';
-  }
+  } catch(e) { showToast('❌ Error: '+e.message,'error'); }
+  finally { btn.disabled=false; btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Lead'; }
 }
 
 async function quickAddLead() {
-  const name = document.getElementById('quick-name').value.trim();
-  const phone = document.getElementById('quick-phone').value.trim();
-  const budget = document.getElementById('quick-budget').value.trim();
-  if (!name || !phone) { showToast('⚠️ Name and phone required', 'error'); return; }
-
+  const name=document.getElementById('quick-name').value.trim();
+  const phone=document.getElementById('quick-phone').value.trim();
+  const budget=document.getElementById('quick-budget').value.trim();
+  if(!name||!phone){showToast('⚠️ Name and phone required','error');return;}
   try {
-    const data = { name, phone, budget, stage:'New', priority:'Normal', email:'', location:'', source:'', notes:'' };
-    await addLeadToDB(data);
-    document.getElementById('quick-name').value = '';
-    document.getElementById('quick-phone').value = '';
-    document.getElementById('quick-budget').value = '';
-    showToast('✅ Lead added!', 'success');
-  } catch(e) {
-    showToast('❌ Error: ' + e.message, 'error');
-  }
+    await addLeadToDB({name,phone,budget,stage:'New',priority:'Normal',email:'',location:'',source:'',notes:''});
+    document.getElementById('quick-name').value='';
+    document.getElementById('quick-phone').value='';
+    document.getElementById('quick-budget').value='';
+    showToast('✅ Lead added!','success');
+  } catch(e){showToast('❌ Error: '+e.message,'error');}
 }
 
 // ════════════════════════════════════════════
-// SAVE / ADD FOLLOW-UP
+// SAVE — FOLLOW-UP
 // ════════════════════════════════════════════
 async function saveFollowUp() {
-  const leadId = document.getElementById('fu-leadId').value;
-  const date = document.getElementById('fu-date').value;
-  const notes = document.getElementById('fu-notes').value.trim();
-  if (!leadId) { showToast('⚠️ Please select a lead', 'error'); return; }
-  if (!date) { showToast('⚠️ Please select a date', 'error'); return; }
-  if (!notes) { showToast('⚠️ Please add a note/reminder', 'error'); return; }
-
-  const lead = _leads.find(l => l.id === leadId);
-  const data = {
-    leadId,
-    leadName: lead ? lead.name : '',
-    type: document.getElementById('fu-type').value,
-    date,
-    time: document.getElementById('fu-time').value,
-    priority: document.getElementById('fu-priority').value,
-    notes,
-    status: 'pending'
-  };
-
-  const btn = document.getElementById('saveFuBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
-
+  const leadId=document.getElementById('fu-leadId').value;
+  const date=document.getElementById('fu-date').value;
+  const notes=document.getElementById('fu-notes').value.trim();
+  if(!leadId){showToast('⚠️ Please select a lead','error');return;}
+  if(!date){showToast('⚠️ Please select a date','error');return;}
+  if(!notes){showToast('⚠️ Please add a note','error');return;}
+  const lead=_leads.find(l=>l.id===leadId);
+  const data={leadId,leadName:lead?lead.name:'',type:document.getElementById('fu-type').value,date,time:document.getElementById('fu-time').value,priority:document.getElementById('fu-priority').value,notes,status:'pending'};
+  const btn=document.getElementById('saveFuBtn');
+  btn.disabled=true; btn.textContent='Saving…';
   try {
-    if (_editingFuId) {
-      await updateFollowUpInDB(_editingFuId, data);
-      showToast('✅ Follow-up updated!', 'success');
-    } else {
-      await addFollowUpToDB(data);
-      showToast('✅ Follow-up scheduled!', 'success');
-    }
+    if(_editingFuId){await updateFollowUpInDB(_editingFuId,data);showToast('✅ Follow-up updated!','success');}
+    else{await addFollowUpToDB(data);showToast('✅ Follow-up scheduled!','success');}
     closeFuModal();
-  } catch(e) {
-    showToast('❌ Error: ' + e.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Follow-up';
-  }
+  } catch(e){showToast('❌ Error: '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Follow-up';}
 }
 
 async function markFuDone(id) {
+  try { await updateFollowUpInDB(id,{status:'done'}); showToast('✅ Marked as done!','success'); }
+  catch(e){showToast('❌ Error: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════════
+// SAVE — PROPERTY
+// ════════════════════════════════════════════
+async function saveProperty() {
+  const title = document.getElementById('p-title').value.trim();
+  const type = document.getElementById('p-type').value;
+  const location = document.getElementById('p-location').value.trim();
+  const supplierName = document.getElementById('p-supplier-name').value.trim();
+  const supplierPhone = document.getElementById('p-supplier-phone').value.trim();
+
+  if(!title){showToast('⚠️ Property title is required','error');return;}
+  if(!type){showToast('⚠️ Please select property type','error');return;}
+  if(!location){showToast('⚠️ Location is required','error');return;}
+  if(!supplierName||!supplierPhone){showToast('⚠️ Supplier name and phone are required','error');return;}
+
+  const data = {
+    title, type, location,
+    survey: document.getElementById('p-survey').value.trim(),
+    area: document.getElementById('p-area').value.trim(),
+    price: document.getElementById('p-price').value.trim(),
+    ppu: document.getElementById('p-ppu').value.trim(),
+    zone: document.getElementById('p-zone').value,
+    facing: document.getElementById('p-facing').value,
+    status: document.getElementById('p-status').value || 'Available',
+    features: document.getElementById('p-features').value.trim(),
+    description: document.getElementById('p-desc').value.trim(),
+    supplierName, supplierPhone,
+    supplierEmail: document.getElementById('p-supplier-email').value.trim(),
+    supplierType: document.getElementById('p-supplier-type').value,
+    commission: document.getElementById('p-commission').value.trim(),
+    negotiable: document.getElementById('p-negotiable').value,
+    titleStatus: document.getElementById('p-title-status').value,
+    doc712: document.getElementById('p-712').value,
+    naOrder: document.getElementById('p-na').value,
+    legalNotes: document.getElementById('p-legal').value.trim(),
+  };
+
+  const btn = document.getElementById('savePropBtn');
+  btn.disabled=true; btn.textContent='Saving…';
   try {
-    await updateFollowUpInDB(id, { status: 'done' });
-    showToast('✅ Marked as done!', 'success');
-  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
+    if(_editingPropId){ await updatePropertyInDB(_editingPropId, data); showToast('✅ Property updated!','success'); }
+    else { await addPropertyToDB(data); showToast('✅ Property listed!','success'); }
+    closePropModal();
+  } catch(e){showToast('❌ Error: '+e.message,'error');}
+  finally{btn.disabled=false; btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Property';}
 }
 
 // ════════════════════════════════════════════
 // DELETE
 // ════════════════════════════════════════════
-function confirmDeleteLead(id, name) {
-  if (!confirm(`Delete lead "${name}"? This cannot be undone.`)) return;
-  deleteLead(id, name);
-}
-async function deleteLead(id, name) {
-  try {
-    await deleteLeadFromDB(id);
-    showToast(`🗑 ${name} deleted`, 'success');
-  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
-}
+function confirmDeleteLead(id,name){if(!confirm(`Delete lead "${name}"?`))return;deleteLeadFromDB(id).then(()=>showToast(`🗑 ${name} deleted`,'success')).catch(e=>showToast('❌ '+e.message,'error'));}
+function confirmDeleteFu(id){if(!confirm('Delete this follow-up?'))return;deleteFollowUpFromDB(id).then(()=>showToast('🗑 Deleted','success')).catch(e=>showToast('❌ '+e.message,'error'));}
+function confirmDeleteProp(id,title){if(!confirm(`Delete property "${title}"? This cannot be undone.`))return;deletePropertyFromDB(id).then(()=>showToast(`🗑 Property deleted`,'success')).catch(e=>showToast('❌ '+e.message,'error'));}
 
-function confirmDeleteFu(id) {
-  if (!confirm('Delete this follow-up?')) return;
-  deleteFu(id);
+// ════════════════════════════════════════════
+// VIEW PROPERTY DETAIL
+// ════════════════════════════════════════════
+function viewProperty(id) {
+  const p = _properties.find(x=>x.id===id);
+  if(!p) return;
+  const icon = getPropIcon(p.type);
+  const statusClass = getPropStatusClass(p.status);
+  document.getElementById('propDetailTitle').textContent = p.title || 'Property Details';
+  document.getElementById('propDetailEditBtn').onclick = () => { closePropDetail(); openPropertyModal(id); };
+  document.getElementById('propDetailBody').innerHTML = `
+    <div class="prop-detail-header">
+      <div class="prop-detail-icon">${icon}</div>
+      <div class="prop-detail-meta">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="status-pill ${statusClass}">${p.status||'Available'}</span>
+          ${p.type?`<span class="tag" style="background:var(--bg4);color:var(--text2)">${p.type}</span>`:''}
+          ${p.zone?`<span class="tag" style="background:var(--teal-dim);color:var(--teal)">${p.zone}</span>`:''}
+        </div>
+        <div class="prop-detail-title">${esc(p.title)}</div>
+        <div class="prop-detail-loc">📍 ${esc(p.location)} ${p.survey?'· '+p.survey:''}</div>
+        <div class="prop-detail-price">${esc(p.price||'Price not set')} ${p.ppu?`<span style="font-size:13px;color:var(--text2);font-family:'DM Sans'">· ${esc(p.ppu)}</span>`:''}</div>
+      </div>
+    </div>
+
+    <div class="prop-info-grid">
+      <div class="prop-info-item"><div class="prop-info-label">Area / Size</div><div class="prop-info-value">${esc(p.area||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Facing</div><div class="prop-info-value">${esc(p.facing||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Price Negotiable</div><div class="prop-info-value" style="color:${p.negotiable==='Yes'?'var(--green)':'var(--text)'}">${esc(p.negotiable||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Title Status</div><div class="prop-info-value">${esc(p.titleStatus||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">7/12 Extract</div><div class="prop-info-value">${esc(p.doc712||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">NA Order</div><div class="prop-info-value">${esc(p.naOrder||'—')}</div></div>
+    </div>
+
+    ${p.features?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Key Features</div><div class="fu-body">${esc(p.features)}</div></div>`:''}
+    ${p.description?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Description</div><div class="fu-body">${esc(p.description)}</div></div>`:''}
+
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px">👤 Supplier / Owner Details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px">Name</div><div style="font-size:13px;font-weight:600;color:var(--text)">${esc(p.supplierName||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px">Phone</div><div style="font-size:13px;font-family:'JetBrains Mono',monospace">${esc(p.supplierPhone||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px">Email</div><div style="font-size:13px;color:var(--text)">${esc(p.supplierEmail||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px">Type</div><div style="font-size:13px;color:var(--text)">${esc(p.supplierType||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:3px">Commission</div><div style="font-size:13px;color:var(--gold);font-weight:600">${esc(p.commission||'—')}</div></div>
+      </div>
+    </div>
+
+    ${p.legalNotes?`<div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">⚖️ Legal Notes</div><div class="fu-body" style="border:1px solid rgba(224,85,85,.15)">${esc(p.legalNotes)}</div></div>`:''}
+  `;
+  document.getElementById('propDetailOverlay').classList.add('open');
 }
-async function deleteFu(id) {
-  try {
-    await deleteFollowUpFromDB(id);
-    showToast('🗑 Follow-up deleted', 'success');
-  } catch(e) { showToast('❌ Error: ' + e.message, 'error'); }
-}
+function closePropDetail(){document.getElementById('propDetailOverlay').classList.remove('open');}
 
 // ════════════════════════════════════════════
 // MODAL HELPERS
 // ════════════════════════════════════════════
 function openLeadModal(leadId) {
-  _editingLeadId = leadId || null;
-  document.getElementById('leadModalTitle').textContent = leadId ? 'Edit Lead' : 'Add New Lead';
-  const fields = ['name','phone','email','budget','proptype','location','source','stage','priority','wa','notes'];
-  fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) el.value = ''; });
-
-  if (leadId) {
-    const lead = _leads.find(l => l.id === leadId);
-    if (lead) {
-      fields.forEach(f => {
-        const el = document.getElementById('f-'+f);
-        if (el && lead[f] !== undefined) el.value = lead[f];
-      });
-    }
-  }
+  _editingLeadId = leadId||null;
+  document.getElementById('leadModalTitle').textContent = leadId?'Edit Lead':'Add New Lead';
+  const fields=['name','phone','email','budget','proptype','location','source','stage','priority','wa','notes'];
+  fields.forEach(f=>{const el=document.getElementById('f-'+f);if(el)el.value='';});
+  if(leadId){const lead=_leads.find(l=>l.id===leadId);if(lead)fields.forEach(f=>{const el=document.getElementById('f-'+f);if(el&&lead[f]!==undefined)el.value=lead[f];});}
   document.getElementById('leadModalOverlay').classList.add('open');
 }
-function closeLeadModal() {
-  document.getElementById('leadModalOverlay').classList.remove('open');
-  _editingLeadId = null;
-}
+function closeLeadModal(){document.getElementById('leadModalOverlay').classList.remove('open');_editingLeadId=null;}
 
 function openFollowUpModal(fuId, presetLeadId) {
-  _editingFuId = fuId || null;
-  document.getElementById('fuModalTitle').textContent = fuId ? 'Edit Follow-up' : 'Add Follow-up';
-
-  const sel = document.getElementById('fu-leadId');
-  sel.innerHTML = '<option value="">Select a lead</option>' +
-    _leads.map(l => `<option value="${l.id}">${esc(l.name)} ${l.phone?'('+l.phone+')':''}</option>`).join('');
-
-  ['fu-leadId','fu-type','fu-date','fu-time','fu-priority','fu-notes'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && id !== 'fu-type' && id !== 'fu-priority') el.value = '';
-  });
-  document.getElementById('fu-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('fu-time').value = '10:00';
-
-  if (presetLeadId) document.getElementById('fu-leadId').value = presetLeadId;
-
-  if (fuId) {
-    const fu = _followups.find(f => f.id === fuId);
-    if (fu) {
-      document.getElementById('fu-leadId').value = fu.leadId || '';
-      document.getElementById('fu-type').value = fu.type || 'Call';
-      document.getElementById('fu-date').value = fu.date || '';
-      document.getElementById('fu-time').value = fu.time || '10:00';
-      document.getElementById('fu-priority').value = fu.priority || 'Normal';
-      document.getElementById('fu-notes').value = fu.notes || '';
-    }
-  }
+  _editingFuId=fuId||null;
+  document.getElementById('fuModalTitle').textContent=fuId?'Edit Follow-up':'Add Follow-up';
+  const sel=document.getElementById('fu-leadId');
+  sel.innerHTML='<option value="">Select a lead</option>'+_leads.map(l=>`<option value="${l.id}">${esc(l.name)} ${l.phone?'('+l.phone+')':''}</option>`).join('');
+  document.getElementById('fu-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fu-time').value='10:00';
+  document.getElementById('fu-notes').value='';
+  if(presetLeadId)document.getElementById('fu-leadId').value=presetLeadId;
+  if(fuId){const fu=_followups.find(f=>f.id===fuId);if(fu){document.getElementById('fu-leadId').value=fu.leadId||'';document.getElementById('fu-type').value=fu.type||'Call';document.getElementById('fu-date').value=fu.date||'';document.getElementById('fu-time').value=fu.time||'10:00';document.getElementById('fu-priority').value=fu.priority||'Normal';document.getElementById('fu-notes').value=fu.notes||'';}}
   document.getElementById('fuModalOverlay').classList.add('open');
 }
-function closeFuModal() {
-  document.getElementById('fuModalOverlay').classList.remove('open');
-  _editingFuId = null;
+function closeFuModal(){document.getElementById('fuModalOverlay').classList.remove('open');_editingFuId=null;}
+
+function openPropertyModal(propId) {
+  _editingPropId = propId||null;
+  document.getElementById('propModalTitle').textContent = propId?'Edit Property':'Add Property Listing';
+  const fields=['title','type','location','survey','area','price','ppu','zone','facing','status','features','desc','supplier-name','supplier-phone','supplier-email','supplier-type','commission','negotiable','title-status','712','na','legal'];
+  fields.forEach(f=>{const el=document.getElementById('p-'+f);if(el)el.value='';});
+  document.getElementById('p-status').value='Available';
+  document.getElementById('p-negotiable').value='Yes';
+  document.getElementById('p-supplier-type').value='Direct Owner';
+  if(propId){
+    const p=_properties.find(x=>x.id===propId);
+    if(p){
+      const map={title:'title',type:'type',location:'location',survey:'survey',area:'area',price:'price',ppu:'ppu',zone:'zone',facing:'facing',status:'status',features:'features',description:'desc',supplierName:'supplier-name',supplierPhone:'supplier-phone',supplierEmail:'supplier-email',supplierType:'supplier-type',commission:'commission',negotiable:'negotiable',titleStatus:'title-status',doc712:'712',naOrder:'na',legalNotes:'legal'};
+      Object.entries(map).forEach(([key,fieldId])=>{const el=document.getElementById('p-'+fieldId);if(el&&p[key]!==undefined)el.value=p[key];});
+    }
+  }
+  document.getElementById('propModalOverlay').classList.add('open');
+}
+function closePropModal(){document.getElementById('propModalOverlay').classList.remove('open');_editingPropId=null;}
+
+// ════════════════════════════════════════════
+// VIEW MODE TOGGLE (grid/table)
+// ════════════════════════════════════════════
+function setPropView(mode) {
+  _propViewMode = mode;
+  document.getElementById('propsGridView').style.display = mode==='grid'?'block':'none';
+  document.getElementById('propsTableView').style.display = mode==='table'?'block':'none';
+  document.getElementById('vt-grid').classList.toggle('active', mode==='grid');
+  document.getElementById('vt-table').classList.toggle('active', mode==='table');
+  renderProperties();
 }
 
 // ════════════════════════════════════════════
@@ -1190,57 +1554,57 @@ function closeFuModal() {
 function handleSearch(val) {
   if (!val.trim()) { renderLeads(); return; }
   const q = val.toLowerCase();
-  const filtered = _leads.filter(l =>
-    (l.name||'').toLowerCase().includes(q) ||
-    (l.phone||'').includes(q) ||
-    (l.location||'').toLowerCase().includes(q) ||
-    (l.budget||'').toLowerCase().includes(q)
-  );
+  const filtered = _leads.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.phone||'').includes(q)||(l.location||'').toLowerCase().includes(q)||(l.budget||'').toLowerCase().includes(q));
   const tbody = document.getElementById('leadsTableBody');
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text3)">No leads found for "${val}"</td></tr>`;
-    return;
-  }
-  const orig = _leads;
-  _leads = filtered;
-  renderLeads();
-  _leads = orig;
+  if(filtered.length===0){tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text3)">No leads found for "${val}"</td></tr>`;return;}
+  const orig=_leads;_leads=filtered;renderLeads();_leads=orig;
 }
 
 // ════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════
 function setView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  const ni = document.getElementById('nav-' + name);
-  if (ni) ni.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  const ni=document.getElementById('nav-'+name);
+  if(ni)ni.classList.add('active');
 }
 
 function updateNavCounts() {
-  const hot = _leads.filter(l => l.priority === 'Hot' || l.priority === 'VIP').length;
-  const today = new Date().toISOString().split('T')[0];
-  const todayFu = _followups.filter(f => f.date === today && f.status !== 'done').length;
-  document.getElementById('nav-leads-count').textContent = hot > 0 ? hot + ' hot' : _leads.length;
-  document.getElementById('nav-fu-count').textContent = todayFu;
-  document.getElementById('todayFuBadge').textContent = todayFu;
+  const hot=_leads.filter(l=>l.priority==='Hot'||l.priority==='VIP').length;
+  const today=new Date().toISOString().split('T')[0];
+  const todayFu=_followups.filter(f=>f.date===today&&f.status!=='done').length;
+  document.getElementById('nav-leads-count').textContent=hot>0?hot+' hot':_leads.length;
+  document.getElementById('nav-fu-count').textContent=todayFu;
+  document.getElementById('todayFuBadge').textContent=todayFu;
+  document.getElementById('nav-props-count').textContent=_properties.length;
 }
 
 // ════════════════════════════════════════════
-// FILTER CHIPS
+// FILTER CHIPS — LEADS
 // ════════════════════════════════════════════
 document.getElementById('leadsToolbar').addEventListener('click', e => {
-  const chip = e.target.closest('.filter-chip');
-  if (!chip) return;
-  document.querySelectorAll('#leadsToolbar .filter-chip').forEach(c => c.classList.remove('active'));
+  const chip=e.target.closest('.filter-chip');
+  if(!chip)return;
+  document.querySelectorAll('#leadsToolbar .filter-chip').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active');
   renderLeads(chip.dataset.filter);
 });
 
+// FILTER CHIPS — PROPERTIES
+document.getElementById('propsToolbar').addEventListener('click', e => {
+  const chip=e.target.closest('.filter-chip');
+  if(!chip)return;
+  document.querySelectorAll('#propsToolbar .filter-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  renderProperties(chip.dataset.pfilter);
+});
+
+// FILTER — FOLLOW-UP TYPE
 document.querySelectorAll('.fu-type-item').forEach(item => {
   item.addEventListener('click', () => {
-    document.querySelectorAll('.fu-type-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.fu-type-item').forEach(i=>i.classList.remove('active'));
     item.classList.add('active');
     renderFollowUps(item.dataset.type);
   });
@@ -1250,60 +1614,26 @@ document.querySelectorAll('.fu-type-item').forEach(item => {
 // MINI CALENDAR
 // ════════════════════════════════════════════
 function buildMiniCal() {
-  const now = new Date();
-  document.getElementById('calMonth').textContent = now.toLocaleString('default', {month:'long', year:'numeric'});
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-  const today = now.getDate();
-
-  let html = ['S','M','T','W','T','F','S'].map(d => `<div class="mcg-day-name">${d}</div>`).join('');
-  for(let i = 0; i < firstDay; i++) html += '<div></div>';
-  for(let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === today;
-    html += `<div class="mcg-day${isToday?' today':''}">${d}</div>`;
-  }
-  document.getElementById('miniCal').innerHTML = `<div class="mini-cal-grid">${html}</div>`;
+  const now=new Date();
+  document.getElementById('calMonth').textContent=now.toLocaleString('default',{month:'long',year:'numeric'});
+  const firstDay=new Date(now.getFullYear(),now.getMonth(),1).getDay();
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const today=now.getDate();
+  let html=['S','M','T','W','T','F','S'].map(d=>`<div class="mcg-day-name">${d}</div>`).join('');
+  for(let i=0;i<firstDay;i++)html+='<div></div>';
+  for(let d=1;d<=daysInMonth;d++)html+=`<div class="mcg-day${d===today?' today':''}">${d}</div>`;
+  document.getElementById('miniCal').innerHTML=`<div class="mini-cal-grid">${html}</div>`;
 }
 
 // ════════════════════════════════════════════
 // UTILITIES
 // ════════════════════════════════════════════
-function setDbStatus(ok, msg) {
-  const dot = document.getElementById('dbDot');
-  const txt = document.getElementById('dbStatusText');
-  dot.className = 'db-dot ' + (ok ? 'connected' : 'error');
-  txt.textContent = msg;
-}
-
-function updateDate() {
-  const now = new Date();
-  const h = now.getHours();
-  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('dashGreeting').textContent = greet + ' ☀️';
-  document.getElementById('dashDate').textContent = now.toLocaleDateString('en-IN', {
-    weekday:'long', day:'numeric', month:'long', year:'numeric'
-  }) + ' · Real Estate CRM';
-}
-
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-IN', {weekday:'long', day:'2-digit', month:'long'});
-}
-
-function esc(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+function setDbStatus(ok,msg){const dot=document.getElementById('dbDot');const txt=document.getElementById('dbStatusText');dot.className='db-dot '+(ok?'connected':'error');txt.textContent=msg;}
+function updateDate(){const now=new Date();const h=now.getHours();const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('dashGreeting').textContent=greet+' ☀️';document.getElementById('dashDate').textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · Real Estate CRM';}
+function formatDate(dateStr){const d=new Date(dateStr);return d.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long'});}
+function esc(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 let toastTimer;
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  const icon = type === 'error' ? '❌' : type === 'info' ? '💡' : '✅';
-  document.getElementById('toastIcon').textContent = icon;
-  document.getElementById('toastMsg').textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
-}
+function showToast(msg,type='success'){const t=document.getElementById('toast');const icon=type==='error'?'❌':type==='info'?'💡':'✅';document.getElementById('toastIcon').textContent=icon;document.getElementById('toastMsg').textContent=msg;t.className='toast show '+type;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 // ════════════════════════════════════════════
 // LOAD
@@ -1311,12 +1641,7 @@ function showToast(msg, type = 'success') {
 window.addEventListener('load', () => {
   updateDate();
   buildMiniCal();
-  if (window._dbReady && window._db) {
-    setDbStatus(true, 'Connected');
-    _dbConnected = true;
-    loadLeadsFromDB();
-    loadFollowUpsFromDB();
-  }
+  if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();}
 });
 </script>
 </body>
