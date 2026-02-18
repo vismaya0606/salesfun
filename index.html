@@ -360,6 +360,108 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+
+/* ══════════════════════════════════════
+   WHATSAPP / VIP CONTACTS
+══════════════════════════════════════ */
+--wa:#25d366; --wa-dim:rgba(37,211,102,0.12); --wa-glow:rgba(37,211,102,0.22);
+
+.nav-badge.wa{background:var(--wa-dim);color:#25d366;}
+
+/* VIP Contacts view */
+.vip-content{flex:1;display:flex;overflow:hidden;}
+.vip-contacts-panel{width:320px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.vip-panel-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.vip-panel-title{font-size:13px;font-weight:700;color:var(--text);}
+.vip-contacts-list{flex:1;overflow-y:auto;padding:10px;}
+.vip-contact-card{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;transition:all .15s;cursor:pointer;animation:fadeUp .3s ease forwards;opacity:0;}
+.vip-contact-card:hover{border-color:var(--border2);}
+.vip-contact-card:nth-child(1){animation-delay:.05s;}
+.vip-contact-card:nth-child(2){animation-delay:.1s;}
+.vip-contact-card:nth-child(3){animation-delay:.15s;}
+.vcc-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1a6b3a,#25d366);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.vcc-info{flex:1;min-width:0;}
+.vcc-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vcc-phone{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);margin-top:1px;}
+.vcc-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:#25d36620;color:#25d366;margin-top:3px;display:inline-block;}
+.vcc-actions{display:flex;gap:5px;}
+.vcc-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s;}
+.vcc-btn:hover{border-color:var(--border2);color:var(--text);}
+.vcc-btn.wa-btn{background:#25d36615;border-color:#25d36630;color:#25d366;}
+.vcc-btn.wa-btn:hover{background:#25d36625;}
+.vcc-btn.del-btn:hover{background:var(--red-dim);border-color:rgba(224,85,85,.3);color:var(--red);}
+
+/* Broadcast panel */
+.vip-broadcast-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.vip-broadcast-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.vip-bc-title{font-size:14px;font-weight:700;color:var(--text);}
+.vip-bc-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.vip-broadcast-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.bc-template-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.bc-template-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg4);}
+.bc-template-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+.bc-template-wa-icon{width:22px;height:22px;border-radius:6px;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.bc-template-textarea{width:100%;background:transparent;border:none;outline:none;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;resize:vertical;min-height:140px;}
+.bc-vars{display:flex;gap:6px;padding:8px 14px 10px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.bc-var{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(212,168,67,.2);cursor:pointer;transition:all .15s;}
+.bc-var:hover{background:var(--gold-glow);}
+
+.bc-recipient-list{display:flex;flex-direction:column;gap:8px;}
+.bc-recipient-row{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:fadeUp .25s ease forwards;opacity:0;}
+.bc-recipient-row:nth-child(1){animation-delay:.04s;}
+.bc-recipient-row:nth-child(2){animation-delay:.08s;}
+.bc-recipient-row:nth-child(3){animation-delay:.12s;}
+.bc-recipient-row:nth-child(4){animation-delay:.16s;}
+.bc-rec-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a6b3a,#25d366);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.bc-rec-info{flex:1;min-width:0;}
+.bc-rec-name{font-size:13px;font-weight:600;color:var(--text);}
+.bc-rec-phone{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.bc-rec-status{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+.bc-rec-status.sent{background:#25d36615;color:#25d366;border:1px solid #25d36630;}
+.bc-rec-status.pending{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2);}
+.bc-send-btn{height:30px;padding:0 14px;border-radius:7px;border:1px solid #25d36640;background:#25d36618;color:#25d366;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.bc-send-btn:hover{background:#25d36628;transform:translateY(-1px);}
+.bc-send-btn.sent-state{background:rgba(76,175,125,.15);border-color:rgba(76,175,125,.3);color:var(--green);cursor:default;transform:none;}
+
+/* WhatsApp broadcast MODAL (new lead trigger) */
+.wa-modal{background:var(--bg2);border:1px solid rgba(37,211,102,.2);border-radius:14px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.wa-modal-header{padding:16px 20px;border-bottom:1px solid rgba(37,211,102,.15);display:flex;align-items:center;gap:12px;}
+.wa-modal-icon{width:40px;height:40px;background:linear-gradient(135deg,#128C7E,#25D366);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.wa-modal-titles{flex:1;}
+.wa-modal-titles h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--text);}
+.wa-modal-titles p{font-size:12px;color:var(--text3);margin-top:2px;}
+.wa-lead-banner{background:linear-gradient(135deg,rgba(37,211,102,.08),rgba(37,211,102,.04));border:1px solid rgba(37,211,102,.15);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:12px;align-items:center;}
+.wa-lead-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#000;flex-shrink:0;}
+.wa-lead-details{flex:1;}
+.wa-lead-name{font-size:15px;font-weight:700;color:var(--text);}
+.wa-lead-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+.wa-new-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:#25d36620;color:#25d366;border:1px solid #25d36640;flex-shrink:0;}
+.wa-msg-preview{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.wa-msg-preview-header{padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;justify-content:space-between;}
+.wa-msg-edit-btn{font-size:11px;color:var(--gold);cursor:pointer;}
+.wa-msg-edit-btn:hover{text-decoration:underline;}
+.wa-msg-body{padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap;word-break:break-word;}
+.wa-msg-body textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;resize:none;min-height:100px;}
+.wa-contacts-header{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.wa-contacts-count{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#25d36618;color:#25d366;}
+.wa-contact-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;animation:fadeUp .2s ease forwards;opacity:0;}
+.wa-contact-row:nth-child(1){animation-delay:.03s;}
+.wa-contact-row:nth-child(2){animation-delay:.06s;}
+.wa-contact-row:nth-child(3){animation-delay:.09s;}
+.wa-contact-row:nth-child(4){animation-delay:.12s;}
+.wa-contact-row:nth-child(5){animation-delay:.15s;}
+.wc-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1a6b3a,#25d366);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.wc-info{flex:1;min-width:0;}
+.wc-name{font-size:13px;font-weight:600;color:var(--text);}
+.wc-phone{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.wc-send-btn{height:30px;padding:0 14px;border-radius:7px;border:1px solid #25d36640;background:#25d36618;color:#25d366;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.wc-send-btn:hover{background:#25d36628;transform:translateY(-1px);}
+.wc-send-btn.sent{background:rgba(76,175,125,.15);border-color:rgba(76,175,125,.3);color:var(--green);pointer-events:none;}
+.wa-modal-footer{padding:14px 20px;border-top:1px solid rgba(37,211,102,.12);display:flex;gap:8px;justify-content:space-between;align-items:center;}
+.wa-send-all-btn{padding:0 20px;height:36px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;color:#fff;font-family:inherit;font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 4px 14px rgba(37,211,102,.25);}
+.wa-send-all-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,211,102,.35);}
+.wa-sent-count{font-size:12px;color:var(--text3);}
+.wa-sent-count strong{color:#25d366;}
 </style>
 </head>
 <body>
@@ -416,6 +518,11 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Properties
     <span class="nav-badge prop" id="nav-props-count">0</span>
+  </div>
+  <div class="nav-item" id="nav-vipcontacts" onclick="setView('vipcontacts')">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    VIP Broadcast
+    <span class="nav-badge wa" id="nav-vip-count">0</span>
   </div>
   <div class="nav-spacer"></div>
   <div class="nav-agent-card">
@@ -631,6 +738,79 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
           <tr><td colspan="9"><div class="loading"><div class="spinner"></div></div></td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VIP BROADCAST VIEW ═══ -->
+<div class="view" id="view-vipcontacts">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>VIP Broadcast</h1>
+      <p id="vip-subtitle">WhatsApp broadcast list for new lead alerts</p>
+    </div>
+    <div class="page-actions">
+      <button class="t-btn" onclick="openVipAddModal()" style="background:#25d36618;border-color:#25d36640;color:#25d366;">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add VIP Contact
+      </button>
+    </div>
+  </div>
+  <div class="vip-content">
+    <div class="vip-contacts-panel">
+      <div class="vip-panel-header">
+        <div class="vip-panel-title">💚 VIP Contacts</div>
+        <span class="nav-badge wa" id="vip-contacts-count">0</span>
+      </div>
+      <div class="vip-contacts-list" id="vipContactsList">
+        <div class="loading"><div class="spinner"></div>Loading…</div>
+      </div>
+    </div>
+    <div class="vip-broadcast-panel">
+      <div class="vip-broadcast-header">
+        <div>
+          <div class="vip-bc-title">📢 Broadcast to All VIPs</div>
+          <div class="vip-bc-sub" id="vip-bc-sub">Select a lead to broadcast to all VIP contacts</div>
+        </div>
+        <button class="t-btn" onclick="openBroadcastPickLead()" style="background:#25d36618;border-color:#25d36640;color:#25d366;">📣 Broadcast Lead</button>
+      </div>
+      <div class="vip-broadcast-body" id="vipBroadcastBody">
+        <div style="margin-bottom:16px">
+          <div class="bc-template-box">
+            <div class="bc-template-header">
+              <div class="bc-template-wa-icon">💬</div>
+              <span class="bc-template-label">Message Template</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--text3)">Click variables to insert</span>
+            </div>
+            <textarea class="bc-template-textarea" id="bcTemplateText">🔔 *New Lead Alert!*
+
+👤 *Name:* {leadName}
+📞 *Phone:* {phone}
+💰 *Budget:* {budget}
+📍 *Looking in:* {location}
+🏠 *Property:* {propType}
+
+This lead just came in. Please reach out if interested in collaborating!
+
+— SalesFun CRM</textarea>
+            <div class="bc-vars">
+              <span class="bc-var" onclick="insertVar('{leadName')">👤 leadName</span>
+              <span class="bc-var" onclick="insertVar('{phone')">📞 phone</span>
+              <span class="bc-var" onclick="insertVar('{budget')">💰 budget</span>
+              <span class="bc-var" onclick="insertVar('{location')">📍 location</span>
+              <span class="bc-var" onclick="insertVar('{propType')">🏠 propType</span>
+              <span class="bc-var" onclick="insertVar('{source')">🔗 source</span>
+              <span class="bc-var" onclick="insertVar('{stage')">📊 stage</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="wa-contacts-header"><span>Recent Broadcasts</span></div>
+          <div id="recentBroadcasts" style="font-size:12px;color:var(--text3);padding:16px;text-align:center;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            No broadcasts yet. Add VIP contacts and broadcast a lead to get started.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -954,6 +1134,111 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
 </div>
 
+<!-- ════════ ADD VIP CONTACT MODAL ════════ -->
+<div class="modal-overlay" id="vipAddModalOverlay" onclick="if(event.target===this)closeVipAddModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="vipAddModalTitle" style="color:#25d366">Add VIP Contact</h3>
+      <div class="modal-close" onclick="closeVipAddModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editVipId">
+      <div style="background:#25d36610;border:1px solid #25d36625;border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.6">
+        💡 VIP contacts receive WhatsApp alerts whenever a new lead is added to the CRM. Add your top clients, investors, co-agents, or team members here.
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Contact Name *</label><input class="form-input" id="vc-name" placeholder="e.g. Priya Mehta"></div>
+        <div class="form-row"><label class="form-label">WhatsApp Number *</label><input class="form-input" id="vc-phone" placeholder="+91 98800 12345"></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Contact Type</label>
+          <select class="form-select" id="vc-type">
+            <option value="Investor">💼 Investor</option>
+            <option value="Co-Agent">🤝 Co-Agent / Broker</option>
+            <option value="VIP Client">⭐ VIP Client</option>
+            <option value="Team Member">👥 Team Member</option>
+            <option value="Partner">🔗 Business Partner</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">Notes</label><input class="form-input" id="vc-notes" placeholder="e.g. Interested in 2BHK Pune"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeVipAddModal()">Cancel</button>
+      <button class="btn-save" id="saveVipBtn" onclick="saveVipContact()" style="background:#25d366;color:#000">
+        💚 Save Contact
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ WHATSAPP BROADCAST MODAL ════════ -->
+<div class="modal-overlay" id="waBroadcastOverlay" onclick="if(event.target===this)closeWaBroadcast()">
+  <div class="wa-modal">
+    <div class="wa-modal-header">
+      <div class="wa-modal-icon">💬</div>
+      <div class="wa-modal-titles">
+        <h3>WhatsApp Broadcast</h3>
+        <p id="waBcSubtitle">Send new lead details to VIP contacts</p>
+      </div>
+      <div class="modal-close" onclick="closeWaBroadcast()" style="margin-left:auto">✕</div>
+    </div>
+    <div class="modal-body">
+      <!-- Lead Banner -->
+      <div class="wa-lead-banner" id="waBcLeadBanner">
+        <div class="wa-lead-av" id="waBcLeadAv">?</div>
+        <div class="wa-lead-details">
+          <div class="wa-lead-name" id="waBcLeadName">New Lead</div>
+          <div class="wa-lead-meta" id="waBcLeadMeta">Loading lead details…</div>
+        </div>
+        <span class="wa-new-badge">🆕 New Lead</span>
+      </div>
+
+      <!-- Message Preview / Edit -->
+      <div class="wa-msg-preview">
+        <div class="wa-msg-preview-header">
+          <span>Message Preview</span>
+          <span class="wa-msg-edit-btn" onclick="toggleWaMsgEdit()">✏️ Edit</span>
+        </div>
+        <div class="wa-msg-body" id="waMsgBody">Loading message…</div>
+      </div>
+
+      <!-- Contacts -->
+      <div class="wa-contacts-header">
+        <span>Send to VIP Contacts</span>
+        <span class="wa-contacts-count" id="waBcContactsCount">0 contacts</span>
+      </div>
+      <div id="waBcContactsList">
+        <div class="loading"><div class="spinner"></div>Loading contacts…</div>
+      </div>
+    </div>
+    <div class="wa-modal-footer">
+      <span class="wa-sent-count" id="waBcSentCount">0 sent</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel" onclick="closeWaBroadcast()">Skip</button>
+        <button class="wa-send-all-btn" onclick="sendToAllVips()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send to All VIPs
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PICK LEAD FOR BROADCAST ════════ -->
+<div class="modal-overlay" id="pickLeadOverlay" onclick="if(event.target===this)document.getElementById('pickLeadOverlay').classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Select Lead to Broadcast</h3>
+      <div class="modal-close" onclick="document.getElementById('pickLeadOverlay').classList.remove('open')">✕</div>
+    </div>
+    <div class="modal-body" style="padding:12px">
+      <input class="form-input" id="pickLeadSearch" placeholder="Search lead by name…" oninput="renderPickLeadList(this.value)" style="margin-bottom:12px">
+      <div id="pickLeadList" style="max-height:340px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <span id="toastIcon">✨</span>
@@ -989,6 +1274,7 @@ function initApp() {
     loadLeadsFromDB();
     loadFollowUpsFromDB();
     loadPropertiesFromDB();
+    loadVipContactsFromDB();
   } else {
     window.addEventListener('dbReady', () => {
       setDbStatus(true, 'Connected');
@@ -1099,6 +1385,7 @@ function renderLeads(filter) {
       <td><div class="td-actions">
         <button class="row-btn" onclick="openLeadModal('${l.id}')">✏️ Edit</button>
         <button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button>
+        <button class="row-btn" style="background:#25d36615;border-color:#25d36630;color:#25d366" onclick="openWaBroadcast(_leads.find(function(l){return l.id==='${l.id}';})||{name:'${esc(l.name)}',phone:'${esc(l.phone||'')}',budget:'${esc(l.budget||'')}',location:'${esc(l.location||'')}'})" title="Broadcast to VIPs">💬 VIP</button>
         <button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button>
       </div></td>
     </tr>`;
@@ -1335,7 +1622,7 @@ async function saveLead() {
   btn.disabled=true; btn.textContent='Saving…';
   try {
     if(_editingLeadId) { await updateLeadInDB(_editingLeadId,data); showToast('✅ Lead updated!','success'); }
-    else { await addLeadToDB(data); showToast('✅ Lead saved!','success'); }
+    else { await addLeadToDB(data); showToast('✅ Lead saved!','success'); closeLeadModal(); if(_vipContacts.length>0){setTimeout(function(){openWaBroadcast({...data,id:'new'});},400);} return; }
     closeLeadModal();
   } catch(e) { showToast('❌ Error: '+e.message,'error'); }
   finally { btn.disabled=false; btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Lead'; }
@@ -1632,6 +1919,293 @@ function setDbStatus(ok,msg){const dot=document.getElementById('dbDot');const tx
 function updateDate(){const now=new Date();const h=now.getHours();const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('dashGreeting').textContent=greet+' ☀️';document.getElementById('dashDate').textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · Real Estate CRM';}
 function formatDate(dateStr){const d=new Date(dateStr);return d.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long'});}
 function esc(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ════════════════════════════════════════════
+// VIP CONTACTS — FIRESTORE
+// ════════════════════════════════════════════
+let _vipContacts = [];
+let _currentBroadcastLead = null;
+let _waSentSet = new Set();
+let _waMsgEditMode = false;
+let _editingVipId = null;
+
+async function loadVipContactsFromDB() {
+  try {
+    const { collection, onSnapshot, orderBy, query } = window._firebase;
+    const q = query(collection(window._db, 'vipcontacts'), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      _vipContacts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderVipContacts();
+      updateNavCounts();
+    });
+  } catch(e) { showToast('Could not load VIP contacts: ' + e.message, 'error'); }
+}
+
+async function addVipContactToDB(data) {
+  const { collection, addDoc, serverTimestamp } = window._firebase;
+  await addDoc(collection(window._db, 'vipcontacts'), { ...data, createdAt: serverTimestamp() });
+}
+
+async function updateVipContactInDB(id, data) {
+  const { doc, updateDoc } = window._firebase;
+  await updateDoc(doc(window._db, 'vipcontacts', id), data);
+}
+
+async function deleteVipContactFromDB(id) {
+  const { doc, deleteDoc } = window._firebase;
+  await deleteDoc(doc(window._db, 'vipcontacts', id));
+}
+
+function renderVipContacts() {
+  const list = document.getElementById('vipContactsList');
+  const countEl = document.getElementById('vip-contacts-count');
+  const navEl = document.getElementById('nav-vip-count');
+  if (countEl) countEl.textContent = _vipContacts.length;
+  if (navEl) navEl.textContent = _vipContacts.length;
+  const subEl = document.getElementById('vip-subtitle');
+  if (subEl) subEl.textContent = _vipContacts.length + ' VIP contacts in broadcast list';
+
+  if (!list) return;
+  if (_vipContacts.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:30px 16px"><div class="empty-state-icon">💚</div><h3>No VIP contacts yet</h3><p>Add investors, co-agents, or VIP clients to receive WhatsApp alerts.</p><button class="btn-save" style="background:#25d366;color:#000" onclick="openVipAddModal()">+ Add Contact</button></div>';
+    return;
+  }
+  const typeColors = { 'Investor': '#a78bfa', 'Co-Agent': '#6ba3d6', 'VIP Client': '#d4a843', 'Team Member': '#4caf7d', 'Partner': '#e8924a' };
+  list.innerHTML = _vipContacts.map(c => {
+    const initials = c.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    const color = typeColors[c.type] || '#25d366';
+    return '<div class="vip-contact-card">' +
+      '<div class="vcc-avatar" style="background:linear-gradient(135deg,#1a6b3a,' + color + ')">' + initials + '</div>' +
+      '<div class="vcc-info">' +
+        '<div class="vcc-name">' + esc(c.name) + '</div>' +
+        '<div class="vcc-phone">' + esc(c.phone) + '</div>' +
+        '<span class="vcc-tag">' + esc(c.type||'Contact') + '</span>' +
+        (c.notes ? '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(c.notes) + '</div>' : '') +
+      '</div>' +
+      '<div class="vcc-actions">' +
+        '<button class="vcc-btn wa-btn" title="Send WhatsApp" onclick="openWaForContact('' + c.id + '')">💬</button>' +
+        '<button class="vcc-btn" title="Edit" onclick="openVipAddModal('' + c.id + '')">✏️</button>' +
+        '<button class="vcc-btn del-btn" title="Delete" onclick="confirmDeleteVip('' + c.id + '','' + esc(c.name) + '')">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openVipAddModal(vipId) {
+  _editingVipId = vipId || null;
+  document.getElementById('vipAddModalTitle').textContent = vipId ? 'Edit VIP Contact' : 'Add VIP Contact';
+  document.getElementById('vc-name').value = '';
+  document.getElementById('vc-phone').value = '';
+  document.getElementById('vc-notes').value = '';
+  document.getElementById('vc-type').value = 'Investor';
+  if (vipId) {
+    const c = _vipContacts.find(function(x){return x.id === vipId;});
+    if (c) {
+      document.getElementById('vc-name').value = c.name || '';
+      document.getElementById('vc-phone').value = c.phone || '';
+      document.getElementById('vc-notes').value = c.notes || '';
+      document.getElementById('vc-type').value = c.type || 'Investor';
+    }
+  }
+  document.getElementById('vipAddModalOverlay').classList.add('open');
+}
+function closeVipAddModal() {
+  document.getElementById('vipAddModalOverlay').classList.remove('open');
+  _editingVipId = null;
+}
+
+async function saveVipContact() {
+  const name = document.getElementById('vc-name').value.trim();
+  const phone = document.getElementById('vc-phone').value.trim();
+  if (!name || !phone) { showToast('Name and phone required', 'error'); return; }
+  const data = { name, phone, type: document.getElementById('vc-type').value, notes: document.getElementById('vc-notes').value.trim() };
+  const btn = document.getElementById('saveVipBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    if (_editingVipId) { await updateVipContactInDB(_editingVipId, data); showToast('Contact updated!', 'success'); }
+    else { await addVipContactToDB(data); showToast('VIP contact added!', 'success'); }
+    closeVipAddModal();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = '💚 Save Contact'; }
+}
+
+function confirmDeleteVip(id, name) {
+  if (!confirm('Remove "' + name + '" from VIP broadcast list?')) return;
+  deleteVipContactFromDB(id).then(function(){ showToast('Contact removed', 'success'); }).catch(function(e){ showToast('Error: ' + e.message, 'error'); });
+}
+
+function buildWaMessage(lead, templateOverride) {
+  const tmpl = templateOverride || (document.getElementById('bcTemplateText') ? document.getElementById('bcTemplateText').value : '') || '🔔 New Lead: {leadName}, Phone: {phone}, Budget: {budget}';
+  return tmpl
+    .replace(/{leadName}/g, lead.name || '')
+    .replace(/{phone}/g, lead.phone || '')
+    .replace(/{budget}/g, lead.budget || 'Not specified')
+    .replace(/{location}/g, lead.location || 'Not specified')
+    .replace(/{propType}/g, lead.proptype || 'Not specified')
+    .replace(/{source}/g, lead.source || 'Not specified')
+    .replace(/{stage}/g, lead.stage || 'New');
+}
+
+function getWaLink(phone, message) {
+  const cleaned = phone.replace(/[\s\-()]/g, '');
+  return 'https://wa.me/' + cleaned + '?text=' + encodeURIComponent(message);
+}
+
+function openWaBroadcast(lead) {
+  _currentBroadcastLead = lead;
+  _waSentSet = new Set();
+  _waMsgEditMode = false;
+  const initials = lead.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+  document.getElementById('waBcLeadAv').textContent = initials;
+  document.getElementById('waBcLeadName').textContent = lead.name;
+  document.getElementById('waBcLeadMeta').textContent = [lead.budget, lead.location, lead.proptype].filter(Boolean).join(' · ') || 'No extra details';
+  document.getElementById('waBcSubtitle').textContent = 'Notify ' + _vipContacts.length + ' VIP contact' + (_vipContacts.length !== 1 ? 's' : '');
+  document.getElementById('waBcContactsCount').textContent = _vipContacts.length + ' contacts';
+  renderWaMsgPreview();
+  renderWaBcContacts();
+  document.getElementById('waBcSentCount').innerHTML = '0 sent';
+  document.getElementById('waBroadcastOverlay').classList.add('open');
+}
+
+function renderWaMsgPreview() {
+  if (!_currentBroadcastLead) return;
+  const msg = buildWaMessage(_currentBroadcastLead);
+  const bodyEl = document.getElementById('waMsgBody');
+  if (!bodyEl) return;
+  if (_waMsgEditMode) {
+    bodyEl.innerHTML = '<textarea id="waMsgEditArea" style="width:100%;background:transparent;border:none;outline:none;color:var(--text2);font-family:DM Sans,sans-serif;font-size:13px;line-height:1.7;resize:none;min-height:120px">' + esc(msg) + '</textarea>';
+  } else {
+    bodyEl.textContent = msg;
+  }
+}
+
+function toggleWaMsgEdit() {
+  _waMsgEditMode = !_waMsgEditMode;
+  renderWaMsgPreview();
+}
+
+function getCurrentWaMessage() {
+  if (_waMsgEditMode) {
+    const el = document.getElementById('waMsgEditArea');
+    return el ? el.value : buildWaMessage(_currentBroadcastLead);
+  }
+  return buildWaMessage(_currentBroadcastLead);
+}
+
+function renderWaBcContacts() {
+  const container = document.getElementById('waBcContactsList');
+  if (!container) return;
+  if (_vipContacts.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:var(--text3)">No VIP contacts yet. <span style="color:var(--gold);cursor:pointer" onclick="closeWaBroadcast();setView('vipcontacts');openVipAddModal()">Add one →</span></div>';
+    return;
+  }
+  container.innerHTML = _vipContacts.map(function(c, i) {
+    const initials = c.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    const sent = _waSentSet.has(c.id);
+    return '<div class="wa-contact-row" style="animation-delay:' + (i*0.04) + 's" id="wc-row-' + c.id + '">' +
+      '<div class="wc-av">' + initials + '</div>' +
+      '<div class="wc-info">' +
+        '<div class="wc-name">' + esc(c.name) + ' <span style="font-size:10px;color:var(--text3);font-weight:400">· ' + esc(c.type||'Contact') + '</span></div>' +
+        '<div class="wc-phone">' + esc(c.phone) + '</div>' +
+      '</div>' +
+      '<button class="wc-send-btn ' + (sent ? 'sent' : '') + '" id="wc-btn-' + c.id + '" onclick="sendToOneVip('' + c.id + '')">' +
+        (sent ? '✓ Sent' : '💬 Send') +
+      '</button>' +
+    '</div>';
+  }).join('');
+}
+
+function sendToOneVip(contactId) {
+  if (!_currentBroadcastLead) return;
+  const contact = _vipContacts.find(function(c){return c.id === contactId;});
+  if (!contact) return;
+  const msg = getCurrentWaMessage();
+  window.open(getWaLink(contact.phone, msg), '_blank');
+  _waSentSet.add(contactId);
+  const btn = document.getElementById('wc-btn-' + contactId);
+  if (btn) { btn.textContent = '✓ Sent'; btn.classList.add('sent'); }
+  updateWaSentCount();
+}
+
+function sendToAllVips() {
+  if (!_currentBroadcastLead || _vipContacts.length === 0) { showToast('No VIP contacts', 'error'); return; }
+  const msg = getCurrentWaMessage();
+  var delay = 0;
+  _vipContacts.forEach(function(c) {
+    setTimeout(function() {
+      window.open(getWaLink(c.phone, msg), '_blank');
+      _waSentSet.add(c.id);
+      const btn = document.getElementById('wc-btn-' + c.id);
+      if (btn) { btn.textContent = '✓ Sent'; btn.classList.add('sent'); }
+      updateWaSentCount();
+    }, delay);
+    delay += 600;
+  });
+  showToast('💬 Sending to ' + _vipContacts.length + ' VIP contacts!', 'success');
+}
+
+function updateWaSentCount() {
+  const el = document.getElementById('waBcSentCount');
+  if (el) el.innerHTML = '<strong>' + _waSentSet.size + '</strong> / ' + _vipContacts.length + ' sent';
+}
+
+function closeWaBroadcast() {
+  document.getElementById('waBroadcastOverlay').classList.remove('open');
+  _currentBroadcastLead = null;
+}
+
+function openWaForContact(contactId) {
+  const contact = _vipContacts.find(function(c){return c.id === contactId;});
+  if (!contact) return;
+  if (_leads.length === 0) { showToast('No leads yet to share', 'error'); return; }
+  const lead = _leads[0];
+  window.open(getWaLink(contact.phone, buildWaMessage(lead)), '_blank');
+  showToast('Opening WhatsApp for ' + contact.name, 'success');
+}
+
+function openBroadcastPickLead() {
+  renderPickLeadList('');
+  document.getElementById('pickLeadSearch').value = '';
+  document.getElementById('pickLeadOverlay').classList.add('open');
+}
+
+function renderPickLeadList(search) {
+  const list = document.getElementById('pickLeadList');
+  if (!list) return;
+  var items = _leads;
+  if (search) items = items.filter(function(l){return (l.name||'').toLowerCase().indexOf(search.toLowerCase()) >= 0;});
+  if (items.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">No leads found</div>'; return; }
+  var pillMap = {'New':'pill-new','Contacted':'pill-contacted','Site Visit':'pill-site','Negotiation':'pill-nego','Closed':'pill-closed','Lost':'pill-lost'};
+  list.innerHTML = items.map(function(l) {
+    const initials = l.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    return '<div onclick="selectLeadForBroadcast('' + l.id + '')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--border);margin-bottom:6px;background:var(--bg3);transition:all .15s" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0">' + initials + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:13px;font-weight:600;color:var(--text)">' + esc(l.name) + '</div>' +
+        '<div style="font-size:11px;color:var(--text3)">' + esc(l.budget||'') + (l.location ? ' · '+l.location : '') + '</div>' +
+      '</div>' +
+      '<span class="status-pill ' + (pillMap[l.stage]||'pill-new') + '">' + l.stage + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function selectLeadForBroadcast(leadId) {
+  const lead = _leads.find(function(l){return l.id === leadId;});
+  if (!lead) return;
+  document.getElementById('pickLeadOverlay').classList.remove('open');
+  openWaBroadcast(lead);
+}
+
+function insertVar(varStr) {
+  const ta = document.getElementById('bcTemplateText');
+  if (!ta) return;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  ta.value = ta.value.slice(0, start) + varStr + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + varStr.length;
+  ta.focus();
+}
+
 let toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');const icon=type==='error'?'❌':type==='info'?'💡':'✅';document.getElementById('toastIcon').textContent=icon;document.getElementById('toastMsg').textContent=msg;t.className='toast show '+type;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
@@ -1641,7 +2215,7 @@ function showToast(msg,type='success'){const t=document.getElementById('toast');
 window.addEventListener('load', () => {
   updateDate();
   buildMiniCal();
-  if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();}
+  if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVipContactsFromDB();}
 });
 </script>
 </body>
