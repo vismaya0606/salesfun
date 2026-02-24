@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SalesFun — Property Portal</title>
+<title>SalesFun — Property &amp; Vehicle Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <script type="module">
@@ -24,7 +24,7 @@
   window._db = db;
   window._firebase = { collection, getDocs, query, where, orderBy, onSnapshot };
 
-  document.addEventListener('DOMContentLoaded', () => { loadPublishedProperties(); });
+  document.addEventListener('DOMContentLoaded', () => { loadPublishedProperties(); loadPublishedVehicles(); });
 </script>
 
 <style>
@@ -349,6 +349,126 @@ body::before {
   .info-grid { grid-template-columns: repeat(2,1fr); }
   .hero-stats { gap: 24px; }
 }
+
+/* ====== VEHICLE SECTION ====== */
+.section-tabs {
+  display: flex; gap: 0; background: var(--bg2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 70px; z-index: 95;
+}
+.section-tab {
+  flex: 1; padding: 14px 20px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer;
+  border-bottom: 3px solid transparent; transition: all .2s;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.section-tab:hover { color: var(--gold); }
+.section-tab.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--gold-dim); }
+.section-tab .tab-icon { font-size: 16px; margin-right: 6px; }
+.section-tab .tab-count {
+  background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,168,76,.2);
+  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; margin-left: 6px;
+}
+
+.section-panel { display: none; }
+.section-panel.active { display: block; }
+
+/* Vehicle Hero */
+.vehicle-hero {
+  text-align: center; padding: 28px 40px 20px;
+  background: linear-gradient(180deg, rgba(10,9,8,0) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+}
+.vehicle-hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 8px;
+}
+.vehicle-hero h2 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; margin-bottom: 6px; }
+.vehicle-hero h2 em { color: var(--orange); font-style: italic; }
+.vehicle-hero p { color: var(--text2); font-size: 12px; max-width: 480px; margin: 0 auto 16px; }
+.vehicle-hero-stats { display: flex; gap: 32px; justify-content: center; align-items: center; }
+.vehicle-hero-stats .hero-divider { width: 1px; height: 28px; background: var(--border); }
+
+/* Vehicle Filters */
+.vehicle-filters-bar {
+  position: sticky; top: 110px; z-index: 90;
+  background: rgba(10,9,8,0.92); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 40px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.veh-type-filter {
+  display: flex; gap: 6px; align-items: center; margin-left: 8px;
+}
+.veh-type-chip {
+  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  background: transparent; transition: all .2s; letter-spacing: .04em;
+}
+.veh-type-chip:hover { border-color: var(--orange); color: var(--orange); }
+.veh-type-chip.active { background: var(--orange-dim); color: var(--orange); border-color: rgba(224,136,74,.4); }
+
+/* Vehicle Cards */
+.veh-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; cursor: pointer; transition: all .25s; position: relative;
+  animation: fadeUp .5s both;
+}
+.veh-card:hover { border-color: var(--orange); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(224,136,74,.12); }
+
+.veh-thumb {
+  height: 160px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--bg3), var(--bg4));
+}
+.veh-thumb-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 40%, var(--orange), transparent 65%);
+  opacity: .15;
+}
+.veh-thumb-icon {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 72px; filter: drop-shadow(0 4px 12px rgba(0,0,0,.4));
+}
+.veh-thumb-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10,9,8,.8) 100%);
+}
+.veh-thumb-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
+.veh-thumb-price {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(10,9,8,.85); border: 1px solid var(--border2);
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 14px; font-weight: 700; color: var(--orange);
+}
+.veh-thumb-price small { display: block; font-size: 9px; color: var(--text3); font-weight: 400; }
+
+.veh-body { padding: 14px 16px 16px; }
+.veh-title {
+  font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700;
+  margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.veh-sub { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
+.veh-metas { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.veh-meta {
+  font-size: 10px; color: var(--text2); background: var(--bg3);
+  border: 1px solid var(--border); border-radius: 5px; padding: 3px 7px;
+}
+.veh-footer { display: flex; gap: 8px; }
+.pill-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(224,136,74,.25); }
+
+/* Vehicle Inquiry Modal specifics */
+.veh-role-card {
+  flex: 1; padding: 14px 12px; border: 1px solid var(--border2); border-radius: 10px;
+  cursor: pointer; text-align: center; transition: all .2s; background: var(--bg3);
+}
+.veh-role-card:hover { border-color: var(--orange); }
+.veh-role-card.active { border-color: var(--orange); background: var(--orange-dim); }
+
+@media (max-width: 768px) {
+  .section-tabs { top: 56px; }
+  .vehicle-filters-bar { top: 106px; padding: 10px 16px; }
+  .vehicle-hero { padding: 20px 16px 14px; }
+  .vehicle-hero h2 { font-size: 26px; }
+}
 </style>
 </head>
 <body>
@@ -363,11 +483,24 @@ body::before {
   <span class="logo-tagline" onclick="openInquiryModal()" style="cursor:pointer;" title="Post your property for free">Buy or Sell? Advertise for <span class="logo-tagline-free">FREE</span> ✨</span>
 </div>
   <div class="header-right">
-    <div class="live-badge"><div class="live-dot"></div>Live Listings</div>
-    <a href="#listings" class="header-cta">Browse Properties →</a>
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
+    <span class="header-cta" onclick="openInquiryModal()" style="cursor:pointer;">List for FREE ✨</span>
   </div>
 </header>
 
+<!-- SECTION TABS -->
+<div class="section-tabs" id="sectionTabs">
+  <div class="section-tab active" onclick="switchSection('properties')" id="tab-properties">
+    <span class="tab-icon">🏘️</span>Properties
+    <span class="tab-count" id="prop-tab-count">—</span>
+  </div>
+  <div class="section-tab" onclick="switchSection('vehicles')" id="tab-vehicles">
+    <span class="tab-icon">🚗</span>Bikes &amp; Cars
+    <span class="tab-count" id="veh-tab-count">—</span>
+  </div>
+</div>
+
+<div class="section-panel active" id="panel-properties">
 <!-- HERO -->
 <section class="hero">
   <div class="hero-eyebrow">🏆 Premium Real Estate Listings</div>
@@ -412,6 +545,57 @@ body::before {
     <div class="loading-card"><div class="loading-thumb"></div><div class="loading-body"><div class="loading-line" style="width:70%"></div><div class="loading-line" style="width:45%"></div><div class="loading-line" style="width:55%"></div></div></div>
   </div>
 </main>
+</div>
+
+<!-- VEHICLE SECTION PANEL -->
+<div class="section-panel" id="panel-vehicles">
+
+  <!-- VEHICLE HERO -->
+  <section class="vehicle-hero">
+    <div class="vehicle-hero-eyebrow">🏆 Premium Pre-Owned Vehicles</div>
+    <h2>Find Your <em>Perfect</em> Ride</h2>
+    <p>Handpicked bikes and cars — transparent pricing, verified listings, updated live.</p>
+    <div class="vehicle-hero-stats">
+      <div><div class="hero-stat-val" id="veh-hero-avail">—</div><div class="hero-stat-lbl">Available Now</div></div>
+      <div class="hero-divider"></div>
+      <div><div class="hero-stat-val" id="veh-hero-total">—</div><div class="hero-stat-lbl">Total Listings</div></div>
+      <div class="hero-divider"></div>
+      <div><div class="hero-stat-val" id="veh-hero-types">—</div><div class="hero-stat-lbl">Vehicle Types</div></div>
+    </div>
+  </section>
+
+  <!-- VEHICLE FILTERS -->
+  <div class="vehicle-filters-bar" id="vehicle-listings">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search by brand, model, location…" id="vehSearchInput" oninput="filterVehicles()">
+    </div>
+    <div class="veh-type-filter">
+      <div class="veh-type-chip active" data-vt="all" onclick="setVehTypeFilter(this,'all')">All</div>
+      <div class="veh-type-chip" data-vt="Bike" onclick="setVehTypeFilter(this,'Bike')">🏍️ Bikes</div>
+      <div class="veh-type-chip" data-vt="Car" onclick="setVehTypeFilter(this,'Car')">🚗 Cars</div>
+    </div>
+    <div class="filter-chip active" style="margin-left:8px;" data-vf="all" onclick="setVehFilter(this,'all')">All Status</div>
+    <div class="filter-chip" data-vf="Available" onclick="setVehFilter(this,'Available')">🟢 Available</div>
+    <div class="filter-chip" data-vf="Negotiation" onclick="setVehFilter(this,'Negotiation')">🟡 Negotiation</div>
+    <div class="filter-chip" data-vf="Sold" onclick="setVehFilter(this,'Sold')">🔴 Sold</div>
+    <select class="sort-select" id="vehSortSelect" onchange="filterVehicles()">
+      <option value="new">Newest First</option>
+      <option value="price-asc">Price: Low → High</option>
+      <option value="price-desc">Price: High → Low</option>
+      <option value="alpha">A → Z</option>
+    </select>
+    <span class="result-count" id="vehResultCount">Loading…</span>
+  </div>
+
+  <!-- VEHICLE GRID -->
+  <main class="prop-grid" id="vehGrid" style="min-height:300px;">
+    <div class="loading-card"><div class="loading-thumb"></div><div class="loading-body"><div class="loading-line" style="width:70%"></div><div class="loading-line" style="width:45%"></div><div class="loading-line" style="width:55%"></div></div></div>
+    <div class="loading-card"><div class="loading-thumb"></div><div class="loading-body"><div class="loading-line" style="width:70%"></div><div class="loading-line" style="width:45%"></div><div class="loading-line" style="width:55%"></div></div></div>
+    <div class="loading-card"><div class="loading-thumb"></div><div class="loading-body"><div class="loading-line" style="width:70%"></div><div class="loading-line" style="width:45%"></div><div class="loading-line" style="width:55%"></div></div></div>
+  </main>
+
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -838,6 +1022,462 @@ async function submitInquiry() {
     status.textContent = '❌ Submission failed. Please try again or contact us directly.';
   }
 }
+</script>
+
+
+<!-- VEHICLE DETAIL MODAL -->
+<div class="modal-overlay" id="vehModal" onclick="if(event.target===this)closeVehModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Vehicle Details</div>
+        <div id="vehModalTitle" style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">—</div>
+      </div>
+      <div class="modal-close" onclick="closeVehModal()">✕</div>
+    </div>
+    <div class="modal-body" id="vehModalBody"></div>
+  </div>
+</div>
+
+<!-- VEHICLE INQUIRY MODAL -->
+<div class="modal-overlay" id="vehInquiryModal" onclick="if(event.target===this)closeVehInquiryModal()">
+  <div class="modal" style="width:720px;">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Free Vehicle Listing</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">🚗 List Your Bike or Car for FREE</div>
+      </div>
+      <div class="modal-close" onclick="closeVehInquiryModal()">✕</div>
+    </div>
+    <div class="modal-body">
+
+      <!-- ROLE SELECTOR -->
+      <div style="margin-bottom:20px;">
+        <div class="section-label">👤 I am a…</div>
+        <div style="display:flex;gap:10px;">
+          <div class="veh-role-card active" id="vrole-seller" onclick="selectVehRole('seller')">
+            <div style="font-size:22px;margin-bottom:6px;">🚗</div>
+            <div style="font-weight:700;font-size:13px;color:var(--text)">Seller / Owner</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:3px;">I want to sell my vehicle</div>
+          </div>
+          <div class="veh-role-card" id="vrole-buyer" onclick="selectVehRole('buyer')">
+            <div style="font-size:22px;margin-bottom:6px;">🔍</div>
+            <div style="font-weight:700;font-size:13px;color:var(--text)">Buyer</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:3px;">I'm looking to buy a vehicle</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VEHICLE FORM -->
+      <div id="vehInquiryForm">
+        <div class="section-label" style="margin-bottom:12px;">🚗 Vehicle Details</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Vehicle Type *</label>
+            <select class="form-input" id="vf-type" onchange="updateVehicleModelOptions()">
+              <option value="">Select type…</option>
+              <option value="Bike">🏍️ Bike / Motorcycle</option>
+              <option value="Car">🚗 Car / SUV</option>
+              <option value="Scooter">🛵 Scooter / Moped</option>
+              <option value="Auto">🛺 Auto Rickshaw</option>
+              <option value="Truck">🚛 Truck / Commercial</option>
+              <option value="Other">🚐 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Brand / Make *</label>
+            <input class="form-input" id="vf-brand" type="text" placeholder="e.g. Royal Enfield, Honda, Maruti">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Model *</label>
+            <input class="form-input" id="vf-model" type="text" placeholder="e.g. Bullet 350, City, Swift">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year *</label>
+            <select class="form-input" id="vf-year">
+              <option value="">Select year…</option>
+              <!-- Year options populated by JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fuel Type</label>
+            <select class="form-input" id="vf-fuel">
+              <option value="">Select…</option>
+              <option>Petrol</option>
+              <option>Diesel</option>
+              <option>Electric</option>
+              <option>CNG</option>
+              <option>Hybrid</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">KM Driven</label>
+            <input class="form-input" id="vf-km" type="text" placeholder="e.g. 25,000 km">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Asking Price *</label>
+            <input class="form-input" id="vf-price" type="text" placeholder="e.g. ₹85,000 or ₹8.5 Lakh">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location *</label>
+            <input class="form-input" id="vf-location" type="text" placeholder="e.g. Nashik, Maharashtra">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            <select class="form-input" id="vf-condition">
+              <option value="">Select…</option>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Repair</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <input class="form-input" id="vf-color" type="text" placeholder="e.g. Red, Black, White">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Insurance</label>
+            <select class="form-input" id="vf-insurance">
+              <option value="">Select…</option>
+              <option>Valid</option>
+              <option>Expired</option>
+              <option>N/A</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Negotiable</label>
+            <select class="form-input" id="vf-negotiable">
+              <option value="">Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label class="form-label">Additional Details / Description</label>
+          <textarea class="form-input" id="vf-desc" rows="3" placeholder="Modifications, service history, reason for selling, any other details…"></textarea>
+        </div>
+
+        <div class="section-label" style="margin: 16px 0 10px;">👤 Your Contact Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Your Name *</label>
+            <input class="form-input" id="vf-name" type="text" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone / WhatsApp *</label>
+            <input class="form-input" id="vf-phone" type="tel" placeholder="+91 98765 43210">
+          </div>
+        </div>
+
+        <div id="vf-status" style="font-size:12px;min-height:18px;margin-top:4px;"></div>
+
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="contact-btn gold" style="flex:1;font-size:13px;padding:12px;" onclick="submitVehicleInquiry()">
+            Submit Free Listing 🚗
+          </button>
+          <button class="card-btn" style="padding:12px 20px;font-size:12px;" onclick="closeVehInquiryModal()">Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// VEHICLE SECTION LOGIC
+// ============================================================
+let _allVehicles = [];
+let _currentVehFilter = 'all';
+let _currentVehTypeFilter = 'all';
+let _vehInquiryRole = 'seller';
+
+function switchSection(section) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + section).classList.add('active');
+  document.getElementById('tab-' + section).classList.add('active');
+  // Update the free listing button context
+  const cta = document.querySelector('.header-cta');
+  if (section === 'vehicles') {
+    cta.onclick = () => openVehInquiryModal();
+    cta.textContent = 'List Vehicle FREE ✨';
+  } else {
+    cta.onclick = () => openInquiryModal();
+    cta.textContent = 'List for FREE ✨';
+  }
+}
+
+// ---- LOAD VEHICLES FROM FIREBASE ----
+function loadPublishedVehicles() {
+  const { collection, onSnapshot, orderBy, query, where } = window._firebase;
+  const q = query(collection(window._db, 'vehicles'), where('published', '==', true), orderBy('createdAt', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    _allVehicles = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateVehHeroStats(); filterVehicles();
+  }, (err) => {
+    const qAll = query(collection(window._db, 'vehicles'), orderBy('createdAt', 'desc'));
+    onSnapshot(qAll, (snapshot) => {
+      _allVehicles = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(v => v.published === true);
+      updateVehHeroStats(); filterVehicles();
+    });
+  });
+}
+
+function updateVehHeroStats() {
+  const avail = _allVehicles.filter(v => v.status === 'Available').length;
+  const types = [...new Set(_allVehicles.map(v => v.vehicleType).filter(Boolean))].length;
+  document.getElementById('veh-hero-avail').textContent = avail;
+  document.getElementById('veh-hero-total').textContent = _allVehicles.length;
+  document.getElementById('veh-hero-types').textContent = types;
+  document.getElementById('veh-tab-count').textContent = _allVehicles.length;
+}
+
+function setVehTypeFilter(el, val) {
+  document.querySelectorAll('.veh-type-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  _currentVehTypeFilter = val;
+  filterVehicles();
+}
+
+function setVehFilter(el, val) {
+  // Only status filter chips in vehicle bar (not type chips)
+  el.closest('.vehicle-filters-bar').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  _currentVehFilter = val;
+  filterVehicles();
+}
+
+function filterVehicles() {
+  const q = document.getElementById('vehSearchInput').value.toLowerCase();
+  const sort = document.getElementById('vehSortSelect').value;
+  let list = _allVehicles;
+  if (_currentVehTypeFilter !== 'all') list = list.filter(v => v.vehicleType === _currentVehTypeFilter);
+  if (_currentVehFilter !== 'all') list = list.filter(v => v.status === _currentVehFilter);
+  if (q) list = list.filter(v =>
+    (v.brand||'').toLowerCase().includes(q) || (v.model||'').toLowerCase().includes(q) ||
+    (v.location||'').toLowerCase().includes(q) || (v.price||'').toLowerCase().includes(q) ||
+    (v.title||'').toLowerCase().includes(q)
+  );
+  if (sort === 'alpha') list = [...list].sort((a,b) => ((a.brand||'')+(a.model||'')).localeCompare((b.brand||'')+(b.model||'')));
+  else if (sort === 'price-asc') list = [...list].sort((a,b) => parsePriceNum(a.price) - parsePriceNum(b.price));
+  else if (sort === 'price-desc') list = [...list].sort((a,b) => parsePriceNum(b.price) - parsePriceNum(a.price));
+  document.getElementById('vehResultCount').textContent = `${list.length} listing${list.length!==1?'s':''}`;
+  renderVehGrid(list);
+}
+
+function getVehIcon(type, brand) {
+  const t = (type||'').toLowerCase();
+  const b = (brand||'').toLowerCase();
+  if (t === 'bike' || t.includes('motor')) {
+    if (b.includes('royal') || b.includes('enfield')) return '🏍️';
+    if (b.includes('ktm') || b.includes('kawasaki') || b.includes('yamaha r')) return '🏎️';
+    return '🏍️';
+  }
+  if (t === 'scooter') return '🛵';
+  if (t === 'auto') return '🛺';
+  if (t === 'truck') return '🚛';
+  if (t === 'car') {
+    if (b.includes('bmw') || b.includes('mercedes') || b.includes('audi') || b.includes('porsche')) return '🚘';
+    if (b.includes('tesla')) return '⚡';
+    return '🚗';
+  }
+  return '🚗';
+}
+
+function renderVehCard(v, i) {
+  const icon = getVehIcon(v.vehicleType, v.brand);
+  const pillCls = getPillClass(v.status);
+  const title = esc(v.brand ? v.brand + ' ' + (v.model||'') : v.title||'Vehicle');
+  const sub = [v.year, v.fuelType, v.condition].filter(Boolean).join(' · ');
+  return `<div class="veh-card" style="animation-delay:${i*0.06}s" onclick="openVehModal('${v.id}')">
+    <div class="veh-thumb">
+      <div class="veh-thumb-bg"></div>
+      <div class="veh-thumb-icon">${icon}</div>
+      <div class="veh-thumb-overlay"></div>
+      <div class="veh-thumb-badges">
+        <span class="pill ${pillCls}">${esc(v.status||'Available')}</span>
+        ${v.vehicleType?`<span class="pill pill-orange">${esc(v.vehicleType)}</span>`:''}
+      </div>
+      <div class="veh-thumb-price">${esc(v.price||'Price on request')}</div>
+    </div>
+    <div class="veh-body">
+      <div class="veh-title" title="${title}">${title}</div>
+      ${sub ? `<div class="veh-sub">${esc(sub)}</div>` : ''}
+      <div class="veh-metas">
+        ${v.kmDriven?`<div class="veh-meta">🛣️ ${esc(v.kmDriven)}</div>`:''}
+        ${v.color?`<div class="veh-meta">🎨 ${esc(v.color)}</div>`:''}
+        ${v.insurance?`<div class="veh-meta">📋 Insurance: ${esc(v.insurance)}</div>`:''}
+        ${v.location?`<div class="veh-meta">📍 ${esc(v.location)}</div>`:''}
+        ${v.negotiable==='Yes'?`<div class="veh-meta" style="color:var(--green)">✓ Negotiable</div>`:''}
+      </div>
+      <div class="veh-footer">
+        <button class="card-btn primary" style="background:var(--orange-dim);color:var(--orange);border-color:rgba(224,136,74,.3);" onclick="event.stopPropagation();openVehModal('${v.id}')">View Details</button>
+        <button class="card-btn" onclick="event.stopPropagation();contactAgent('${esc(v.supplierPhone||'')}','${title}')">📞 Enquire</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderVehGrid(list) {
+  const grid = document.getElementById('vehGrid');
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🚗</div><h3>No vehicles found</h3><p>Try adjusting your filters or check back soon — new listings added regularly.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((v, i) => renderVehCard(v, i)).join('');
+}
+
+// ---- VEHICLE DETAIL MODAL ----
+function openVehModal(id) {
+  const v = _allVehicles.find(x => x.id === id);
+  if (!v) return;
+  const icon = getVehIcon(v.vehicleType, v.brand);
+  const pillCls = getPillClass(v.status);
+  const title = (v.brand ? v.brand + ' ' + (v.model||'') : v.title||'Vehicle');
+  document.getElementById('vehModalTitle').textContent = title;
+  document.getElementById('vehModalBody').innerHTML = `
+    <div class="m-hero">
+      <div class="m-icon">${icon}</div>
+      <div class="m-meta">
+        <div class="m-badges">
+          <span class="pill ${pillCls}">${esc(v.status||'Available')}</span>
+          ${v.vehicleType?`<span class="pill pill-orange">${esc(v.vehicleType)}</span>`:''}
+        </div>
+        <div class="m-title">${esc(title)}</div>
+        <div class="m-loc">📍 ${esc(v.location||'—')}</div>
+        <div class="m-price" style="color:var(--orange)">${esc(v.price||'Price on request')}</div>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Brand</div><div class="info-value">${esc(v.brand||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Model</div><div class="info-value">${esc(v.model||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Year</div><div class="info-value">${esc(v.year||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Fuel Type</div><div class="info-value">${esc(v.fuelType||'—')}</div></div>
+      <div class="info-item"><div class="info-label">KM Driven</div><div class="info-value">${esc(v.kmDriven||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Condition</div><div class="info-value">${esc(v.condition||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Color</div><div class="info-value">${esc(v.color||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Insurance</div><div class="info-value">${esc(v.insurance||'—')}</div></div>
+      <div class="info-item"><div class="info-label">Negotiable</div><div class="info-value" style="${v.negotiable==='Yes'?'color:var(--green)':''}">${esc(v.negotiable||'—')}</div></div>
+    </div>
+    ${v.description?`<div class="section-label">📋 Description</div><div class="text-block">${esc(v.description)}</div>`:''}
+    <div class="contact-box">
+      <h4>🤝 Interested in this vehicle?</h4>
+      <div class="contact-btns">
+        ${v.supplierPhone?`<a class="contact-btn call" href="tel:${esc(v.supplierPhone)}">📞 Call Seller</a><a class="contact-btn wa" href="https://wa.me/${v.supplierPhone.replace(/[^0-9]/g,'')}?text=Hi, I'm interested in: ${encodeURIComponent(title)}" target="_blank">💬 WhatsApp</a>`:`<span style="font-size:12px;color:var(--text3)">Contact info available on request.</span>`}
+        <button class="contact-btn gold" onclick="showToastMsg('✅ Enquiry sent! Seller will contact you soon.')">Send Enquiry ✉️</button>
+      </div>
+    </div>`;
+  document.getElementById('vehModal').classList.add('open');
+}
+function closeVehModal() { document.getElementById('vehModal').classList.remove('open'); }
+
+// ---- VEHICLE INQUIRY MODAL ----
+function openVehInquiryModal() {
+  // Pre-populate year options via JS (since template literal won't work in static HTML)
+  const yearSel = document.getElementById('vf-year');
+  if (yearSel.options.length <= 1) {
+    for (let y = 2025; y >= 2005; y--) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      yearSel.appendChild(opt);
+    }
+  }
+  document.getElementById('vehInquiryModal').classList.add('open');
+}
+function closeVehInquiryModal() { document.getElementById('vehInquiryModal').classList.remove('open'); }
+
+function selectVehRole(role) {
+  _vehInquiryRole = role;
+  document.querySelectorAll('.veh-role-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('vrole-' + role).classList.add('active');
+}
+
+async function submitVehicleInquiry() {
+  const brand    = document.getElementById('vf-brand').value.trim();
+  const model    = document.getElementById('vf-model').value.trim();
+  const type     = document.getElementById('vf-type').value;
+  const location = document.getElementById('vf-location').value.trim();
+  const name     = document.getElementById('vf-name').value.trim();
+  const phone    = document.getElementById('vf-phone').value.trim();
+  const price    = document.getElementById('vf-price').value.trim();
+  const status   = document.getElementById('vf-status');
+
+  if (!brand || !type || !location || !name || !phone || !price) {
+    status.style.color = '#d95050';
+    status.textContent = '⚠️ Please fill in all required fields (*)';
+    return;
+  }
+
+  status.style.color = 'var(--text3)';
+  status.textContent = '⏳ Submitting…';
+
+  try {
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    const docData = {
+      vehicleType:   type,
+      brand,
+      model:         document.getElementById('vf-model').value.trim(),
+      year:          document.getElementById('vf-year').value,
+      fuelType:      document.getElementById('vf-fuel').value,
+      kmDriven:      document.getElementById('vf-km').value.trim(),
+      price,
+      location,
+      condition:     document.getElementById('vf-condition').value,
+      color:         document.getElementById('vf-color').value.trim(),
+      insurance:     document.getElementById('vf-insurance').value,
+      negotiable:    document.getElementById('vf-negotiable').value,
+      description:   document.getElementById('vf-desc').value.trim(),
+      title:         brand + (model ? ' ' + model : ''),
+      supplierName:  name,
+      supplierPhone: phone,
+      role:          _vehInquiryRole,
+      status:        'Available',
+      published:     false,
+      source:        'portal-vehicle-inquiry',
+      createdAt:     serverTimestamp(),
+    };
+
+    await addDoc(collection(window._db, 'vehicles'), docData);
+
+    status.style.color = 'var(--green)';
+    status.textContent = '✅ Listing submitted! Our team will review and publish it shortly.';
+
+    ['vf-type','vf-brand','vf-model','vf-year','vf-fuel','vf-km','vf-price','vf-location',
+     'vf-condition','vf-color','vf-insurance','vf-negotiable','vf-name','vf-phone','vf-desc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+
+    setTimeout(() => {
+      closeVehInquiryModal();
+      showToastMsg('🎉 Vehicle listing submitted for review!');
+    }, 2500);
+
+  } catch(e) {
+    console.error(e);
+    status.style.color = '#d95050';
+    status.textContent = '❌ Error submitting. Please try again.';
+  }
+}
+
+// Update prop-tab-count when properties load
+// This is called from filterProperties via the injected DOMContentLoaded
+function updatePropTabCount() {
+  try {
+    const el = document.getElementById('prop-tab-count');
+    if (el && typeof _allProperties !== 'undefined') el.textContent = _allProperties.length;
+  } catch(e) {}
+}
+window.addEventListener('load', () => {
+  // Periodically sync tab count
+  setInterval(updatePropTabCount, 2000);
+});
 </script>
 
 </body>
