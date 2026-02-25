@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SalesFun — Real Estate CRM</title>
+<title>SalesFun — Real Estate & Vehicle CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Firebase SDK -->
@@ -41,7 +41,7 @@
   --green:#4caf7d; --green-dim:rgba(76,175,125,0.12);
   --red:#e05555; --red-dim:rgba(224,85,85,0.12);
   --blue:#6ba3d6; --blue-dim:rgba(107,163,214,0.12);
-  --orange:#e8924a; --orange-dim:rgba(232,146,74,0.12);
+  --orange:#e8924a; --orange-dim:rgba(232,146,74,0.12); --orange-glow:rgba(232,146,74,0.22);
   --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
   --teal:#2dd4bf; --teal-dim:rgba(45,212,191,0.12);
   --r:10px; --r-sm:7px;
@@ -64,6 +64,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .t-btn.gold:hover{background:var(--gold-glow);}
 .t-btn.portal{background:var(--teal-dim);border-color:rgba(45,212,191,.3);color:var(--teal);}
 .t-btn.portal:hover{background:rgba(45,212,191,.2);}
+.t-btn.orange{background:var(--orange-dim);border-color:rgba(232,146,74,.3);color:var(--orange);}
+.t-btn.orange:hover{background:var(--orange-glow);}
 .notif-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .2s;position:relative;}
 .notif-badge{position:absolute;top:-3px;right:-3px;width:15px;height:15px;background:var(--red);border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2);}
 .avatar{width:32px;height:32px;background:linear-gradient(135deg,#8b4513,var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
@@ -79,11 +81,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .nav-item:hover{background:var(--bg3);color:var(--text);}
 .nav-item.active{background:var(--gold-dim);color:var(--gold);}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--gold);border-radius:0 2px 2px 0;}
+.nav-item.active.vehicle-nav{background:var(--orange-dim);color:var(--orange);}
+.nav-item.active.vehicle-nav::before{background:var(--orange);}
 .nav-item svg{flex-shrink:0;}
 .nav-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--bg4);color:var(--text2);padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;}
 .nav-badge.hot{background:var(--red-dim);color:var(--red);}
 .nav-badge.new{background:var(--green-dim);color:var(--green);}
 .nav-badge.prop{background:var(--purple-dim);color:var(--purple);}
+.nav-badge.veh{background:var(--orange-dim);color:var(--orange);}
 .nav-divider{height:1px;background:var(--border);margin:8px 0;}
 .nav-spacer{flex:1;}
 .nav-agent-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:4px;}
@@ -111,13 +116,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .dash-content{padding:20px 24px;flex:1;overflow-y:auto;}
 .dash-content::-webkit-scrollbar{width:6px;}
 .dash-content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:border-color .2s;cursor:default;animation:fadeUp .4s ease forwards;opacity:0;}
 .stat-card:hover{border-color:var(--border2);}
 .stat-card:nth-child(1){animation-delay:.05s;}
 .stat-card:nth-child(2){animation-delay:.1s;}
 .stat-card:nth-child(3){animation-delay:.15s;}
 .stat-card:nth-child(4){animation-delay:.2s;}
+.stat-card:nth-child(5){animation-delay:.25s;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .sc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
@@ -173,6 +179,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
 .filter-chip:hover{border-color:var(--border2);color:var(--text);}
 .filter-chip.active{background:var(--gold-dim);border-color:rgba(212,168,67,.3);color:var(--gold);}
+.filter-chip.active.orange-chip{background:var(--orange-dim);border-color:rgba(232,146,74,.3);color:var(--orange);}
 .leads-table-wrap{flex:1;overflow-y:auto;padding:0 24px 20px;}
 .leads-table-wrap::-webkit-scrollbar{width:6px;}
 .leads-table-wrap::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
@@ -184,6 +191,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .td-name{color:var(--text);font-weight:600;}
 .td-phone{font-family:'JetBrains Mono',monospace;font-size:12px;}
 .td-budget{color:var(--gold);font-weight:600;}
+.td-orange{color:var(--orange);font-weight:600;}
 .td-actions{display:flex;gap:6px;}
 .row-btn{height:26px;padding:0 10px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:inherit;font-size:11px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .row-btn:hover{border-color:var(--border2);color:var(--text);}
@@ -233,8 +241,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .props-table-wrap::-webkit-scrollbar{width:6px;}
 .props-table-wrap::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
 
-/* Property card grid */
-.props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding:20px 24px;}
+/* Property / Vehicle card grid */
+.props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:20px 24px;}
 .prop-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;animation:fadeUp .35s ease forwards;opacity:0;cursor:pointer;}
 .prop-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3);}
 .prop-card:nth-child(1){animation-delay:.05s;}
@@ -249,6 +257,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .prop-card-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,14,12,.8),transparent);z-index:2;}
 .prop-card-img-badges{position:absolute;top:10px;left:10px;z-index:3;display:flex;gap:6px;flex-wrap:wrap;}
 .prop-card-img-price{position:absolute;bottom:10px;right:10px;z-index:3;font-size:15px;font-weight:700;color:var(--gold2);font-family:'Cormorant Garamond',serif;}
+.prop-card-img-price.orange{color:var(--orange);}
 .prop-card-body{padding:14px;}
 .prop-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .prop-card-sub{font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:4px;}
@@ -268,16 +277,22 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .pub-btn{flex:1;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;}
 .pub-btn.published{background:var(--green-dim);border-color:rgba(76,175,125,.35);color:var(--green);}
 .pub-btn.published:hover{background:var(--red-dim);border-color:rgba(224,85,85,.3);color:var(--red);}
+.pub-btn.published.veh-pub:hover{background:var(--red-dim);border-color:rgba(224,85,85,.3);color:var(--red);}
 .pub-btn.draft{color:var(--text3);}
 .pub-btn.draft:hover{background:var(--green-dim);border-color:rgba(76,175,125,.3);color:var(--green);}
 
 /* Portal info bar */
 .portal-banner{margin:14px 24px 0;background:var(--teal-dim);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.portal-banner.orange-banner{background:var(--orange-dim);border-color:rgba(232,146,74,.2);}
 .portal-banner-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 6px rgba(45,212,191,.6);animation:pulse 2s infinite;flex-shrink:0;}
+.portal-banner-dot.orange-dot{background:var(--orange);box-shadow:0 0 6px rgba(232,146,74,.6);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .portal-banner-text{font-size:12px;color:var(--teal);flex:1;}
+.portal-banner-text.orange-text{color:var(--orange);}
 .portal-banner-link{font-size:11px;color:var(--teal);font-weight:600;text-decoration:none;background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.3);border-radius:5px;padding:3px 10px;white-space:nowrap;}
 .portal-banner-link:hover{background:rgba(45,212,191,.25);}
+.portal-banner-link.orange-link{color:var(--orange);background:rgba(232,146,74,.15);border-color:rgba(232,146,74,.3);}
+.portal-banner-link.orange-link:hover{background:rgba(232,146,74,.25);}
 
 /* View toggle */
 .view-toggle{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px;}
@@ -309,7 +324,7 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
-.modal.wide{width:680px;}
+.modal.wide{width:720px;}
 .modal::-webkit-scrollbar{width:4px;}
 .modal::-webkit-scrollbar-thumb{background:var(--bg4);}
 .modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1;}
@@ -334,6 +349,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 .btn-save{padding:0 20px;height:34px;background:var(--gold);border:none;color:#000;font-family:inherit;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
 .btn-save:hover{background:var(--gold2);transform:translateY(-1px);}
 .btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-save.orange-btn{background:var(--orange);}
+.btn-save.orange-btn:hover{background:#f0a060;}
 
 /* Publish checkbox in modal */
 .publish-checkbox-wrap{display:flex;align-items:center;gap:10px;margin-right:auto;background:var(--green-dim);border:1px solid rgba(76,175,125,.25);border-radius:8px;padding:6px 12px;cursor:pointer;}
@@ -367,10 +384,12 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 /* Property detail modal */
 .prop-detail-header{background:var(--bg3);padding:16px;border-radius:10px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start;}
 .prop-detail-icon{width:56px;height:56px;border-radius:12px;background:var(--purple-dim);border:1px solid rgba(167,139,250,.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.prop-detail-icon.orange{background:var(--orange-dim);border-color:rgba(232,146,74,.2);}
 .prop-detail-meta{flex:1;}
 .prop-detail-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);}
 .prop-detail-loc{font-size:13px;color:var(--text3);margin-top:3px;}
 .prop-detail-price{font-size:22px;font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif;margin-top:4px;}
+.prop-detail-price.orange{color:var(--orange);}
 .prop-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
 .prop-info-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
 .prop-info-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
@@ -386,12 +405,12 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="logo" onclick="setView('dashboard')">
-    <div class="logo-icon">P</div>
+    <div class="logo-icon">SF</div>
     SalesFun
   </div>
   <div class="top-search">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="globalSearch" placeholder="Search leads, properties…" oninput="handleSearch(this.value)">
+    <input type="text" id="globalSearch" placeholder="Search leads, properties, vehicles…" oninput="handleSearch(this.value)">
   </div>
   <div class="top-right">
     <div class="db-status" id="dbStatus">
@@ -431,21 +450,27 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     Follow-ups
     <span class="nav-badge hot" id="nav-fu-count">0</span>
   </div>
+  <div class="nav-section-label">Inventory</div>
   <div class="nav-item" id="nav-properties" onclick="setView('properties')">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Properties
     <span class="nav-badge prop" id="nav-props-count">0</span>
   </div>
+  <div class="nav-item vehicle-nav" id="nav-vehicles" onclick="setView('vehicles')">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="13" width="22" height="7" rx="2"/><path d="M5 13V9l3-4h8l3 4v4"/><line x1="5" y1="17" x2="5" y2="17"/><line x1="19" y1="17" x2="19" y2="17"/><circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/></svg>
+    Vehicles
+    <span class="nav-badge veh" id="nav-vehs-count">0</span>
+  </div>
   <div class="nav-spacer"></div>
   <div class="nav-agent-card">
     <div class="nac-top">
       <div class="nac-avatar">RK</div>
-      <div><div class="nac-name">Your Name</div><div class="nac-role">Real Estate Agent</div></div>
+      <div><div class="nac-name">Your Name</div><div class="nac-role">Agent · Dealer</div></div>
     </div>
     <div class="nac-stats">
       <div class="nac-stat"><div class="nac-stat-val" id="stat-total">0</div><div class="nac-stat-lbl">Leads</div></div>
       <div class="nac-stat"><div class="nac-stat-val" id="stat-closed">0</div><div class="nac-stat-lbl">Closed</div></div>
-      <div class="nac-stat"><div class="nac-stat-val" id="stat-hot">0</div><div class="nac-stat-lbl">Hot</div></div>
+      <div class="nac-stat"><div class="nac-stat-val" id="stat-vehs">0</div><div class="nac-stat-lbl">Vehicles</div></div>
     </div>
   </div>
 </nav>
@@ -470,6 +495,10 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <div class="stat-card">
         <div class="sc-top"><div class="sc-icon" style="background:var(--purple-dim)"><svg width="18" height="18" fill="none" stroke="var(--purple)" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div></div>
         <div class="sc-val" id="dash-props">—</div><div class="sc-lbl">Properties Listed</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top"><div class="sc-icon" style="background:var(--orange-dim)"><svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="13" width="22" height="7" rx="2"/><path d="M5 13V9l3-4h8l3 4v4"/><circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/></svg></div></div>
+        <div class="sc-val" id="dash-vehs">—</div><div class="sc-lbl">Vehicles Listed</div>
       </div>
       <div class="stat-card">
         <div class="sc-top"><div class="sc-icon" style="background:var(--teal-dim)"><svg width="18" height="18" fill="none" stroke="var(--teal)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div></div>
@@ -581,12 +610,10 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   <div class="page-header">
     <div class="page-title">
       <h1>Property Listings</h1>
-      <p id="props-subtitle">Manage supplier land & property inventory</p>
+      <p id="props-subtitle">Manage supplier land &amp; property inventory</p>
     </div>
     <div class="page-actions">
-      <a class="t-btn portal" href="portal.html" target="_blank">
-        🌐 Live Portal
-      </a>
+      <a class="t-btn portal" href="portal.html" target="_blank">🌐 Live Portal</a>
       <div class="view-toggle">
         <button class="vt-btn active" id="vt-grid" onclick="setPropView('grid')" title="Grid">⊞</button>
         <button class="vt-btn" id="vt-table" onclick="setPropView('table')" title="Table">☰</button>
@@ -597,16 +624,11 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       </button>
     </div>
   </div>
-
-  <!-- Portal live banner -->
   <div class="portal-banner">
     <div class="portal-banner-dot"></div>
-    <div class="portal-banner-text">
-      <strong id="portal-published-count">0</strong> properties published to your public portal — toggle 🌐 Publish on any card to show/hide it.
-    </div>
+    <div class="portal-banner-text"><strong id="portal-published-count">0</strong> properties published to your public portal — toggle 🌐 Publish on any card.</div>
     <a class="portal-banner-link" href="portal.html" target="_blank">Open Portal →</a>
   </div>
-
   <div class="props-content">
     <div class="props-toolbar" id="propsToolbar">
       <div class="filter-chip active" data-pfilter="all">All (<span id="pchip-all">0</span>)</div>
@@ -629,7 +651,58 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <div id="propsTableView" style="flex:1;overflow-y:auto;display:none;padding:0 24px 20px;">
       <table style="margin-top:14px">
         <thead><tr><th>Property Title</th><th>Type</th><th>Location</th><th>Area</th><th>Price</th><th>Supplier</th><th>Status</th><th>Portal</th><th>Actions</th></tr></thead>
-        <tbody id="propsTableBody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+        <tbody id="propsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VEHICLES VIEW ═══ -->
+<div class="view" id="view-vehicles">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>🚗 Vehicle Listings</h1>
+      <p id="vehs-subtitle">Manage pre-owned bikes &amp; cars inventory</p>
+    </div>
+    <div class="page-actions">
+      <a class="t-btn portal" href="portal.html#vehicles" target="_blank">🌐 Vehicle Portal</a>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vvt-grid" onclick="setVehView('grid')" title="Grid">⊞</button>
+        <button class="vt-btn" id="vvt-table" onclick="setVehView('table')" title="Table">☰</button>
+      </div>
+      <button class="t-btn orange" onclick="openVehicleModal()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Vehicle
+      </button>
+    </div>
+  </div>
+  <!-- Portal live banner -->
+  <div class="portal-banner orange-banner">
+    <div class="portal-banner-dot orange-dot"></div>
+    <div class="portal-banner-text orange-text"><strong id="veh-portal-published-count">0</strong> vehicles published to portal — toggle 🌐 Publish on any card to show/hide.</div>
+    <a class="portal-banner-link orange-link" href="portal.html" target="_blank">Open Portal →</a>
+  </div>
+  <div class="props-content">
+    <div class="props-toolbar" id="vehsToolbar">
+      <div class="filter-chip active" data-vfilter="all">All (<span id="vchip-all">0</span>)</div>
+      <div class="filter-chip" data-vfilter="Available">Available (<span id="vchip-avail">0</span>)</div>
+      <div class="filter-chip" data-vfilter="Negotiation">Negotiation (<span id="vchip-nego">0</span>)</div>
+      <div class="filter-chip" data-vfilter="Sold">Sold (<span id="vchip-sold">0</span>)</div>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <select class="form-select" style="height:32px;padding:0 10px;font-size:12px;width:auto" id="vehTypeFilter" onchange="renderVehicles()">
+          <option value="">All Types</option>
+          <option>Bike</option><option>Car</option><option>Scooter</option>
+          <option>Auto</option><option>Truck</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div id="vehsGridView" style="flex:1;overflow-y:auto;">
+      <div class="props-grid" id="vehsGrid"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Loading…</div></div>
+    </div>
+    <div id="vehsTableView" style="flex:1;overflow-y:auto;display:none;padding:0 24px 20px;">
+      <table style="margin-top:14px">
+        <thead><tr><th>Brand &amp; Model</th><th>Type</th><th>Year</th><th>Fuel</th><th>KM Driven</th><th>Price</th><th>Seller</th><th>Status</th><th>Portal</th><th>Actions</th></tr></thead>
+        <tbody id="vehsTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -746,7 +819,6 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
         <div class="form-row"><label class="form-label">Key Features</label><textarea class="form-textarea" id="p-features" placeholder="Water source, road access, electricity…" style="min-height:60px"></textarea></div>
         <div class="form-row"><label class="form-label">Description</label><textarea class="form-textarea" id="p-desc" placeholder="Detailed description, investment potential…"></textarea></div>
       </div>
-
       <div class="modal-section">
         <div class="modal-section-title"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Supplier / Owner</div>
         <div class="form-2col">
@@ -766,9 +838,8 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
           </div>
         </div>
       </div>
-
       <div class="modal-section">
-        <div class="modal-section-title"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Legal & Documents</div>
+        <div class="modal-section-title"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Legal &amp; Documents</div>
         <div class="form-3col">
           <div class="form-row"><label class="form-label">Title Status</label>
             <select class="form-select" id="p-title-status"><option value="">Unknown</option><option>Clear Title</option><option>Disputed</option><option>Joint Ownership</option></select>
@@ -784,13 +855,9 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       </div>
     </div>
     <div class="modal-footer">
-      <!-- PUBLISH CHECKBOX -->
       <label class="publish-checkbox-wrap" for="p-publish">
         <input type="checkbox" id="p-publish">
-        <div>
-          <div class="publish-checkbox-label">🌐 Publish to Portal</div>
-          <div class="publish-checkbox-sub">Visible on public website</div>
-        </div>
+        <div><div class="publish-checkbox-label">🌐 Publish to Portal</div><div class="publish-checkbox-sub">Visible on public website</div></div>
       </label>
       <button class="btn-cancel" onclick="closePropModal()">Cancel</button>
       <button class="btn-save" id="savePropBtn" onclick="saveProperty()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Property</button>
@@ -810,6 +877,169 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
 </div>
 
+<!-- ════════ ADD VEHICLE MODAL ════════ -->
+<div class="modal-overlay" id="vehModalOverlay" onclick="if(event.target===this)closeVehicleModal()">
+  <div class="modal wide">
+    <div class="modal-header"><h3 id="vehModalTitle">Add Vehicle Listing</h3><div class="modal-close" onclick="closeVehicleModal()">✕</div></div>
+    <div class="modal-body">
+      <input type="hidden" id="editVehId">
+
+      <!-- VEHICLE DETAILS -->
+      <div class="modal-section">
+        <div class="modal-section-title">🚗 Vehicle Details</div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Vehicle Type *</label>
+            <select class="form-select" id="v-type">
+              <option value="">Select type</option>
+              <option value="Bike">🏍️ Bike / Motorcycle</option>
+              <option value="Car">🚗 Car / SUV</option>
+              <option value="Scooter">🛵 Scooter / Moped</option>
+              <option value="Auto">🛺 Auto Rickshaw</option>
+              <option value="Truck">🚛 Truck / Commercial</option>
+              <option value="Other">🚐 Other</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">Brand / Make *</label>
+            <input class="form-input" id="v-brand" placeholder="e.g. Royal Enfield, Honda, Maruti">
+          </div>
+          <div class="form-row"><label class="form-label">Model *</label>
+            <input class="form-input" id="v-model" placeholder="e.g. Bullet 350, City, Swift">
+          </div>
+        </div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Year *</label>
+            <select class="form-select" id="v-year">
+              <option value="">Select year</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">Fuel Type</label>
+            <select class="form-select" id="v-fuel">
+              <option value="">Select</option>
+              <option>Petrol</option><option>Diesel</option><option>Electric</option>
+              <option>CNG</option><option>Hybrid</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">KM Driven</label>
+            <input class="form-input" id="v-km" placeholder="e.g. 25,000 km">
+          </div>
+        </div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Asking Price *</label>
+            <input class="form-input" id="v-price" placeholder="e.g. ₹85,000">
+          </div>
+          <div class="form-row"><label class="form-label">Location *</label>
+            <input class="form-input" id="v-location" placeholder="e.g. Nashik, Maharashtra">
+          </div>
+          <div class="form-row"><label class="form-label">Status</label>
+            <select class="form-select" id="v-status">
+              <option value="Available">🟢 Available</option>
+              <option value="Negotiation">🟡 Negotiation</option>
+              <option value="Sold">⚫ Sold</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-3col">
+          <div class="form-row"><label class="form-label">Condition</label>
+            <select class="form-select" id="v-condition">
+              <option value="">Select</option>
+              <option>Excellent</option><option>Good</option>
+              <option>Fair</option><option>Needs Repair</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">Color</label>
+            <input class="form-input" id="v-color" placeholder="e.g. Red, Midnight Black">
+          </div>
+          <div class="form-row"><label class="form-label">Negotiable?</label>
+            <select class="form-select" id="v-negotiable">
+              <option value="Yes">Yes</option>
+              <option value="No">No — Fixed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Insurance</label>
+            <select class="form-select" id="v-insurance">
+              <option value="">Select</option>
+              <option>Valid</option><option>Expired</option><option>N/A</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="form-label">No. of Owners</label>
+            <select class="form-select" id="v-owners">
+              <option value="">Select</option>
+              <option>1st Owner</option><option>2nd Owner</option>
+              <option>3rd Owner</option><option>4th Owner+</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Additional Details / Description</label>
+          <textarea class="form-textarea" id="v-desc" placeholder="Modifications, service history, reason for selling, accessories…"></textarea>
+        </div>
+      </div>
+
+      <!-- SELLER DETAILS -->
+      <div class="modal-section">
+        <div class="modal-section-title">👤 Seller / Owner Details</div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Name *</label>
+            <input class="form-input" id="v-seller-name" placeholder="e.g. Ravi Kumar">
+          </div>
+          <div class="form-row"><label class="form-label">Phone *</label>
+            <input class="form-input" id="v-seller-phone" placeholder="+91 98765 43210">
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Email</label>
+            <input class="form-input" id="v-seller-email" placeholder="seller@email.com">
+          </div>
+          <div class="form-row"><label class="form-label">Seller Type</label>
+            <select class="form-select" id="v-seller-type">
+              <option value="Direct Owner">Direct Owner</option>
+              <option value="Dealer">Dealer</option>
+              <option value="Broker">Broker / Agent</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-row"><label class="form-label">Commission</label>
+            <input class="form-input" id="v-commission" placeholder="e.g. ₹2,000 or 2%">
+          </div>
+          <div class="form-row"><label class="form-label">Source</label>
+            <select class="form-select" id="v-source">
+              <option value="">Select source</option>
+              <option>Portal Inquiry</option><option>Walk-in</option>
+              <option>Referral</option><option>OLX / Quikr</option>
+              <option>Social Media</option><option>Direct Call</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Internal Notes</label>
+          <textarea class="form-textarea" id="v-notes" style="min-height:60px" placeholder="Private notes about this vehicle or seller…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <label class="publish-checkbox-wrap" for="v-publish">
+        <input type="checkbox" id="v-publish">
+        <div><div class="publish-checkbox-label">🌐 Publish to Portal</div><div class="publish-checkbox-sub">Visible on vehicle portal</div></div>
+      </label>
+      <button class="btn-cancel" onclick="closeVehicleModal()">Cancel</button>
+      <button class="btn-save orange-btn" id="saveVehBtn" onclick="saveVehicle()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Vehicle</button>
+    </div>
+  </div>
+</div>
+
+<!-- VEHICLE DETAIL MODAL -->
+<div class="modal-overlay" id="vehDetailOverlay" onclick="if(event.target===this)closeVehDetail()">
+  <div class="modal wide">
+    <div class="modal-header"><h3 id="vehDetailTitle">Vehicle Details</h3><div class="modal-close" onclick="closeVehDetail()">✕</div></div>
+    <div class="modal-body" id="vehDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeVehDetail()">Close</button>
+      <button class="btn-save orange-btn" id="vehDetailEditBtn">✏️ Edit Vehicle</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"><span id="toastIcon">✨</span><span id="toastMsg">Done!</span></div>
 
@@ -817,21 +1047,33 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 // ════════════════════════════════
 // STATE
 // ════════════════════════════════
-let _leads=[], _followups=[], _properties=[];
-let _currentFilter='all', _currentFuType='all', _currentPropFilter='all';
-let _propViewMode='grid';
-let _editingLeadId=null, _editingFuId=null, _editingPropId=null;
+let _leads=[], _followups=[], _properties=[], _vehicles=[];
+let _currentFilter='all', _currentFuType='all', _currentPropFilter='all', _currentVehFilter='all';
+let _propViewMode='grid', _vehViewMode='grid';
+let _editingLeadId=null, _editingFuId=null, _editingPropId=null, _editingVehId=null;
 let _dbConnected=false;
 
 // ════════════════════════════════
 // INIT
 // ════════════════════════════════
 function initApp() {
-  updateDate(); buildMiniCal();
-  if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();}
-  else{
-    window.addEventListener('dbReady',()=>{setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();},{once:true});
+  updateDate(); buildMiniCal(); populateVehYears();
+  if(window._dbReady&&window._db){
+    setDbStatus(true,'Connected');_dbConnected=true;
+    loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();
+  } else {
+    window.addEventListener('dbReady',()=>{
+      setDbStatus(true,'Connected');_dbConnected=true;
+      loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();
+    },{once:true});
     setTimeout(()=>{if(!_dbConnected){setDbStatus(false,'Failed');showToast('⚠️ Firebase connection failed','error');}},8000);
+  }
+}
+
+function populateVehYears() {
+  const sel = document.getElementById('v-year');
+  for(let y=2025;y>=2000;y--) {
+    const opt=document.createElement('option');opt.value=y;opt.textContent=y;sel.appendChild(opt);
   }
 }
 
@@ -860,17 +1102,35 @@ async function updatePropertyInDB(id,data){const{doc,updateDoc}=window._firebase
 async function deletePropertyFromDB(id){const{doc,deleteDoc}=window._firebase;await deleteDoc(doc(window._db,'properties',id));}
 
 // ════════════════════════════════
+// FIRESTORE — VEHICLES
+// ════════════════════════════════
+async function loadVehiclesFromDB(){
+  const{collection,onSnapshot,orderBy,query}=window._firebase;
+  const q=query(collection(window._db,'vehicles'),orderBy('createdAt','desc'));
+  onSnapshot(q,(snap)=>{
+    _vehicles=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderVehicles();renderDashboard();updateNavCounts();
+  });
+}
+async function addVehicleToDB(data){const{collection,addDoc,serverTimestamp}=window._firebase;await addDoc(collection(window._db,'vehicles'),{...data,createdAt:serverTimestamp()});}
+async function updateVehicleInDB(id,data){const{doc,updateDoc}=window._firebase;await updateDoc(doc(window._db,'vehicles',id),data);}
+async function deleteVehicleFromDB(id){const{doc,deleteDoc}=window._firebase;await deleteDoc(doc(window._db,'vehicles',id));}
+
+// ════════════════════════════════
 // PUBLISH / UNPUBLISH
 // ════════════════════════════════
-async function togglePublish(id, currentState, event) {
-  if(event) event.stopPropagation();
-  const newState = !currentState;
-  try {
-    await updatePropertyInDB(id, { published: newState });
-    showToast(newState ? '🌐 Published to portal!' : '⚫ Removed from portal', newState ? 'success' : 'info');
-  } catch(e) {
-    showToast('❌ Error: '+e.message, 'error');
-  }
+async function togglePublish(id,currentState,event){
+  if(event)event.stopPropagation();
+  const newState=!currentState;
+  try{await updatePropertyInDB(id,{published:newState});showToast(newState?'🌐 Published to portal!':'⚫ Removed from portal',newState?'success':'info');}
+  catch(e){showToast('❌ Error: '+e.message,'error');}
+}
+
+async function toggleVehPublish(id,currentState,event){
+  if(event)event.stopPropagation();
+  const newState=!currentState;
+  try{await updateVehicleInDB(id,{published:newState});showToast(newState?'🌐 Vehicle published to portal!':'⚫ Vehicle removed from portal',newState?'success':'info');}
+  catch(e){showToast('❌ Error: '+e.message,'error');}
 }
 
 // ════════════════════════════════
@@ -953,8 +1213,7 @@ function renderPropsGrid(list){
   const grid=document.getElementById('propsGrid');
   if(list.length===0){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏗️</div><h3>No properties</h3><p>Click "Add Property" to list your first property.</p><button class="btn-save" onclick="openPropertyModal()">+ Add Property</button></div>`;return;}
   grid.innerHTML=list.map((p,i)=>{
-    const icon=getPropIcon(p.type);
-    const stCls=getPropStatusClass(p.status);
+    const icon=getPropIcon(p.type);const stCls=getPropStatusClass(p.status);
     const supInit=(p.supplierName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const isPub=p.published===true;
     return `<div class="prop-card" style="animation-delay:${i*0.05}s" onclick="viewProperty('${p.id}')">
@@ -981,9 +1240,7 @@ function renderPropsGrid(list){
           <div class="prop-supplier-info"><div class="prop-supplier-name">${esc(p.supplierName||'—')}</div><div class="prop-supplier-role">${esc(p.supplierType||'Owner')}</div></div>
         </div>
         <div class="prop-card-actions" style="margin-top:10px">
-          <button class="pub-btn ${isPub?'published':'draft'}" onclick="togglePublish('${p.id}',${isPub},event)" title="${isPub?'Click to unpublish':'Click to publish to portal'}">
-            ${isPub?'🌐 Live on Portal':'⚫ Publish to Portal'}
-          </button>
+          <button class="pub-btn ${isPub?'published':'draft'}" onclick="togglePublish('${p.id}',${isPub},event)">${isPub?'🌐 Live on Portal':'⚫ Publish to Portal'}</button>
         </div>
         <div class="prop-card-actions" style="margin-top:6px">
           <button class="prop-action-btn" onclick="event.stopPropagation();openPropertyModal('${p.id}')">✏️ Edit</button>
@@ -998,25 +1255,119 @@ function renderPropsTable(list){
   const tbody=document.getElementById('propsTableBody');
   if(list.length===0){tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">🏗️</div><h3>No properties</h3></div></td></tr>`;return;}
   tbody.innerHTML=list.map(p=>{
-    const stCls=getPropStatusClass(p.status);
-    const isPub=p.published===true;
-    const date=p.createdAt?.toDate?p.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'Just now';
-    return `<tr onclick="viewProperty('${p.id}')">
-      <td><span class="td-name">${esc(p.title||'—')}</span></td>
-      <td>${esc(p.type||'—')}</td>
-      <td>${esc(p.location||'—')}</td>
-      <td>${esc(p.area||'—')}</td>
-      <td><span class="td-budget">${esc(p.price||'—')}</span></td>
-      <td>${esc(p.supplierName||'—')}</td>
-      <td><span class="status-pill ${stCls}">${p.status}</span></td>
-      <td>
-        <button class="pub-btn ${isPub?'published':'draft'}" style="width:auto;padding:0 8px" onclick="togglePublish('${p.id}',${isPub},event)">
-          ${isPub?'🌐 Live':'⚫ Draft'}
-        </button>
-      </td>
+    const stCls=getPropStatusClass(p.status);const isPub=p.published===true;
+    return `<tr onclick="viewProperty('${p.id}')"><td><span class="td-name">${esc(p.title||'—')}</span></td><td>${esc(p.type||'—')}</td><td>${esc(p.location||'—')}</td><td>${esc(p.area||'—')}</td><td><span class="td-budget">${esc(p.price||'—')}</span></td><td>${esc(p.supplierName||'—')}</td><td><span class="status-pill ${stCls}">${p.status}</span></td><td><button class="pub-btn ${isPub?'published':'draft'}" style="width:auto;padding:0 8px" onclick="togglePublish('${p.id}',${isPub},event)">${isPub?'🌐 Live':'⚫ Draft'}</button></td><td><div class="td-actions"><button class="row-btn" onclick="event.stopPropagation();openPropertyModal('${p.id}')">✏️</button><button class="row-btn del" onclick="event.stopPropagation();confirmDeleteProp('${p.id}','${esc(p.title||'')}')">🗑</button></div></td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════
+// RENDER — VEHICLES
+// ════════════════════════════════
+function getVehIcon(type, brand){
+  const t=(type||'').toLowerCase();const b=(brand||'').toLowerCase();
+  if(t==='bike'||t.includes('motor')){if(b.includes('royal')||b.includes('enfield'))return '🏍️';return '🏍️';}
+  if(t==='scooter')return '🛵';if(t==='auto')return '🛺';if(t==='truck')return '🚛';
+  if(t==='car'){if(b.includes('bmw')||b.includes('mercedes')||b.includes('audi'))return '🚘';return '🚗';}
+  return '🚗';
+}
+function getVehStatusClass(status){return{Available:'prop-avail',Negotiation:'prop-nego',Sold:'prop-sold'}[status]||'prop-avail';}
+
+function renderVehicles(filter){
+  if(filter!==undefined)_currentVehFilter=filter;
+  const typeFilter=document.getElementById('vehTypeFilter')?.value||'';
+  let list=_vehicles;
+  if(_currentVehFilter!=='all')list=list.filter(v=>v.status===_currentVehFilter);
+  if(typeFilter)list=list.filter(v=>v.vehicleType===typeFilter);
+  const counts={};_vehicles.forEach(v=>{counts[v.status]=(counts[v.status]||0)+1;});
+  document.getElementById('vchip-all').textContent=_vehicles.length;
+  document.getElementById('vchip-avail').textContent=counts['Available']||0;
+  document.getElementById('vchip-nego').textContent=counts['Negotiation']||0;
+  document.getElementById('vchip-sold').textContent=counts['Sold']||0;
+  document.getElementById('vehs-subtitle').textContent=`${_vehicles.length} vehicles · ${counts['Available']||0} available`;
+  const pubCount=_vehicles.filter(v=>v.published===true).length;
+  const bannerEl=document.getElementById('veh-portal-published-count');
+  if(bannerEl)bannerEl.textContent=pubCount;
+  if(_vehViewMode==='grid')renderVehsGrid(list);
+  else renderVehsTable(list);
+}
+
+function renderVehsGrid(list){
+  const grid=document.getElementById('vehsGrid');
+  if(list.length===0){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🚗</div><h3>No vehicles</h3><p>Click "Add Vehicle" to list your first vehicle, or portal inquiries will appear here after approval.</p><button class="btn-save orange-btn" onclick="openVehicleModal()">+ Add Vehicle</button></div>`;
+    return;
+  }
+  grid.innerHTML=list.map((v,i)=>{
+    const icon=getVehIcon(v.vehicleType,v.brand);
+    const stCls=getVehStatusClass(v.status);
+    const sellerInit=(v.sellerName||v.supplierName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const title=v.brand?(v.brand+(v.model?' '+v.model:'')):(v.title||'Vehicle');
+    const isPub=v.published===true;
+    const source=v.source==='portal-vehicle-inquiry'?'🌐 Portal Inquiry':'';
+    return `<div class="prop-card" style="animation-delay:${i*0.05}s" onclick="viewVehicle('${v.id}')">
+      <div class="prop-card-img">
+        <div class="prop-card-img-bg" style="background:radial-gradient(circle at 30% 50%,var(--orange),transparent 70%)"></div>
+        <div class="prop-card-img-icon">${icon}</div>
+        <div class="prop-card-img-overlay"></div>
+        <div class="prop-card-img-badges">
+          <span class="status-pill ${stCls}">${v.status||'Available'}</span>
+          ${v.vehicleType?`<span class="status-pill" style="background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2)">${esc(v.vehicleType)}</span>`:''}
+          ${isPub?`<span class="status-pill" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,.2)">🌐 Live</span>`:''}
+        </div>
+        <div class="prop-card-img-price orange">${esc(v.price||'Price TBD')}</div>
+      </div>
+      <div class="prop-card-body">
+        <div class="prop-card-title" title="${esc(title)}">${esc(title)}</div>
+        <div class="prop-card-sub">
+          ${v.year?`<span>${v.year}</span>`:''}
+          ${v.fuelType?`<span style="color:var(--text3)"> · ${esc(v.fuelType)}</span>`:''}
+          ${v.location?`<span style="color:var(--text3)"> · 📍${esc(v.location)}</span>`:''}
+        </div>
+        <div class="prop-meta-row">
+          ${v.kmDriven?`<div class="prop-meta">🛣️ ${esc(v.kmDriven)}</div>`:''}
+          ${v.condition?`<div class="prop-meta">✨ ${esc(v.condition)}</div>`:''}
+          ${v.color?`<div class="prop-meta">🎨 ${esc(v.color)}</div>`:''}
+          ${v.negotiable==='Yes'?`<div class="prop-meta" style="color:var(--green)">✓ Negotiable</div>`:''}
+        </div>
+        <div class="prop-supplier-row">
+          <div class="prop-supplier-av">${sellerInit}</div>
+          <div class="prop-supplier-info">
+            <div class="prop-supplier-name">${esc(v.sellerName||v.supplierName||'—')}</div>
+            <div class="prop-supplier-role">${source||esc(v.sellerType||v.role||'Seller')}</div>
+          </div>
+        </div>
+        <div class="prop-card-actions" style="margin-top:10px">
+          <button class="pub-btn ${isPub?'published veh-pub':'draft'}" onclick="toggleVehPublish('${v.id}',${isPub},event)">${isPub?'🌐 Live on Portal':'⚫ Publish to Portal'}</button>
+        </div>
+        <div class="prop-card-actions" style="margin-top:6px">
+          <button class="prop-action-btn" onclick="event.stopPropagation();openVehicleModal('${v.id}')">✏️ Edit</button>
+          <button class="prop-action-btn del" onclick="event.stopPropagation();confirmDeleteVeh('${v.id}','${esc(title)}')">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderVehsTable(list){
+  const tbody=document.getElementById('vehsTableBody');
+  if(list.length===0){tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">🚗</div><h3>No vehicles</h3></div></td></tr>`;return;}
+  tbody.innerHTML=list.map(v=>{
+    const stCls=getVehStatusClass(v.status);const isPub=v.published===true;
+    const title=v.brand?(v.brand+(v.model?' '+v.model:'')):(v.title||'—');
+    const date=v.createdAt?.toDate?v.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'Just now';
+    return `<tr onclick="viewVehicle('${v.id}')">
+      <td><span class="td-name">${esc(title)}</span></td>
+      <td>${esc(v.vehicleType||'—')}</td>
+      <td>${esc(v.year||'—')}</td>
+      <td>${esc(v.fuelType||'—')}</td>
+      <td>${esc(v.kmDriven||'—')}</td>
+      <td><span class="td-orange">${esc(v.price||'—')}</span></td>
+      <td>${esc(v.sellerName||v.supplierName||'—')}</td>
+      <td><span class="status-pill ${stCls}">${v.status||'—'}</span></td>
+      <td><button class="pub-btn ${isPub?'published veh-pub':'draft'}" style="width:auto;padding:0 8px" onclick="toggleVehPublish('${v.id}',${isPub},event)">${isPub?'🌐 Live':'⚫ Draft'}</button></td>
       <td><div class="td-actions">
-        <button class="row-btn" onclick="event.stopPropagation();openPropertyModal('${p.id}')">✏️</button>
-        <button class="row-btn del" onclick="event.stopPropagation();confirmDeleteProp('${p.id}','${esc(p.title||'')}')">🗑</button>
+        <button class="row-btn" onclick="event.stopPropagation();openVehicleModal('${v.id}')">✏️</button>
+        <button class="row-btn del" onclick="event.stopPropagation();confirmDeleteVeh('${v.id}','${esc(title)}')">🗑</button>
       </div></td>
     </tr>`;
   }).join('');
@@ -1030,20 +1381,21 @@ function renderDashboard(){
   const hot=_leads.filter(l=>l.priority==='Hot'||l.priority==='VIP').length;
   const closed=_leads.filter(l=>l.stage==='Closed').length;
   const todayFu=_followups.filter(f=>f.date===today&&f.status!=='done').length;
-  const pubCount=_properties.filter(p=>p.published===true).length;
+  const pubProps=_properties.filter(p=>p.published===true).length;
+  const pubVehs=_vehicles.filter(v=>v.published===true).length;
   document.getElementById('dash-total').textContent=_leads.length;
   document.getElementById('dash-props').textContent=_properties.length;
-  document.getElementById('dash-published').textContent=pubCount;
+  document.getElementById('dash-vehs').textContent=_vehicles.length;
+  document.getElementById('dash-published').textContent=pubProps+pubVehs;
   document.getElementById('dash-closed').textContent=closed;
   document.getElementById('stat-total').textContent=_leads.length;
   document.getElementById('stat-closed').textContent=closed;
-  document.getElementById('stat-hot').textContent=hot;
+  document.getElementById('stat-vehs').textContent=_vehicles.length;
   document.getElementById('todayFuBadge').textContent=todayFu;
   ['New','Site Visit','Negotiation','Closed'].forEach((s,i)=>{
     const key=['new','site','nego','closed'][i];
     const f=_leads.filter(l=>l.stage===s);
-    const cEl=document.getElementById('pc-'+key);
-    if(cEl)cEl.textContent=f.length+' lead'+(f.length!==1?'s':'');
+    const cEl=document.getElementById('pc-'+key);if(cEl)cEl.textContent=f.length+' lead'+(f.length!==1?'s':'');
     const lEl=document.getElementById('pc-leads-'+key);
     if(lEl)lEl.innerHTML=f.length===0?`<div style="font-size:11px;color:var(--text3);padding:8px;text-align:center">No leads</div>`:f.slice(0,4).map(l=>`<div class="lead-mini" onclick="setView('leads')"><div class="lm-name">${esc(l.name)}</div><div class="lm-prop">${esc(l.location||'')}</div><div class="lm-budget">${esc(l.budget||'—')}</div></div>`).join('');
   });
@@ -1056,8 +1408,7 @@ function renderDashboard(){
 // SAVE — LEAD
 // ════════════════════════════════
 async function saveLead(){
-  const name=document.getElementById('f-name').value.trim();
-  const phone=document.getElementById('f-phone').value.trim();
+  const name=document.getElementById('f-name').value.trim();const phone=document.getElementById('f-phone').value.trim();
   if(!name||!phone){showToast('⚠️ Name and phone required','error');return;}
   const data={name,phone,email:document.getElementById('f-email').value.trim(),budget:document.getElementById('f-budget').value.trim(),proptype:document.getElementById('f-proptype').value,location:document.getElementById('f-location').value.trim(),source:document.getElementById('f-source').value,stage:document.getElementById('f-stage').value||'New',priority:document.getElementById('f-priority').value||'Normal',wa:document.getElementById('f-wa').value.trim(),notes:document.getElementById('f-notes').value.trim()};
   const btn=document.getElementById('saveLeadBtn');btn.disabled=true;btn.textContent='Saving…';
@@ -1067,9 +1418,7 @@ async function saveLead(){
 }
 
 async function quickAddLead(){
-  const name=document.getElementById('quick-name').value.trim();
-  const phone=document.getElementById('quick-phone').value.trim();
-  const budget=document.getElementById('quick-budget').value.trim();
+  const name=document.getElementById('quick-name').value.trim();const phone=document.getElementById('quick-phone').value.trim();const budget=document.getElementById('quick-budget').value.trim();
   if(!name||!phone){showToast('⚠️ Name and phone required','error');return;}
   try{await addLeadToDB({name,phone,budget,stage:'New',priority:'Normal',email:'',location:'',source:'',notes:''});document.getElementById('quick-name').value='';document.getElementById('quick-phone').value='';document.getElementById('quick-budget').value='';showToast('✅ Lead added!','success');}
   catch(e){showToast('❌ '+e.message,'error');}
@@ -1079,12 +1428,8 @@ async function quickAddLead(){
 // SAVE — FOLLOW-UP
 // ════════════════════════════════
 async function saveFollowUp(){
-  const leadId=document.getElementById('fu-leadId').value;
-  const date=document.getElementById('fu-date').value;
-  const notes=document.getElementById('fu-notes').value.trim();
-  if(!leadId){showToast('⚠️ Select a lead','error');return;}
-  if(!date){showToast('⚠️ Select a date','error');return;}
-  if(!notes){showToast('⚠️ Add a note','error');return;}
+  const leadId=document.getElementById('fu-leadId').value;const date=document.getElementById('fu-date').value;const notes=document.getElementById('fu-notes').value.trim();
+  if(!leadId){showToast('⚠️ Select a lead','error');return;}if(!date){showToast('⚠️ Select a date','error');return;}if(!notes){showToast('⚠️ Add a note','error');return;}
   const lead=_leads.find(l=>l.id===leadId);
   const data={leadId,leadName:lead?lead.name:'',type:document.getElementById('fu-type').value,date,time:document.getElementById('fu-time').value,priority:document.getElementById('fu-priority').value,notes,status:'pending'};
   const btn=document.getElementById('saveFuBtn');btn.disabled=true;btn.textContent='Saving…';
@@ -1092,67 +1437,94 @@ async function saveFollowUp(){
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save';}
 }
-
 async function markFuDone(id){try{await updateFollowUpInDB(id,{status:'done'});showToast('✅ Done!','success');}catch(e){showToast('❌ '+e.message,'error');}}
 
 // ════════════════════════════════
 // SAVE — PROPERTY
 // ════════════════════════════════
 async function saveProperty(){
-  const title=document.getElementById('p-title').value.trim();
-  const type=document.getElementById('p-type').value;
-  const location=document.getElementById('p-location').value.trim();
-  const sName=document.getElementById('p-supplier-name').value.trim();
-  const sPhone=document.getElementById('p-supplier-phone').value.trim();
-  if(!title){showToast('⚠️ Title required','error');return;}
-  if(!type){showToast('⚠️ Select type','error');return;}
-  if(!location){showToast('⚠️ Location required','error');return;}
-  if(!sName||!sPhone){showToast('⚠️ Supplier name & phone required','error');return;}
+  const title=document.getElementById('p-title').value.trim();const type=document.getElementById('p-type').value;const location=document.getElementById('p-location').value.trim();const sName=document.getElementById('p-supplier-name').value.trim();const sPhone=document.getElementById('p-supplier-phone').value.trim();
+  if(!title){showToast('⚠️ Title required','error');return;}if(!type){showToast('⚠️ Select type','error');return;}if(!location){showToast('⚠️ Location required','error');return;}if(!sName||!sPhone){showToast('⚠️ Supplier name & phone required','error');return;}
   const published=document.getElementById('p-publish').checked;
   const data={title,type,location,survey:document.getElementById('p-survey').value.trim(),area:document.getElementById('p-area').value.trim(),price:document.getElementById('p-price').value.trim(),ppu:document.getElementById('p-ppu').value.trim(),zone:document.getElementById('p-zone').value,facing:document.getElementById('p-facing').value,status:document.getElementById('p-status').value||'Available',features:document.getElementById('p-features').value.trim(),description:document.getElementById('p-desc').value.trim(),supplierName:sName,supplierPhone:sPhone,supplierEmail:document.getElementById('p-supplier-email').value.trim(),supplierType:document.getElementById('p-supplier-type').value,commission:document.getElementById('p-commission').value.trim(),negotiable:document.getElementById('p-negotiable').value,titleStatus:document.getElementById('p-title-status').value,doc712:document.getElementById('p-712').value,naOrder:document.getElementById('p-na').value,legalNotes:document.getElementById('p-legal').value.trim(),published};
   const btn=document.getElementById('savePropBtn');btn.disabled=true;btn.textContent='Saving…';
-  try{
-    if(_editingPropId){await updatePropertyInDB(_editingPropId,data);showToast(published?'✅ Updated & published to portal!':'✅ Property updated!','success');}
-    else{await addPropertyToDB(data);showToast(published?'🌐 Property listed & published!':'✅ Property listed!','success');}
-    closePropModal();
-  }catch(e){showToast('❌ '+e.message,'error');}
+  try{if(_editingPropId){await updatePropertyInDB(_editingPropId,data);showToast(published?'✅ Updated & published!':'✅ Property updated!','success');}else{await addPropertyToDB(data);showToast(published?'🌐 Property listed & published!':'✅ Property listed!','success');}closePropModal();}
+  catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Property';}
+}
+
+// ════════════════════════════════
+// SAVE — VEHICLE
+// ════════════════════════════════
+async function saveVehicle(){
+  const type=document.getElementById('v-type').value;
+  const brand=document.getElementById('v-brand').value.trim();
+  const location=document.getElementById('v-location').value.trim();
+  const sName=document.getElementById('v-seller-name').value.trim();
+  const sPhone=document.getElementById('v-seller-phone').value.trim();
+  const price=document.getElementById('v-price').value.trim();
+  if(!type){showToast('⚠️ Select vehicle type','error');return;}
+  if(!brand){showToast('⚠️ Brand/Make required','error');return;}
+  if(!location){showToast('⚠️ Location required','error');return;}
+  if(!sName||!sPhone){showToast('⚠️ Seller name & phone required','error');return;}
+  if(!price){showToast('⚠️ Price required','error');return;}
+  const model=document.getElementById('v-model').value.trim();
+  const published=document.getElementById('v-publish').checked;
+  const data={
+    vehicleType:type, brand, model,
+    title:brand+(model?' '+model:''),
+    year:document.getElementById('v-year').value,
+    fuelType:document.getElementById('v-fuel').value,
+    kmDriven:document.getElementById('v-km').value.trim(),
+    price, location,
+    status:document.getElementById('v-status').value||'Available',
+    condition:document.getElementById('v-condition').value,
+    color:document.getElementById('v-color').value.trim(),
+    negotiable:document.getElementById('v-negotiable').value,
+    insurance:document.getElementById('v-insurance').value,
+    owners:document.getElementById('v-owners').value,
+    description:document.getElementById('v-desc').value.trim(),
+    sellerName:sName, supplierName:sName,
+    sellerPhone:sPhone, supplierPhone:sPhone,
+    sellerEmail:document.getElementById('v-seller-email').value.trim(),
+    sellerType:document.getElementById('v-seller-type').value,
+    commission:document.getElementById('v-commission').value.trim(),
+    source:document.getElementById('v-source').value||'Direct Entry',
+    notes:document.getElementById('v-notes').value.trim(),
+    published,
+    role:'seller'
+  };
+  const btn=document.getElementById('saveVehBtn');btn.disabled=true;btn.textContent='Saving…';
+  try{
+    if(_editingVehId){await updateVehicleInDB(_editingVehId,data);showToast(published?'✅ Vehicle updated & published!':'✅ Vehicle updated!','success');}
+    else{await addVehicleToDB(data);showToast(published?'🌐 Vehicle listed & published!':'✅ Vehicle listed!','success');}
+    closeVehicleModal();
+  }catch(e){showToast('❌ '+e.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Vehicle';}
 }
 
 // ════════════════════════════════
 // DELETE
 // ════════════════════════════════
-function confirmDeleteLead(id,name){if(!confirm(`Delete lead "${name}"?`))return;deleteLeadFromDB(id).then(()=>showToast(`🗑 Deleted`,'success')).catch(e=>showToast('❌ '+e.message,'error'));}
+function confirmDeleteLead(id,name){if(!confirm(`Delete lead "${name}"?`))return;deleteLeadFromDB(id).then(()=>showToast('🗑 Deleted','success')).catch(e=>showToast('❌ '+e.message,'error'));}
 function confirmDeleteFu(id){if(!confirm('Delete this follow-up?'))return;deleteFollowUpFromDB(id).then(()=>showToast('🗑 Deleted','success')).catch(e=>showToast('❌ '+e.message,'error'));}
-function confirmDeleteProp(id,title){if(!confirm(`Delete "${title}"?`))return;deletePropertyFromDB(id).then(()=>showToast(`🗑 Deleted`,'success')).catch(e=>showToast('❌ '+e.message,'error'));}
+function confirmDeleteProp(id,title){if(!confirm(`Delete "${title}"?`))return;deletePropertyFromDB(id).then(()=>showToast('🗑 Deleted','success')).catch(e=>showToast('❌ '+e.message,'error'));}
+function confirmDeleteVeh(id,title){if(!confirm(`Delete vehicle "${title}"?`))return;deleteVehicleFromDB(id).then(()=>showToast('🗑 Deleted','success')).catch(e=>showToast('❌ '+e.message,'error'));}
 
 // ════════════════════════════════
 // VIEW PROPERTY DETAIL
 // ════════════════════════════════
 function viewProperty(id){
   const p=_properties.find(x=>x.id===id);if(!p)return;
-  const icon=getPropIcon(p.type);const stCls=getPropStatusClass(p.status);
-  const isPub=p.published===true;
+  const icon=getPropIcon(p.type);const stCls=getPropStatusClass(p.status);const isPub=p.published===true;
   document.getElementById('propDetailTitle').textContent=p.title||'Property Details';
   document.getElementById('propDetailEditBtn').onclick=()=>{closePropDetail();openPropertyModal(id);};
   document.getElementById('propDetailBody').innerHTML=`
-    <div class="prop-detail-header">
-      <div class="prop-detail-icon">${icon}</div>
-      <div class="prop-detail-meta">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <span class="status-pill ${stCls}">${p.status}</span>
-          ${isPub?`<span class="status-pill" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,.2)">🌐 Live on Portal</span>`:`<span class="status-pill" style="background:var(--bg4);color:var(--text3)">⚫ Not Published</span>`}
-        </div>
-        <div class="prop-detail-title">${esc(p.title)}</div>
-        <div class="prop-detail-loc">📍 ${esc(p.location)} ${p.survey?'· '+p.survey:''}</div>
-        <div class="prop-detail-price">${esc(p.price||'Price not set')}</div>
-      </div>
-    </div>
-    <div style="margin-bottom:14px;display:flex;gap:8px">
-      <button class="pub-btn ${isPub?'published':'draft'}" style="flex:none;padding:0 16px;height:32px" onclick="togglePublish('${p.id}',${isPub},event)">
-        ${isPub?'🌐 Published — Click to Unpublish':'⚫ Draft — Click to Publish'}
-      </button>
-    </div>
+    <div class="prop-detail-header"><div class="prop-detail-icon">${icon}</div><div class="prop-detail-meta">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="status-pill ${stCls}">${p.status}</span>${isPub?`<span class="status-pill" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,.2)">🌐 Live</span>`:`<span class="status-pill" style="background:var(--bg4);color:var(--text3)">⚫ Draft</span>`}</div>
+      <div class="prop-detail-title">${esc(p.title)}</div><div class="prop-detail-loc">📍 ${esc(p.location)} ${p.survey?'· '+p.survey:''}</div>
+      <div class="prop-detail-price">${esc(p.price||'Price not set')}</div></div></div>
+    <div style="margin-bottom:14px"><button class="pub-btn ${isPub?'published':'draft'}" style="flex:none;padding:0 16px;height:32px" onclick="togglePublish('${p.id}',${isPub},event)">${isPub?'🌐 Published — Click to Unpublish':'⚫ Draft — Click to Publish'}</button></div>
     <div class="prop-info-grid">
       <div class="prop-info-item"><div class="prop-info-label">Area</div><div class="prop-info-value">${esc(p.area||'—')}</div></div>
       <div class="prop-info-item"><div class="prop-info-label">Facing</div><div class="prop-info-value">${esc(p.facing||'—')}</div></div>
@@ -1177,7 +1549,66 @@ function viewProperty(id){
 function closePropDetail(){document.getElementById('propDetailOverlay').classList.remove('open');}
 
 // ════════════════════════════════
-// MODAL HELPERS
+// VIEW VEHICLE DETAIL
+// ════════════════════════════════
+function viewVehicle(id){
+  const v=_vehicles.find(x=>x.id===id);if(!v)return;
+  const icon=getVehIcon(v.vehicleType,v.brand);
+  const stCls=getVehStatusClass(v.status);const isPub=v.published===true;
+  const title=v.brand?(v.brand+(v.model?' '+v.model:'')):(v.title||'Vehicle');
+  document.getElementById('vehDetailTitle').textContent=title;
+  document.getElementById('vehDetailEditBtn').onclick=()=>{closeVehDetail();openVehicleModal(id);};
+  const sellerPhone=v.sellerPhone||v.supplierPhone||'';
+  document.getElementById('vehDetailBody').innerHTML=`
+    <div class="prop-detail-header">
+      <div class="prop-detail-icon orange">${icon}</div>
+      <div class="prop-detail-meta">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="status-pill ${stCls}">${v.status||'Available'}</span>
+          ${v.vehicleType?`<span class="status-pill" style="background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2)">${esc(v.vehicleType)}</span>`:''}
+          ${isPub?`<span class="status-pill" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,.2)">🌐 Live</span>`:`<span class="status-pill" style="background:var(--bg4);color:var(--text3)">⚫ Draft</span>`}
+        </div>
+        <div class="prop-detail-title">${esc(title)}</div>
+        <div class="prop-detail-loc">📍 ${esc(v.location||'—')}</div>
+        <div class="prop-detail-price orange">${esc(v.price||'Price not set')}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px"><button class="pub-btn ${isPub?'published veh-pub':'draft'}" style="flex:none;padding:0 16px;height:32px" onclick="toggleVehPublish('${v.id}',${isPub},event)">${isPub?'🌐 Published — Click to Unpublish':'⚫ Draft — Click to Publish'}</button></div>
+    <div class="prop-info-grid">
+      <div class="prop-info-item"><div class="prop-info-label">Brand</div><div class="prop-info-value">${esc(v.brand||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Model</div><div class="prop-info-value">${esc(v.model||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Year</div><div class="prop-info-value">${esc(v.year||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Fuel Type</div><div class="prop-info-value">${esc(v.fuelType||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">KM Driven</div><div class="prop-info-value">${esc(v.kmDriven||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Condition</div><div class="prop-info-value">${esc(v.condition||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Color</div><div class="prop-info-value">${esc(v.color||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Insurance</div><div class="prop-info-value">${esc(v.insurance||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Negotiable</div><div class="prop-info-value" style="${v.negotiable==='Yes'?'color:var(--green)':''}">${esc(v.negotiable||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">No. of Owners</div><div class="prop-info-value">${esc(v.owners||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Source</div><div class="prop-info-value">${esc(v.source||'—')}</div></div>
+      <div class="prop-info-item"><div class="prop-info-label">Commission</div><div class="prop-info-value" style="color:var(--orange)">${esc(v.commission||'—')}</div></div>
+    </div>
+    ${v.description?`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Description</div><div class="fu-body">${esc(v.description)}</div></div>`:''}
+    ${v.notes?`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Internal Notes</div><div class="fu-body" style="border-left:3px solid var(--orange)">${esc(v.notes)}</div></div>`:''}
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">👤 Seller Details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;font-weight:600">Name</div><div style="font-size:13px;font-weight:600;color:var(--text)">${esc(v.sellerName||v.supplierName||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;font-weight:600">Phone</div><div style="font-size:13px;font-family:'JetBrains Mono',monospace">${esc(sellerPhone||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;font-weight:600">Email</div><div style="font-size:13px">${esc(v.sellerEmail||'—')}</div></div>
+        <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;font-weight:600">Seller Type</div><div style="font-size:13px">${esc(v.sellerType||v.role||'—')}</div></div>
+      </div>
+      ${sellerPhone?`<div style="display:flex;gap:8px;margin-top:12px">
+        <a href="tel:${esc(sellerPhone)}" style="flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--bg4);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);text-decoration:none;transition:all .15s" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">📞 Call Seller</a>
+        <a href="https://wa.me/${sellerPhone.replace(/[^0-9]/g,'')}?text=Hi, I'm following up about your ${encodeURIComponent(title)}" target="_blank" style="flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--green-dim);border:1px solid rgba(76,175,125,.3);border-radius:8px;font-size:12px;font-weight:600;color:var(--green);text-decoration:none;">💬 WhatsApp</a>
+      </div>`:''}
+    </div>`;
+  document.getElementById('vehDetailOverlay').classList.add('open');
+}
+function closeVehDetail(){document.getElementById('vehDetailOverlay').classList.remove('open');}
+
+// ════════════════════════════════
+// MODAL HELPERS — LEADS / FU / PROPS
 // ════════════════════════════════
 function openLeadModal(leadId){
   _editingLeadId=leadId||null;
@@ -1194,8 +1625,7 @@ function openFollowUpModal(fuId,presetLeadId){
   const sel=document.getElementById('fu-leadId');
   sel.innerHTML='<option value="">Select a lead</option>'+_leads.map(l=>`<option value="${l.id}">${esc(l.name)} ${l.phone?'('+l.phone+')':''}</option>`).join('');
   document.getElementById('fu-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('fu-time').value='10:00';
-  document.getElementById('fu-notes').value='';
+  document.getElementById('fu-time').value='10:00';document.getElementById('fu-notes').value='';
   if(presetLeadId)document.getElementById('fu-leadId').value=presetLeadId;
   if(fuId){const fu=_followups.find(f=>f.id===fuId);if(fu){document.getElementById('fu-leadId').value=fu.leadId||'';document.getElementById('fu-type').value=fu.type||'Call';document.getElementById('fu-date').value=fu.date||'';document.getElementById('fu-time').value=fu.time||'10:00';document.getElementById('fu-priority').value=fu.priority||'Normal';document.getElementById('fu-notes').value=fu.notes||'';}}
   document.getElementById('fuModalOverlay').classList.add('open');
@@ -1207,21 +1637,41 @@ function openPropertyModal(propId){
   document.getElementById('propModalTitle').textContent=propId?'Edit Property':'Add Property';
   const fields=['title','type','location','survey','area','price','ppu','zone','facing','status','features','desc','supplier-name','supplier-phone','supplier-email','supplier-type','commission','negotiable','title-status','712','na','legal'];
   fields.forEach(f=>{const el=document.getElementById('p-'+f);if(el)el.value='';});
-  document.getElementById('p-status').value='Available';
-  document.getElementById('p-negotiable').value='Yes';
-  document.getElementById('p-supplier-type').value='Direct Owner';
-  document.getElementById('p-publish').checked=false;
+  document.getElementById('p-status').value='Available';document.getElementById('p-negotiable').value='Yes';document.getElementById('p-supplier-type').value='Direct Owner';document.getElementById('p-publish').checked=false;
   if(propId){
     const p=_properties.find(x=>x.id===propId);
-    if(p){
-      const map={title:'title',type:'type',location:'location',survey:'survey',area:'area',price:'price',ppu:'ppu',zone:'zone',facing:'facing',status:'status',features:'features',description:'desc',supplierName:'supplier-name',supplierPhone:'supplier-phone',supplierEmail:'supplier-email',supplierType:'supplier-type',commission:'commission',negotiable:'negotiable',titleStatus:'title-status',doc712:'712',naOrder:'na',legalNotes:'legal'};
-      Object.entries(map).forEach(([key,fId])=>{const el=document.getElementById('p-'+fId);if(el&&p[key]!==undefined)el.value=p[key];});
-      document.getElementById('p-publish').checked=p.published===true;
-    }
+    if(p){const map={title:'title',type:'type',location:'location',survey:'survey',area:'area',price:'price',ppu:'ppu',zone:'zone',facing:'facing',status:'status',features:'features',description:'desc',supplierName:'supplier-name',supplierPhone:'supplier-phone',supplierEmail:'supplier-email',supplierType:'supplier-type',commission:'commission',negotiable:'negotiable',titleStatus:'title-status',doc712:'712',naOrder:'na',legalNotes:'legal'};Object.entries(map).forEach(([key,fId])=>{const el=document.getElementById('p-'+fId);if(el&&p[key]!==undefined)el.value=p[key];});document.getElementById('p-publish').checked=p.published===true;}
   }
   document.getElementById('propModalOverlay').classList.add('open');
 }
 function closePropModal(){document.getElementById('propModalOverlay').classList.remove('open');_editingPropId=null;}
+
+// ════════════════════════════════
+// MODAL HELPERS — VEHICLES
+// ════════════════════════════════
+function openVehicleModal(vehId){
+  _editingVehId=vehId||null;
+  document.getElementById('vehModalTitle').textContent=vehId?'Edit Vehicle':'Add Vehicle Listing';
+  // Clear all fields
+  ['type','brand','model','year','fuel','km','price','location','status','condition','color','negotiable','insurance','owners','desc','seller-name','seller-phone','seller-email','seller-type','commission','source','notes'].forEach(f=>{const el=document.getElementById('v-'+f);if(el)el.value='';});
+  document.getElementById('v-status').value='Available';
+  document.getElementById('v-negotiable').value='Yes';
+  document.getElementById('v-seller-type').value='Direct Owner';
+  document.getElementById('v-publish').checked=false;
+  if(vehId){
+    const v=_vehicles.find(x=>x.id===vehId);
+    if(v){
+      const map={vehicleType:'type',brand:'brand',model:'model',year:'year',fuelType:'fuel',kmDriven:'km',price:'price',location:'location',status:'status',condition:'condition',color:'color',negotiable:'negotiable',insurance:'insurance',owners:'owners',description:'desc',sellerType:'seller-type',commission:'commission',source:'source',notes:'notes'};
+      Object.entries(map).forEach(([key,fId])=>{const el=document.getElementById('v-'+fId);if(el&&v[key]!==undefined)el.value=v[key];});
+      const sellerNameEl=document.getElementById('v-seller-name');if(sellerNameEl)sellerNameEl.value=v.sellerName||v.supplierName||'';
+      const sellerPhoneEl=document.getElementById('v-seller-phone');if(sellerPhoneEl)sellerPhoneEl.value=v.sellerPhone||v.supplierPhone||'';
+      const sellerEmailEl=document.getElementById('v-seller-email');if(sellerEmailEl)sellerEmailEl.value=v.sellerEmail||'';
+      document.getElementById('v-publish').checked=v.published===true;
+    }
+  }
+  document.getElementById('vehModalOverlay').classList.add('open');
+}
+function closeVehicleModal(){document.getElementById('vehModalOverlay').classList.remove('open');_editingVehId=null;}
 
 // ════════════════════════════════
 // VIEW TOGGLE
@@ -1233,6 +1683,14 @@ function setPropView(mode){
   document.getElementById('vt-grid').classList.toggle('active',mode==='grid');
   document.getElementById('vt-table').classList.toggle('active',mode==='table');
   renderProperties();
+}
+function setVehView(mode){
+  _vehViewMode=mode;
+  document.getElementById('vehsGridView').style.display=mode==='grid'?'block':'none';
+  document.getElementById('vehsTableView').style.display=mode==='table'?'block':'none';
+  document.getElementById('vvt-grid').classList.toggle('active',mode==='grid');
+  document.getElementById('vvt-table').classList.toggle('active',mode==='table');
+  renderVehicles();
 }
 
 // ════════════════════════════════
@@ -1263,6 +1721,7 @@ function updateNavCounts(){
   document.getElementById('nav-fu-count').textContent=todayFu;
   document.getElementById('todayFuBadge').textContent=todayFu;
   document.getElementById('nav-props-count').textContent=_properties.length;
+  document.getElementById('nav-vehs-count').textContent=_vehicles.length;
 }
 
 // ════════════════════════════════
@@ -1270,6 +1729,7 @@ function updateNavCounts(){
 // ════════════════════════════════
 document.getElementById('leadsToolbar').addEventListener('click',e=>{const chip=e.target.closest('.filter-chip');if(!chip)return;document.querySelectorAll('#leadsToolbar .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderLeads(chip.dataset.filter);});
 document.getElementById('propsToolbar').addEventListener('click',e=>{const chip=e.target.closest('.filter-chip');if(!chip)return;document.querySelectorAll('#propsToolbar .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderProperties(chip.dataset.pfilter);});
+document.getElementById('vehsToolbar').addEventListener('click',e=>{const chip=e.target.closest('.filter-chip');if(!chip)return;document.querySelectorAll('#vehsToolbar .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderVehicles(chip.dataset.vfilter);});
 document.querySelectorAll('.fu-type-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.fu-type-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');renderFollowUps(item.dataset.type);}));
 
 // ════════════════════════════════
@@ -1291,13 +1751,13 @@ function buildMiniCal(){
 // UTILITIES
 // ════════════════════════════════
 function setDbStatus(ok,msg){const dot=document.getElementById('dbDot');const txt=document.getElementById('dbStatusText');dot.className='db-dot '+(ok?'connected':'error');txt.textContent=msg;}
-function updateDate(){const now=new Date();const h=now.getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('dashGreeting').textContent=g+' ☀️';document.getElementById('dashDate').textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · Real Estate CRM';}
+function updateDate(){const now=new Date();const h=now.getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('dashGreeting').textContent=g+' ☀️';document.getElementById('dashDate').textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · SalesFun CRM';}
 function formatDate(s){return new Date(s).toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long'});}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 let _toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');const icon=type==='error'?'❌':type==='info'?'💡':'✅';document.getElementById('toastIcon').textContent=icon;document.getElementById('toastMsg').textContent=msg;t.className='toast show '+type;clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
-window.addEventListener('load',()=>{updateDate();buildMiniCal();if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();}});
+window.addEventListener('load',()=>{updateDate();buildMiniCal();populateVehYears();if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();}});
 </script>
 </body>
 </html>
