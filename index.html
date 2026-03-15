@@ -6,6 +6,9 @@
 <title>SalesFun — Real Estate & Vehicle CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- Google Identity Services (for Google Contacts OAuth) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -69,6 +72,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .notif-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .2s;position:relative;}
 .notif-badge{position:absolute;top:-3px;right:-3px;width:15px;height:15px;background:var(--red);border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2);}
 .avatar{width:32px;height:32px;background:linear-gradient(135deg,#8b4513,var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
+
+/* ── GOOGLE CONTACTS SYNC MODAL ── */
+.gc-modal{max-width:640px;width:95vw;max-height:85vh;display:flex;flex-direction:column;}
+.gc-modal .modal-body{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:12px;padding:16px 20px;}
+.gc-setup-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:16px;}
+.gc-setup-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.gc-setup-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;}
+.gc-client-row{display:flex;gap:8px;align-items:center;}
+.gc-client-input{flex:1;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace;outline:none;}
+.gc-client-input:focus{border-color:var(--gold);}
+.gc-client-input::placeholder{color:var(--text3);}
+.gc-connect-btn{height:32px;padding:0 14px;background:linear-gradient(135deg,#4285f4,#34a0f5);border:none;color:#fff;font-family:inherit;font-size:12px;font-weight:600;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:opacity .2s;}
+.gc-connect-btn:hover{opacity:.9;}
+.gc-connect-btn:disabled{opacity:.5;cursor:not-allowed;}
+.gc-contacts-header{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.gc-contacts-title{font-size:13px;font-weight:600;color:var(--text);}
+.gc-contacts-sub{font-size:11px;color:var(--text3);}
+.gc-search{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 10px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.gc-search input{background:none;border:none;outline:none;color:var(--text);font-size:12px;width:100%;font-family:inherit;}
+.gc-search input::placeholder{color:var(--text3);}
+.gc-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;min-height:0;}
+.gc-list::-webkit-scrollbar{width:4px;}
+.gc-list::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
+.gc-contact-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);transition:border-color .15s;cursor:pointer;}
+.gc-contact-item:hover{border-color:var(--border2);}
+.gc-contact-item.gc-duplicate{opacity:.5;}
+.gc-contact-item.gc-selected{border-color:rgba(212,168,67,.4);background:var(--gold-dim);}
+.gc-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--bg4),var(--bg5));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0;}
+.gc-info{flex:1;min-width:0;}
+.gc-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gc-phone{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.gc-email{font-size:11px;color:var(--text3);}
+.gc-dup-badge{font-size:10px;background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.3);border-radius:20px;padding:2px 7px;flex-shrink:0;}
+.gc-new-badge{font-size:10px;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.3);border-radius:20px;padding:2px 7px;flex-shrink:0;}
+.gc-checkbox{width:16px;height:16px;accent-color:var(--gold);flex-shrink:0;}
+.gc-footer-info{font-size:11px;color:var(--text3);flex-shrink:0;}
+.gc-empty{text-align:center;padding:40px 20px;color:var(--text3);}
+.gc-empty-icon{font-size:32px;margin-bottom:8px;}
+.gc-empty p{font-size:12px;}
 
 /* ── LAYOUT ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
@@ -421,6 +463,10 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <div class="notif-badge" id="todayFuBadge">0</div>
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
+    <button class="t-btn" id="googleSyncBtn" onclick="syncGoogleContacts()" title="Import contacts from Google Contacts">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Sync Contacts
+    </button>
     <button class="t-btn gold" onclick="openLeadModal()">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add Lead
@@ -710,6 +756,82 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 
 </div><!-- end main -->
 </div><!-- end app-body -->
+
+<!-- ════════ GOOGLE CONTACTS SYNC MODAL ════════ -->
+<div class="modal-overlay" id="gcModalOverlay" onclick="if(event.target===this)closeGcModal()">
+  <div class="modal gc-modal">
+    <div class="modal-header">
+      <h3 id="gcModalTitle">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Sync Google Contacts
+      </h3>
+      <div class="modal-close" onclick="closeGcModal()">✕</div>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step 1: Setup (shown when no client ID saved) -->
+      <div id="gcSetupStep" style="display:none">
+        <div class="gc-setup-box">
+          <div class="gc-setup-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Google Cloud Setup Required (One-time)
+          </div>
+          <div class="gc-setup-desc">
+            To sync your Google Contacts, you need a free Google Cloud OAuth Client ID:<br><br>
+            1. Go to <strong>console.cloud.google.com</strong> → New Project<br>
+            2. Enable <strong>People API</strong><br>
+            3. Create <strong>OAuth 2.0 Client ID</strong> → Web application<br>
+            4. Add your site URL to <em>Authorised JavaScript origins</em><br>
+            5. Copy the <strong>Client ID</strong> and paste it below
+          </div>
+          <div class="gc-client-row">
+            <input class="gc-client-input" id="gcClientIdInput" placeholder="Paste your Google OAuth Client ID here (ends with .apps.googleusercontent.com)">
+            <button class="gc-connect-btn" onclick="saveGcClientId()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Save & Connect
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Loading state -->
+      <div id="gcLoadingStep" style="display:none;text-align:center;padding:40px">
+        <div class="spinner" style="width:28px;height:28px;border-width:3px;margin:0 auto 12px"></div>
+        <div style="font-size:13px;color:var(--text2)" id="gcLoadingMsg">Connecting to Google…</div>
+      </div>
+
+      <!-- Step 3: Contacts list -->
+      <div id="gcContactsStep" style="display:none;flex:1;overflow:hidden;flex-direction:column;gap:10px">
+        <div class="gc-contacts-header">
+          <div>
+            <div class="gc-contacts-title" id="gcContactsTitle">Contacts from Google</div>
+            <div class="gc-contacts-sub" id="gcContactsSub"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="t-btn" style="font-size:11px;height:28px;padding:0 10px" onclick="gcSelectAll()">Select All New</button>
+            <button class="t-btn" style="font-size:11px;height:28px;padding:0 10px" onclick="gcSelectNone()">Clear</button>
+          </div>
+        </div>
+        <div class="gc-search">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="gcSearchInput" placeholder="Search contacts…" oninput="renderGcContacts(this.value)">
+        </div>
+        <div class="gc-list" id="gcContactsList"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-top:4px;border-top:1px solid var(--border)">
+          <div class="gc-footer-info" id="gcFooterInfo">0 selected</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-cancel" onclick="closeGcModal()">Cancel</button>
+            <button class="btn-save" id="gcImportBtn" onclick="importGcSelected()" disabled>
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Import Selected
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- ════════ ADD LEAD MODAL ════════ -->
 <div class="modal-overlay" id="leadModalOverlay" onclick="if(event.target===this)closeLeadModal()">
@@ -1758,6 +1880,251 @@ let _toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');const icon=type==='error'?'❌':type==='info'?'💡':'✅';document.getElementById('toastIcon').textContent=icon;document.getElementById('toastMsg').textContent=msg;t.className='toast show '+type;clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 window.addEventListener('load',()=>{updateDate();buildMiniCal();populateVehYears();if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();}});
+
+// ════════════════════════════════
+// GOOGLE CONTACTS SYNC
+// ════════════════════════════════
+const GC_STORAGE_KEY = 'salesfun_gc_client_id';
+const GC_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
+let _gcTokenClient = null;
+let _gcContacts = [];   // all fetched contacts
+let _gcSelected = new Set(); // selected contact indices
+
+function getGcClientId() {
+  return localStorage.getItem(GC_STORAGE_KEY) || '';
+}
+
+function saveGcClientId() {
+  const val = document.getElementById('gcClientIdInput').value.trim();
+  if (!val || !val.includes('.apps.googleusercontent.com')) {
+    showToast('Please enter a valid Google OAuth Client ID', 'error');
+    return;
+  }
+  localStorage.setItem(GC_STORAGE_KEY, val);
+  showToast('Client ID saved!', 'success');
+  _gcTokenClient = null; // reset so it reinitialises
+  startGcOAuth();
+}
+
+function syncGoogleContacts() {
+  document.getElementById('gcModalOverlay').classList.add('active');
+  // reset state
+  _gcContacts = [];
+  _gcSelected = new Set();
+  document.getElementById('gcSetupStep').style.display = 'none';
+  document.getElementById('gcLoadingStep').style.display = 'none';
+  document.getElementById('gcContactsStep').style.display = 'none';
+
+  const clientId = getGcClientId();
+  if (!clientId) {
+    document.getElementById('gcSetupStep').style.display = 'block';
+    document.getElementById('gcClientIdInput').value = '';
+    return;
+  }
+  startGcOAuth();
+}
+
+function startGcOAuth() {
+  showGcStep('loading');
+  document.getElementById('gcLoadingMsg').textContent = 'Connecting to Google…';
+
+  if (!window.google || !window.google.accounts) {
+    // GIS not loaded yet — wait a bit
+    setTimeout(startGcOAuth, 600);
+    return;
+  }
+
+  const clientId = getGcClientId();
+  _gcTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: GC_SCOPE,
+    callback: (resp) => {
+      if (resp.error) {
+        showGcStep('setup');
+        showToast('Google sign-in failed: ' + resp.error, 'error');
+        return;
+      }
+      fetchGcContacts(resp.access_token);
+    },
+    error_callback: (err) => {
+      showGcStep('setup');
+      showToast('OAuth error: ' + (err.message || err.type || 'unknown'), 'error');
+    }
+  });
+
+  _gcTokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function fetchGcContacts(token) {
+  showGcStep('loading');
+  document.getElementById('gcLoadingMsg').textContent = 'Loading your Google Contacts…';
+  let allContacts = [];
+  let nextPageToken = '';
+
+  try {
+    do {
+      const url = new URL('https://people.googleapis.com/v1/people/me/connections');
+      url.searchParams.set('personFields', 'names,phoneNumbers,emailAddresses');
+      url.searchParams.set('pageSize', '200');
+      url.searchParams.set('sortOrder', 'LAST_NAME_ASCENDING');
+      if (nextPageToken) url.searchParams.set('pageToken', nextPageToken);
+
+      const res = await fetch(url.toString(), {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || 'API error ' + res.status);
+      }
+
+      const data = await res.json();
+      allContacts = allContacts.concat(data.connections || []);
+      nextPageToken = data.nextPageToken || '';
+    } while (nextPageToken);
+
+    // filter: only contacts with at least a name or phone
+    _gcContacts = allContacts
+      .map(c => ({
+        name: c.names?.[0]?.displayName || '',
+        phone: normalisePhone(c.phoneNumbers?.[0]?.value || ''),
+        email: c.emailAddresses?.[0]?.value || ''
+      }))
+      .filter(c => c.name || c.phone)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    showGcStep('contacts');
+    renderGcContacts('');
+  } catch (e) {
+    showGcStep('setup');
+    showToast('Failed to fetch contacts: ' + e.message, 'error');
+  }
+}
+
+function normalisePhone(p) {
+  // strip spaces, dashes, brackets — keep +, digits
+  return p.replace(/[\s\-().]/g, '');
+}
+
+function isGcDuplicate(contact) {
+  if (!contact.phone) return false;
+  const norm = normalisePhone(contact.phone);
+  return _leads.some(l => normalisePhone(l.phone || '') === norm);
+}
+
+function renderGcContacts(search) {
+  const q = (search || '').toLowerCase();
+  const list = document.getElementById('gcContactsList');
+  const filtered = _gcContacts.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.email.toLowerCase().includes(q)
+  );
+
+  const newCount = _gcContacts.filter(c => !isGcDuplicate(c)).length;
+  const dupCount = _gcContacts.length - newCount;
+  document.getElementById('gcContactsTitle').textContent = `${_gcContacts.length} contacts found`;
+  document.getElementById('gcContactsSub').textContent = `${newCount} new · ${dupCount} already in CRM`;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="gc-empty"><div class="gc-empty-icon">🔍</div><p>No contacts match your search.</p></div>`;
+  } else {
+    list.innerHTML = filtered.map((c, i) => {
+      const realIdx = _gcContacts.indexOf(c);
+      const dup = isGcDuplicate(c);
+      const sel = _gcSelected.has(realIdx);
+      const initials = c.name.split(' ').map(w => w[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '?';
+      return `<div class="gc-contact-item${dup?' gc-duplicate':''}${sel?' gc-selected':''}" onclick="gcToggle(${realIdx})">
+        <input type="checkbox" class="gc-checkbox" ${sel?'checked':''} ${dup?'disabled':''} onclick="event.stopPropagation();gcToggle(${realIdx})">
+        <div class="gc-avatar">${esc(initials)}</div>
+        <div class="gc-info">
+          <div class="gc-name">${esc(c.name||'(No Name)')}</div>
+          <div class="gc-phone">${esc(c.phone||'No phone')}</div>
+          ${c.email?`<div class="gc-email">${esc(c.email)}</div>`:''}
+        </div>
+        ${dup?'<span class="gc-dup-badge">Already in CRM</span>':'<span class="gc-new-badge">New</span>'}
+      </div>`;
+    }).join('');
+  }
+
+  updateGcFooter();
+}
+
+function gcToggle(idx) {
+  const c = _gcContacts[idx];
+  if (!c || isGcDuplicate(c)) return;
+  if (_gcSelected.has(idx)) _gcSelected.delete(idx);
+  else _gcSelected.add(idx);
+  renderGcContacts(document.getElementById('gcSearchInput')?.value || '');
+}
+
+function gcSelectAll() {
+  _gcContacts.forEach((c, i) => { if (!isGcDuplicate(c)) _gcSelected.add(i); });
+  renderGcContacts(document.getElementById('gcSearchInput')?.value || '');
+}
+
+function gcSelectNone() {
+  _gcSelected.clear();
+  renderGcContacts(document.getElementById('gcSearchInput')?.value || '');
+}
+
+function updateGcFooter() {
+  const n = _gcSelected.size;
+  document.getElementById('gcFooterInfo').textContent = `${n} contact${n!==1?'s':''} selected`;
+  document.getElementById('gcImportBtn').disabled = n === 0;
+}
+
+async function importGcSelected() {
+  if (_gcSelected.size === 0) return;
+  const btn = document.getElementById('gcImportBtn');
+  btn.disabled = true;
+  btn.textContent = 'Importing…';
+
+  let imported = 0;
+  const errors = [];
+
+  for (const idx of _gcSelected) {
+    const c = _gcContacts[idx];
+    if (!c) continue;
+    try {
+      await addLeadToDB({
+        name: c.name,
+        phone: c.phone,
+        email: c.email,
+        budget: '',
+        proptype: '',
+        location: '',
+        source: 'Google Contacts',
+        stage: 'New',
+        priority: 'Normal',
+        wa: c.phone,
+        notes: 'Imported from Google Contacts'
+      });
+      imported++;
+    } catch (e) {
+      errors.push(c.name);
+    }
+  }
+
+  closeGcModal();
+  if (errors.length) {
+    showToast(`Imported ${imported} · ${errors.length} failed`, 'error');
+  } else {
+    showToast(`${imported} contact${imported!==1?'s':''} imported as leads!`, 'success');
+  }
+  setView('leads');
+}
+
+function showGcStep(step) {
+  document.getElementById('gcSetupStep').style.display   = step==='setup'    ? 'block' : 'none';
+  document.getElementById('gcLoadingStep').style.display  = step==='loading'  ? 'block' : 'none';
+  const contactsEl = document.getElementById('gcContactsStep');
+  contactsEl.style.display = step==='contacts' ? 'flex' : 'none';
+}
+
+function closeGcModal() {
+  document.getElementById('gcModalOverlay').classList.remove('active');
+  _gcContacts = [];
+  _gcSelected = new Set();
+}
 </script>
 </body>
 </html>
