@@ -6,6 +6,9 @@
 <title>SalesFun — Real Estate & Vehicle CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- Google Identity Services for OAuth2 -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -398,6 +401,70 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+
+/* ── GOOGLE CONTACTS ── */
+.gc-btn{height:32px;padding:0 12px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;font-weight:500;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.gc-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg4);}
+.gc-btn.connected{background:rgba(66,133,244,.12);border-color:rgba(66,133,244,.3);color:#7ab4f5;}
+.gc-btn.connected:hover{background:rgba(66,133,244,.22);}
+.gc-icon{width:14px;height:14px;flex-shrink:0;}
+.gc-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(66,133,244,.4);flex-shrink:0;}
+.gc-avatar-initials{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#34a853);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.gc-contact-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#7ab4f5;background:rgba(66,133,244,.1);border:1px solid rgba(66,133,244,.2);border-radius:20px;padding:2px 7px;margin-left:6px;vertical-align:middle;}
+.gc-contact-strip{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(66,133,244,.07);border:1px solid rgba(66,133,244,.15);border-radius:8px;margin-bottom:10px;}
+.gc-contact-strip-info{flex:1;min-width:0;}
+.gc-contact-strip-name{font-size:12px;font-weight:600;color:#7ab4f5;}
+.gc-contact-strip-meta{font-size:11px;color:var(--text3);margin-top:1px;}
+
+/* Google Contacts Import Modal */
+.gc-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;}
+.gc-modal-overlay.open{display:flex;}
+.gc-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:480px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.gc-modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.gc-modal-title{font-size:15px;font-weight:700;color:var(--text);}
+.gc-search-wrap{padding:12px 20px;border-bottom:1px solid var(--border);}
+.gc-search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;}
+.gc-search-input:focus{border-color:rgba(66,133,244,.5);}
+.gc-contacts-list{flex:1;overflow-y:auto;padding:8px 12px;}
+.gc-contacts-list::-webkit-scrollbar{width:5px;}
+.gc-contacts-list::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+.gc-contact-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+.gc-contact-row:hover{background:var(--bg3);border-color:var(--border);}
+.gc-contact-row-info{flex:1;min-width:0;}
+.gc-contact-row-name{font-size:13px;font-weight:600;color:var(--text);}
+.gc-contact-row-sub{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gc-empty{padding:32px;text-align:center;font-size:13px;color:var(--text3);}
+.gc-sync-banner{padding:10px 20px;background:var(--bg3);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.gc-sync-text{font-size:11px;color:var(--text3);}
+
+/* ── CONTACTS PAGE ── */
+.contacts-toolbar{padding:14px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.contacts-grid{flex:1;overflow-y:auto;padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.contacts-grid::-webkit-scrollbar{width:6px;}
+.contacts-grid::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+.contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s;animation:fadeUp .35s ease forwards;opacity:0;position:relative;}
+.contact-card:hover{border-color:var(--border2);}
+.contact-card.new-contact{border-color:rgba(66,133,244,.35);background:rgba(66,133,244,.04);}
+.cc-top{display:flex;align-items:center;gap:10px;}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cc-company{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cc-details{display:flex;flex-direction:column;gap:5px;}
+.cc-detail{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);}
+.cc-detail svg{flex-shrink:0;color:var(--text3);}
+.cc-actions{display:flex;gap:6px;margin-top:2px;}
+.cc-action-btn{flex:1;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-family:inherit;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s;}
+.cc-action-btn:hover{border-color:var(--border2);color:var(--text);}
+.cc-action-btn.import{background:rgba(66,133,244,.1);border-color:rgba(66,133,244,.25);color:#7ab4f5;}
+.cc-action-btn.import:hover{background:rgba(66,133,244,.2);}
+.cc-lead-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,.25);border-radius:20px;padding:2px 7px;}
+.cc-new-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;background:rgba(66,133,244,.15);color:#7ab4f5;border:1px solid rgba(66,133,244,.3);border-radius:20px;padding:2px 7px;}
+.contacts-sync-bar{padding:10px 24px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.sync-bar-dot{width:7px;height:7px;border-radius:50%;background:rgba(66,133,244,.5);flex-shrink:0;}
+.sync-bar-dot.active{background:#4285f4;box-shadow:0 0 6px rgba(66,133,244,.6);animation:pulse 1.5s infinite;}
+.contacts-search{flex:1;max-width:300px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;padding:0 10px;gap:7px;height:32px;}
+.contacts-search input{background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px;width:100%;}
+.contacts-search input::placeholder{color:var(--text3);}
 </style>
 </head>
 <body>
@@ -417,6 +484,15 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
       <div class="db-dot" id="dbDot"></div>
       <span id="dbStatusText">Connecting…</span>
     </div>
+    <button class="gc-btn" id="gcConnectBtn" onclick="handleGoogleContactsClick()" title="Connect Google Contacts">
+      <svg class="gc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      <span id="gcBtnText">Connect Contacts</span>
+    </button>
     <div class="notif-btn" onclick="setView('followups')">
       <div class="notif-badge" id="todayFuBadge">0</div>
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -449,6 +525,11 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Follow-ups
     <span class="nav-badge hot" id="nav-fu-count">0</span>
+  </div>
+  <div class="nav-item" id="nav-contacts" onclick="setView('contacts')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Google Contacts
+    <span class="nav-badge" id="nav-contacts-count" style="background:rgba(66,133,244,.12);color:#7ab4f5">0</span>
   </div>
   <div class="nav-section-label">Inventory</div>
   <div class="nav-item" id="nav-properties" onclick="setView('properties')">
@@ -708,6 +789,49 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
   </div>
 </div>
 
+<!-- ═══ CONTACTS VIEW ═══ -->
+<div class="view" id="view-contacts">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Google Contacts</h1>
+      <p id="contacts-subtitle">Sync your Google Contacts to enrich CRM data</p>
+    </div>
+    <div class="page-actions">
+      <button class="gc-btn" id="gcContactsPageSyncBtn" onclick="syncGoogleContacts()" style="height:34px;font-size:13px">
+        🔄 Sync Now
+      </button>
+      <button class="t-btn gold" id="gcContactsConnectBtn" onclick="connectGoogleContacts()" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Connect Google Account
+      </button>
+    </div>
+  </div>
+  <!-- Sync status bar -->
+  <div class="contacts-sync-bar">
+    <div class="sync-bar-dot" id="gcSyncDot"></div>
+    <span style="font-size:12px;color:var(--text2)" id="gcSyncBarText">Not connected — click Connect Google Account</span>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto" id="gcLastSyncTime"></span>
+    <span style="font-size:11px;color:#7ab4f5;background:rgba(66,133,244,.1);border:1px solid rgba(66,133,244,.2);border-radius:20px;padding:2px 9px" id="gcNewContactsBadge" style="display:none"></span>
+  </div>
+  <!-- Toolbar -->
+  <div class="contacts-toolbar">
+    <div class="contacts-search">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="contactsSearchInput" placeholder="Search contacts…" oninput="renderContactsPage(this.value)">
+    </div>
+    <div class="filter-chip active" data-cfilter="all" id="cc-chip-all" onclick="setContactsFilter('all')">All (<span id="cc-count-all">0</span>)</div>
+    <div class="filter-chip" data-cfilter="imported" id="cc-chip-imported" onclick="setContactsFilter('imported')">In CRM (<span id="cc-count-imported">0</span>)</div>
+    <div class="filter-chip" data-cfilter="new" id="cc-chip-new" onclick="setContactsFilter('new')">New (<span id="cc-count-new">0</span>)</div>
+  </div>
+  <!-- Contact cards grid -->
+  <div class="contacts-grid" id="contactsGrid">
+    <div class="loading" style="grid-column:1/-1">
+      <div class="spinner"></div>
+      Connect Google Contacts to see them here
+    </div>
+  </div>
+</div>
+
 </div><!-- end main -->
 </div><!-- end app-body -->
 
@@ -717,9 +841,17 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <div class="modal-header"><h3 id="leadModalTitle">Add New Lead</h3><div class="modal-close" onclick="closeLeadModal()">✕</div></div>
     <div class="modal-body">
       <input type="hidden" id="editLeadId">
+      <div id="gcLeadContactStrip" style="display:none"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:var(--text3)" id="gcLeadPickerHint">or fill manually below</span>
+        <button class="gc-btn" id="gcLeadImportBtn" onclick="openGcPickerForLead()" style="height:28px;font-size:11px" title="Search Google Contacts to auto-fill this form">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Import from Google Contacts
+        </button>
+      </div>
       <div class="form-2col">
         <div class="form-row"><label class="form-label">Full Name *</label><input class="form-input" id="f-name" placeholder="e.g. Arjun Sharma"></div>
-        <div class="form-row"><label class="form-label">Phone *</label><input class="form-input" id="f-phone" placeholder="+91 98800 12345"></div>
+        <div class="form-row"><label class="form-label">Phone *</label><input class="form-input" id="f-phone" placeholder="+91 98800 12345" oninput="onLeadPhoneInput(this.value)"></div>
       </div>
       <div class="form-2col">
         <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="f-email" placeholder="arjun@email.com"></div>
@@ -750,6 +882,29 @@ tbody td{padding:12px 12px;font-size:13px;color:var(--text2);vertical-align:midd
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeLeadModal()">Cancel</button>
       <button class="btn-save" id="saveLeadBtn" onclick="saveLead()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ GOOGLE CONTACTS PICKER MODAL ════════ -->
+<div class="gc-modal-overlay" id="gcPickerOverlay" onclick="if(event.target===this)closeGcPicker()">
+  <div class="gc-modal">
+    <div class="gc-modal-header">
+      <div class="gc-modal-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Import from Google Contacts
+      </div>
+      <div class="modal-close" onclick="closeGcPicker()">✕</div>
+    </div>
+    <div class="gc-search-wrap">
+      <input class="gc-search-input" id="gcSearchInput" type="text" placeholder="Search by name, phone, or email…" oninput="renderGcPicker(this.value)" autocomplete="off">
+    </div>
+    <div class="gc-contacts-list" id="gcContactsList">
+      <div class="gc-empty">Start typing to search your Google Contacts</div>
+    </div>
+    <div class="gc-sync-banner">
+      <span class="gc-sync-text" id="gcSyncStatus">— contacts synced</span>
+      <button class="gc-btn" style="height:28px;font-size:11px" onclick="syncGoogleContacts()">🔄 Re-sync</button>
     </div>
   </div>
 </div>
@@ -1150,7 +1305,9 @@ function renderLeads(filter){
     const pillClass={'New':'pill-new','Contacted':'pill-contacted','Site Visit':'pill-site','Negotiation':'pill-nego','Closed':'pill-closed','Lost':'pill-lost'}[l.stage]||'pill-new';
     const pBadge=l.priority==='Hot'?'<span class="tag tag-hot">🔥 Hot</span>':l.priority==='VIP'?'<span class="tag tag-vip">⭐ VIP</span>':l.priority==='Warm'?'<span class="tag tag-warm">Warm</span>':l.priority==='Cold'?'<span class="tag tag-cold">Cold</span>':'—';
     const date=l.createdAt?.toDate?l.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'Just now';
-    return `<tr><td><span class="td-name">${esc(l.name)}</span></td><td><span class="td-phone">${esc(l.phone||'—')}</span></td><td><span class="td-budget">${esc(l.budget||'—')}</span></td><td>${esc(l.location||'—')}</td><td>${esc(l.source||'—')}</td><td><span class="status-pill ${pillClass}">${l.stage}</span></td><td>${pBadge}</td><td style="font-size:11px;color:var(--text3)">${date}</td><td><div class="td-actions"><button class="row-btn" onclick="openLeadModal('${l.id}')">✏️</button><button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button><button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button></div></td></tr>`;
+    const gc=findGoogleContact(l.phone||l.wa);
+    const gcBadge=gc?'<span class="gc-contact-badge" title="Matched in Google Contacts: '+esc(gc.name)+'"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> G</span>':'';
+    return `<tr><td><span class="td-name">${esc(l.name)}${gcBadge}</span></td><td><span class="td-phone">${esc(l.phone||'—')}</span></td><td><span class="td-budget">${esc(l.budget||'—')}</span></td><td>${esc(l.location||'—')}</td><td>${esc(l.source||'—')}</td><td><span class="status-pill ${pillClass}">${l.stage}</span></td><td>${pBadge}</td><td style="font-size:11px;color:var(--text3)">${date}</td><td><div class="td-actions"><button class="row-btn" onclick="openLeadModal('${l.id}')">✏️</button><button class="row-btn" onclick="openFollowUpModal(null,'${l.id}')">📅 FU</button><button class="row-btn del" onclick="confirmDeleteLead('${l.id}','${esc(l.name)}')">🗑</button></div></td></tr>`;
   }).join('');
 }
 
@@ -1180,7 +1337,20 @@ function renderFuCard(f,idx){
   const icon={Call:'📞',WhatsApp:'💬','Site Visit':'🏠',Document:'📄',Email:'📧',Meeting:'🤝'}[f.type]||'📋';
   const urgCls=f.priority==='Urgent'?'tag-hot':f.priority==='High'?'tag-warm':'';
   const ts=f.priority==='Urgent'?'background:var(--red-dim);color:var(--red)':'background:var(--orange-dim);color:var(--orange)';
-  return `<div class="fu-card" style="animation-delay:${idx*.05}s"><div class="fu-card-top"><div class="fu-card-avatar">${initials}</div><div class="fu-card-info"><div class="fu-card-name">${esc(name)}</div><div class="fu-card-sub">${lead?esc(lead.budget||'')+(lead.location?' · '+lead.location:''):'Lead not found'}</div></div><div class="fu-card-badges">${urgCls?`<span class="tag ${urgCls}">${f.priority}</span>`:''} ${f.time?`<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;${ts}">${f.time}</span>`:''}</div></div><div class="fu-body">${icon} <strong>${f.type}</strong> — ${esc(f.notes||'No notes')}</div><div class="fu-footer"><button class="fu-action-btn primary" onclick="markFuDone('${f.id}')">✓ Done</button><button class="fu-action-btn" onclick="openFollowUpModal('${f.id}')">✏️ Edit</button><button class="fu-action-btn danger" onclick="confirmDeleteFu('${f.id}')">🗑</button></div></div>`;
+  // Google Contact match
+  const gc = lead ? findGoogleContact(lead.phone||lead.wa) : null;
+  const avatarHtml = gc ? gcAvatarHtml(gc, 40)
+    : `<div class="fu-card-avatar">${initials}</div>`;
+  const gcBadge = gc ? `<span class="gc-contact-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</span>` : '';
+  const gcDetailHtml = gc && f.type === 'Call' ? `<div class="gc-contact-strip" style="margin-top:8px;margin-bottom:0">
+    ${gcAvatarHtml(gc, 28)}
+    <div class="gc-contact-strip-info">
+      <div class="gc-contact-strip-name">${esc(gc.name)}${gc.company?` <span style="font-weight:400;color:var(--text3)">· ${esc(gc.company)}</span>`:''}</div>
+      <div class="gc-contact-strip-meta">${[gc.phones[0],gc.emails[0]].filter(Boolean).map(v=>esc(v)).join(' · ')}</div>
+    </div>
+    ${lead&&lead.phone?`<a href="tel:${esc(lead.phone)}" style="font-size:11px;color:#7ab4f5;background:rgba(66,133,244,.1);border:1px solid rgba(66,133,244,.2);border-radius:6px;padding:3px 8px;text-decoration:none;flex-shrink:0">📞 Call</a>`:''}
+  </div>` : '';
+  return `<div class="fu-card" style="animation-delay:${idx*.05}s"><div class="fu-card-top">${avatarHtml}<div class="fu-card-info"><div class="fu-card-name">${esc(name)}${gcBadge}</div><div class="fu-card-sub">${lead?esc(lead.budget||'')+(lead.location?' · '+lead.location:''):'Lead not found'}</div></div><div class="fu-card-badges">${urgCls?`<span class="tag ${urgCls}">${f.priority}</span>`:''} ${f.time?`<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;${ts}">${f.time}</span>`:''}</div></div><div class="fu-body">${icon} <strong>${f.type}</strong> — ${esc(f.notes||'No notes')}${gcDetailHtml}</div><div class="fu-footer"><button class="fu-action-btn primary" onclick="markFuDone('${f.id}')">✓ Done</button><button class="fu-action-btn" onclick="openFollowUpModal('${f.id}')">✏️ Edit</button><button class="fu-action-btn danger" onclick="confirmDeleteFu('${f.id}')">🗑</button></div></div>`;
 }
 
 // ════════════════════════════════
@@ -1401,7 +1571,16 @@ function renderDashboard(){
   });
   const todayFus=_followups.filter(f=>f.date===today&&f.status!=='done');
   document.getElementById('dash-fu-subtitle').textContent=todayFu+' pending today';
-  document.getElementById('dash-fu-list').innerHTML=todayFus.length===0?`<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">🎉 No follow-ups due today!</div>`:todayFus.slice(0,4).map(f=>{const lead=_leads.find(l=>l.id===f.leadId);const name=lead?lead.name:(f.leadName||'Unknown');const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);return `<div class="fu-dash-item" onclick="setView('followups')"><div class="fu-dash-av">${init}</div><div class="fu-dash-info"><div class="fu-dash-name">${esc(name)}</div><div class="fu-dash-note">${f.type}: ${esc(f.notes||'')}</div></div><span class="fu-dash-time ${f.priority==='Urgent'?'urgent':'today'}">${f.time||'Today'}</span></div>`;}).join('');
+  document.getElementById('dash-fu-list').innerHTML=todayFus.length===0?`<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">🎉 No follow-ups due today!</div>`:todayFus.slice(0,4).map(f=>{
+    const lead=_leads.find(l=>l.id===f.leadId);
+    const name=lead?lead.name:(f.leadName||'Unknown');
+    const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const gc=lead?findGoogleContact(lead.phone||lead.wa):null;
+    const avHtml=gc?gcAvatarHtml(gc,34):`<div class="fu-dash-av">${init}</div>`;
+    const icon={Call:'📞',WhatsApp:'💬','Site Visit':'🏠',Document:'📄',Email:'📧',Meeting:'🤝'}[f.type]||'📋';
+    const subText=gc?`${icon} ${f.type} · ${esc(gc.emails[0]||gc.phones[1]||'')}`:f.type+': '+esc(f.notes||'');
+    return `<div class="fu-dash-item" onclick="setView('followups')">${avHtml}<div class="fu-dash-info"><div class="fu-dash-name">${esc(name)}${gc?'<span class="gc-contact-badge" style="font-size:9px">G</span>':''}</div><div class="fu-dash-note">${subText}</div></div><span class="fu-dash-time ${f.priority==='Urgent'?'urgent':'today'}">${f.time||'Today'}</span></div>`;
+  }).join('');
 }
 
 // ════════════════════════════════
@@ -1711,6 +1890,7 @@ function setView(name){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   const ni=document.getElementById('nav-'+name);if(ni)ni.classList.add('active');
+  if(name==='contacts') renderContactsPage(document.getElementById('contactsSearchInput')?.value||'');
 }
 
 function updateNavCounts(){
@@ -1757,7 +1937,538 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 let _toastTimer;
 function showToast(msg,type='success'){const t=document.getElementById('toast');const icon=type==='error'?'❌':type==='info'?'💡':'✅';document.getElementById('toastIcon').textContent=icon;document.getElementById('toastMsg').textContent=msg;t.className='toast show '+type;clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
-window.addEventListener('load',()=>{updateDate();buildMiniCal();populateVehYears();if(window._dbReady&&window._db){setDbStatus(true,'Connected');_dbConnected=true;loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();}});
+window.addEventListener('load',()=>{
+  updateDate();buildMiniCal();populateVehYears();
+  if(window._dbReady&&window._db){
+    setDbStatus(true,'Connected');_dbConnected=true;
+    loadLeadsFromDB();loadFollowUpsFromDB();loadPropertiesFromDB();loadVehiclesFromDB();
+  }
+  // Auto-sync Google Contacts if previously connected (runs after GIS script loads)
+  if(localStorage.getItem(GC_STORE_CONNECTED)){
+    // GIS script may still be loading — wait a moment then try
+    setTimeout(autoSyncOnLoad, 1500);
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// GOOGLE CONTACTS INTEGRATION
+// ════════════════════════════════════════════════════════════
+// SETUP: Replace with your Google Cloud OAuth 2.0 Client ID.
+// Steps:
+//  1. Go to https://console.cloud.google.com/
+//  2. Create a project → Enable "Google People API"
+//  3. Credentials → Create OAuth 2.0 Client ID (Web application)
+//  4. Add your domain to "Authorized JavaScript origins"
+//  5. Paste the Client ID below
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE';
+
+// Storage keys
+const GC_STORE_CONTACTS  = 'sf_gc_contacts';
+const GC_STORE_CONNECTED = 'sf_gc_connected';
+const GC_STORE_LAST_SYNC = 'sf_gc_last_sync';
+const GC_STORE_PREV_CNT  = 'sf_gc_prev_count';
+
+let _gAccessToken = null;
+let _googleContacts = [];      // [{name, phones[], emails[], photo, company, isNew}]
+let _gcPickerCallback = null;  // fn(contact) called when a contact is picked
+let _gcForLead = false;        // true when picker is opened from lead modal
+let _gcAutoSyncTimer = null;   // daily auto-sync interval handle
+let _gcContactsFilter = 'all'; // filter for contacts page
+
+// ── Phone normalization (handles Indian +91 / 0-prefix / 10-digit) ──
+function normalizePhone(phone) {
+  const d = (phone || '').replace(/[^0-9]/g, '');
+  if (d.length === 12 && d.startsWith('91')) return d.slice(2);
+  if (d.length === 11 && d.startsWith('0'))  return d.slice(1);
+  return d;
+}
+
+// ── Find a cached Google Contact by phone number ──
+function findGoogleContact(phone) {
+  if (!phone || !_googleContacts.length) return null;
+  const norm = normalizePhone(phone);
+  if (!norm) return null;
+  return _googleContacts.find(c => c.phones.some(p => normalizePhone(p) === norm)) || null;
+}
+
+// ── Search cached contacts by query ──
+function searchGoogleContacts(query) {
+  if (!_googleContacts.length) return [];
+  if (!query) return _googleContacts.slice(0, 20);
+  const q = query.toLowerCase();
+  return _googleContacts.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.phones.some(p => p.replace(/[^0-9]/g,'').includes(q.replace(/[^0-9]/g,''))) ||
+    c.emails.some(e => e.toLowerCase().includes(q))
+  ).slice(0, 30);
+}
+
+// ── Handle topbar button click ──
+function handleGoogleContactsClick() {
+  if (_gAccessToken || _googleContacts.length) {
+    // Already connected — navigate to contacts page
+    setView('contacts');
+  } else {
+    connectGoogleContacts();
+  }
+}
+
+// ── Initiate Google OAuth2 token flow ──
+function connectGoogleContacts() {
+  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+    showToast('⚠️ Set your Google Client ID in index.html (GOOGLE_CLIENT_ID)', 'error');
+    return;
+  }
+  if (!window.google || !window.google.accounts) {
+    showToast('⚠️ Google SDK not loaded. Check your internet connection.', 'error');
+    return;
+  }
+  const tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/contacts.readonly',
+    callback: (response) => {
+      if (response.error) {
+        showToast('❌ Google auth failed: ' + response.error, 'error');
+        return;
+      }
+      _gAccessToken = response.access_token;
+      scheduleAutoSync();
+      syncGoogleContacts();
+    }
+  });
+  tokenClient.requestAccessToken();
+}
+
+// ── Fetch all contacts from Google People API ──
+async function syncGoogleContacts() {
+  if (!_gAccessToken) { showToast('⚠️ Connect Google Contacts first', 'error'); return; }
+  updateGcBtn('Syncing…', false);
+  setSyncBarState('syncing');
+  try {
+    let allContacts = [];
+    let pageToken = null;
+    const prevCount = parseInt(localStorage.getItem(GC_STORE_PREV_CNT) || '0', 10);
+    do {
+      let url = 'https://people.googleapis.com/v1/people/me/connections?personFields=names,emailAddresses,phoneNumbers,photos,organizations&pageSize=1000&sortOrder=LAST_MODIFIED_DESCENDING';
+      if (pageToken) url += '&pageToken=' + encodeURIComponent(pageToken);
+      const res = await fetch(url, { headers: { Authorization: 'Bearer ' + _gAccessToken } });
+      if (res.status === 401) {
+        // Token expired — try to refresh silently
+        _gAccessToken = null;
+        await silentTokenRefresh();
+        if (!_gAccessToken) throw new Error('Session expired. Please reconnect.');
+        continue;
+      }
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      if (data.connections) {
+        allContacts = allContacts.concat(data.connections.map(c => ({
+          name: c.names?.[0]?.displayName || '',
+          phones: (c.phoneNumbers || []).map(p => p.value),
+          emails: (c.emailAddresses || []).map(e => e.value),
+          photo: c.photos?.[0]?.url || null,
+          company: c.organizations?.[0]?.name || ''
+        })).filter(c => c.name || c.phones.length));
+      }
+      pageToken = data.nextPageToken || null;
+    } while (pageToken);
+
+    // Mark new contacts (those beyond the previous count, using name-based set diff)
+    const prevNames = new Set((JSON.parse(localStorage.getItem(GC_STORE_CONTACTS)||'[]')).map(c=>c.name+c.phones[0]));
+    const newCount = allContacts.filter(c => !prevNames.has(c.name + c.phones[0])).length;
+    _googleContacts = allContacts.map(c => ({
+      ...c,
+      isNew: prevCount > 0 && !prevNames.has(c.name + c.phones[0])
+    }));
+
+    // Persist
+    localStorage.setItem(GC_STORE_CONTACTS, JSON.stringify(_googleContacts));
+    localStorage.setItem(GC_STORE_LAST_SYNC, new Date().toISOString());
+    localStorage.setItem(GC_STORE_PREV_CNT, String(_googleContacts.length));
+    localStorage.setItem(GC_STORE_CONNECTED, '1');
+
+    updateGcBtn(_googleContacts.length + ' Contacts', true);
+    document.getElementById('gcSyncStatus').textContent = _googleContacts.length + ' contacts synced';
+    setSyncBarState('connected');
+    updateNavContactsCount();
+
+    if (newCount > 0) {
+      showToast('🆕 ' + newCount + ' new contact' + (newCount > 1 ? 's' : '') + ' added to Google Contacts!', 'success');
+    } else {
+      showToast('✅ Synced ' + _googleContacts.length + ' Google Contacts', 'success');
+    }
+
+    // Re-render everywhere
+    renderLeads();
+    renderFollowUps();
+    renderDashboard();
+    renderContactsPage();
+    scheduleAutoSync(); // reset the daily timer
+  } catch (e) {
+    showToast('❌ Sync failed: ' + e.message, 'error');
+    updateGcBtn('Retry Sync', true);
+    setSyncBarState('error');
+  }
+}
+
+// ── Silent token refresh (re-uses previously granted consent) ──
+function silentTokenRefresh() {
+  return new Promise((resolve) => {
+    if (!window.google || !window.google.accounts || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+      resolve(false); return;
+    }
+    const tc = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/contacts.readonly',
+      prompt: '',    // silent — no UI popup if already consented
+      callback: (resp) => {
+        if (resp.access_token) { _gAccessToken = resp.access_token; resolve(true); }
+        else resolve(false);
+      }
+    });
+    tc.requestAccessToken({ prompt: '' });
+  });
+}
+
+// ── Auto-sync on app load if previously connected ──
+async function autoSyncOnLoad() {
+  if (!localStorage.getItem(GC_STORE_CONNECTED)) return;
+  // Restore cached contacts immediately for instant display
+  const cached = localStorage.getItem(GC_STORE_CONTACTS);
+  if (cached) {
+    try {
+      _googleContacts = JSON.parse(cached);
+      updateGcBtn(_googleContacts.length + ' Contacts', true);
+      updateNavContactsCount();
+      setSyncBarState('cached');
+      renderLeads();
+      renderFollowUps();
+      renderDashboard();
+      renderContactsPage();
+    } catch(e) {}
+  }
+  // Now try to get a fresh token and re-sync
+  const ok = await silentTokenRefresh();
+  if (ok) {
+    await syncGoogleContacts();
+  } else {
+    setSyncBarState('disconnected');
+    updateGcBtn('Reconnect', false);
+    const connectBtn = document.getElementById('gcContactsConnectBtn');
+    if (connectBtn) connectBtn.style.display = '';
+  }
+}
+
+// ── Schedule daily auto-sync (every 24h while page is open) ──
+function scheduleAutoSync() {
+  if (_gcAutoSyncTimer) clearInterval(_gcAutoSyncTimer);
+  const MS_24H = 24 * 60 * 60 * 1000;
+  _gcAutoSyncTimer = setInterval(async () => {
+    if (!_gAccessToken) {
+      const ok = await silentTokenRefresh();
+      if (!ok) return; // will retry next interval
+    }
+    await syncGoogleContacts();
+  }, MS_24H);
+}
+
+// ── Update sync bar UI state ──
+function setSyncBarState(state) {
+  const dot = document.getElementById('gcSyncDot');
+  const text = document.getElementById('gcSyncBarText');
+  const lastEl = document.getElementById('gcLastSyncTime');
+  const newBadge = document.getElementById('gcNewContactsBadge');
+  if (!dot || !text) return;
+  dot.classList.remove('active');
+  const lastSync = localStorage.getItem(GC_STORE_LAST_SYNC);
+  const lastSyncStr = lastSync ? 'Last synced: ' + new Date(lastSync).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+  if (lastEl) lastEl.textContent = lastSyncStr;
+  const newCount = _googleContacts.filter(c => c.isNew).length;
+  if (newBadge) {
+    newBadge.style.display = newCount > 0 ? '' : 'none';
+    newBadge.textContent = '+' + newCount + ' new';
+  }
+  if (state === 'syncing') { dot.classList.add('active'); text.textContent = 'Syncing with Google Contacts…'; }
+  else if (state === 'connected') { dot.style.background = '#34a853'; text.textContent = _googleContacts.length + ' contacts synced · Auto-syncs daily'; }
+  else if (state === 'cached') { dot.style.background = '#fbbc05'; text.textContent = _googleContacts.length + ' contacts (cached) · Refreshing…'; }
+  else if (state === 'disconnected') { dot.style.background = 'var(--red)'; text.textContent = 'Session expired — reconnect your Google account'; }
+  else if (state === 'error') { dot.style.background = 'var(--red)'; text.textContent = 'Sync failed — check connection'; }
+  else { dot.style.background = 'rgba(66,133,244,.4)'; text.textContent = 'Not connected — click Connect Google Account'; }
+}
+
+function updateNavContactsCount() {
+  const el = document.getElementById('nav-contacts-count');
+  if (el) el.textContent = _googleContacts.length;
+  const subtitleEl = document.getElementById('contacts-subtitle');
+  if (subtitleEl && _googleContacts.length) subtitleEl.textContent = _googleContacts.length + ' contacts synced · updates daily';
+}
+
+// ── Set contacts page filter ──
+function setContactsFilter(filter) {
+  _gcContactsFilter = filter;
+  document.querySelectorAll('[data-cfilter]').forEach(c => c.classList.remove('active'));
+  const el = document.getElementById('cc-chip-' + filter);
+  if (el) el.classList.add('active');
+  renderContactsPage(document.getElementById('contactsSearchInput')?.value || '');
+}
+
+function updateGcBtn(text, connected) {
+  const btn = document.getElementById('gcConnectBtn');
+  const span = document.getElementById('gcBtnText');
+  if (span) span.textContent = text;
+  if (btn) {
+    if (connected) btn.classList.add('connected');
+    else btn.classList.remove('connected');
+  }
+}
+
+// ── Open contacts picker (browse mode, not for lead) ──
+function openGcPickerBrowse() {
+  _gcForLead = false;
+  _gcPickerCallback = null;
+  document.getElementById('gcSearchInput').value = '';
+  renderGcPicker('');
+  document.getElementById('gcPickerOverlay').classList.add('open');
+}
+
+// ── Open contacts picker from lead modal ──
+function openGcPickerForLead() {
+  if (!_gAccessToken) {
+    showToast('💡 Connect Google Contacts first (topbar button)', 'info');
+    connectGoogleContacts();
+    return;
+  }
+  if (!_googleContacts.length) {
+    showToast('💡 Syncing contacts…', 'info');
+    syncGoogleContacts().then(() => openGcPickerForLead());
+    return;
+  }
+  _gcForLead = true;
+  _gcPickerCallback = (contact) => {
+    applyContactToLeadForm(contact);
+    closeGcPicker();
+  };
+  document.getElementById('gcSearchInput').value = '';
+  renderGcPicker('');
+  document.getElementById('gcPickerOverlay').classList.add('open');
+}
+
+function closeGcPicker() {
+  document.getElementById('gcPickerOverlay').classList.remove('open');
+  _gcPickerCallback = null;
+}
+
+// ── Render the contacts picker list ──
+function renderGcPicker(query) {
+  const list = document.getElementById('gcContactsList');
+  const contacts = searchGoogleContacts(query);
+  if (!_gAccessToken) {
+    list.innerHTML = '<div class="gc-empty">Connect your Google account first using the button in the top bar.</div>';
+    return;
+  }
+  if (!_googleContacts.length) {
+    list.innerHTML = '<div class="gc-empty">No contacts synced yet. Click Re-sync.</div>';
+    return;
+  }
+  if (!contacts.length) {
+    list.innerHTML = '<div class="gc-empty">No contacts found for "' + esc(query) + '"</div>';
+    return;
+  }
+  list.innerHTML = contacts.map(c => {
+    const initials = (c.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    const avatarHtml = c.photo
+      ? `<img class="gc-avatar" src="${esc(c.photo)}" alt="${esc(c.name)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+      + `<div class="gc-avatar-initials" style="display:none">${initials}</div>`
+      : `<div class="gc-avatar-initials">${initials}</div>`;
+    const sub = [c.phones[0] || '', c.emails[0] || '', c.company || ''].filter(Boolean).join(' · ');
+    return `<div class="gc-contact-row" onclick="gcPickContact(${JSON.stringify(JSON.stringify(c))})">
+      ${avatarHtml}
+      <div class="gc-contact-row-info">
+        <div class="gc-contact-row-name">${esc(c.name)}</div>
+        <div class="gc-contact-row-sub">${esc(sub)}</div>
+      </div>
+      ${_gcForLead ? '<span style="font-size:11px;color:var(--text3)">→ Import</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function gcPickContact(jsonStr) {
+  const contact = JSON.parse(jsonStr);
+  if (_gcPickerCallback) {
+    _gcPickerCallback(contact);
+  }
+}
+
+// ── Apply a Google Contact to the lead form ──
+function applyContactToLeadForm(contact) {
+  const nameEl = document.getElementById('f-name');
+  const phoneEl = document.getElementById('f-phone');
+  const emailEl = document.getElementById('f-email');
+  if (nameEl && contact.name) nameEl.value = contact.name;
+  if (phoneEl && contact.phones.length) phoneEl.value = contact.phones[0];
+  if (emailEl && contact.emails.length) emailEl.value = contact.emails[0];
+  // Show contact strip in modal
+  const strip = document.getElementById('gcLeadContactStrip');
+  if (strip) {
+    const initials = (contact.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const avatarHtml = contact.photo
+      ? `<img class="gc-avatar" src="${esc(contact.photo)}" style="width:30px;height:30px" onerror="this.outerHTML='<div class=gc-avatar-initials style=width:30px;height:30px;font-size:11px>${initials}</div>'">`
+      : `<div class="gc-avatar-initials" style="width:30px;height:30px;font-size:11px">${initials}</div>`;
+    strip.style.display = 'flex';
+    strip.innerHTML = `<div class="gc-contact-strip">
+      ${avatarHtml}
+      <div class="gc-contact-strip-info">
+        <div class="gc-contact-strip-name">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:3px"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Imported from Google Contacts: ${esc(contact.name)}
+        </div>
+        <div class="gc-contact-strip-meta">${esc([contact.phones[0],contact.emails[0],contact.company].filter(Boolean).join(' · '))}</div>
+      </div>
+      <button onclick="clearGcLeadStrip()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:2px 6px" title="Clear">✕</button>
+    </div>`;
+  }
+  showToast('✅ Contact imported: ' + contact.name, 'success');
+}
+
+function clearGcLeadStrip() {
+  const strip = document.getElementById('gcLeadContactStrip');
+  if (strip) { strip.style.display = 'none'; strip.innerHTML = ''; }
+}
+
+// ── Auto-match Google Contact when phone is typed in lead modal ──
+function onLeadPhoneInput(phone) {
+  if (!_googleContacts.length) return;
+  const contact = findGoogleContact(phone);
+  if (contact) {
+    // Auto-fill name & email if empty
+    const nameEl = document.getElementById('f-name');
+    const emailEl = document.getElementById('f-email');
+    if (nameEl && !nameEl.value) nameEl.value = contact.name;
+    if (emailEl && !emailEl.value && contact.emails.length) emailEl.value = contact.emails[0];
+    applyContactToLeadForm({...contact, phones:[phone]});
+  }
+}
+
+// ── Build the Google contact avatar HTML for cards ──
+function gcAvatarHtml(contact, size) {
+  size = size || 34;
+  if (!contact) return '';
+  const initials = (contact.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  if (contact.photo) {
+    return `<img src="${esc(contact.photo)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid rgba(66,133,244,.4);flex-shrink:0" alt="${esc(contact.name)}" onerror="this.outerHTML='<div style=width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#34a853);display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*0.35)}px;font-weight:700;color:#fff;flex-shrink:0>${initials}</div>'">`;
+  }
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#34a853);display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*0.35)}px;font-weight:700;color:#fff;flex-shrink:0">${initials}</div>`;
+}
+
+// ── Render the Contacts page ──
+function renderContactsPage(query) {
+  const grid = document.getElementById('contactsGrid');
+  if (!grid) return;
+  const connectBtn = document.getElementById('gcContactsConnectBtn');
+  const syncBtn = document.getElementById('gcContactsPageSyncBtn');
+
+  if (!_gAccessToken && !_googleContacts.length) {
+    if (connectBtn) connectBtn.style.display = '';
+    if (syncBtn) syncBtn.style.display = 'none';
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">📱</div>
+      <h3>Connect Google Contacts</h3>
+      <p>Click "Connect Google Account" to import your contacts and keep them in sync automatically.</p>
+      <button class="btn-save" onclick="connectGoogleContacts()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Connect Google Account
+      </button>
+    </div>`;
+    return;
+  }
+  if (connectBtn) connectBtn.style.display = 'none';
+  if (syncBtn) syncBtn.style.display = '';
+
+  let list = _googleContacts;
+  const q = (query || '').toLowerCase().trim();
+  if (q) {
+    list = list.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.phones.some(p => p.includes(q)) ||
+      c.emails.some(e => e.toLowerCase().includes(q)) ||
+      (c.company||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Apply filter
+  const importedPhones = new Set(_leads.flatMap(l => [normalizePhone(l.phone), normalizePhone(l.wa)].filter(Boolean)));
+  const newContacts = list.filter(c => c.isNew);
+  const importedContacts = list.filter(c => c.phones.some(p => importedPhones.has(normalizePhone(p))));
+  if (_gcContactsFilter === 'imported') list = list.filter(c => c.phones.some(p => importedPhones.has(normalizePhone(p))));
+  else if (_gcContactsFilter === 'new') list = list.filter(c => c.isNew);
+
+  // Update chip counts
+  const fullList = _googleContacts;
+  const q2 = (document.getElementById('contactsSearchInput')?.value||'').toLowerCase().trim();
+  const filtered = q2 ? fullList.filter(c=>c.name.toLowerCase().includes(q2)||c.phones.some(p=>p.includes(q2))) : fullList;
+  document.getElementById('cc-count-all').textContent = filtered.length;
+  document.getElementById('cc-count-imported').textContent = filtered.filter(c=>c.phones.some(p=>importedPhones.has(normalizePhone(p)))).length;
+  document.getElementById('cc-count-new').textContent = filtered.filter(c=>c.isNew).length;
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🔍</div><h3>No contacts found</h3><p>${q?'No contacts match "'+esc(q)+'"':'No contacts in this filter.'}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((c, i) => {
+    const isImported = c.phones.some(p => importedPhones.has(normalizePhone(p)));
+    const matchedLead = isImported ? _leads.find(l => c.phones.some(p => normalizePhone(p) === normalizePhone(l.phone||l.wa))) : null;
+    const avatar = gcAvatarHtml(c, 42);
+    const phoneLine = c.phones[0] ? `<div class="cc-detail"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.6 1.3h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(c.phones[0])}</div>` : '';
+    const emailLine = c.emails[0] ? `<div class="cc-detail"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${esc(c.emails[0])}</div>` : '';
+    const newBadge = c.isNew ? `<div class="cc-new-badge">🆕 New</div>` : '';
+    const importedBadge = isImported && !c.isNew ? `<div class="cc-lead-badge">✓ In CRM</div>` : '';
+    const importBtn = !isImported
+      ? `<button class="cc-action-btn import" onclick="importGcContactAsLead(${JSON.stringify(JSON.stringify(c))})">
+           <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+           Add as Lead
+         </button>`
+      : `<button class="cc-action-btn" onclick="openLeadModal('${matchedLead?matchedLead.id:''}')">✏️ View Lead</button>`;
+    const callBtn = c.phones[0] ? `<a href="tel:${esc(c.phones[0])}" class="cc-action-btn" style="text-decoration:none">📞 Call</a>` : '';
+    return `<div class="contact-card${c.isNew?' new-contact':''}" style="animation-delay:${(i%20)*0.03}s">
+      ${newBadge || importedBadge}
+      <div class="cc-top">
+        ${avatar}
+        <div class="cc-info">
+          <div class="cc-name">${esc(c.name||'—')}</div>
+          <div class="cc-company">${esc(c.company||' ')}</div>
+        </div>
+      </div>
+      <div class="cc-details">${phoneLine}${emailLine}</div>
+      <div class="cc-actions">${importBtn}${callBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Import a Google Contact directly as a CRM Lead ──
+async function importGcContactAsLead(jsonStr) {
+  const c = JSON.parse(jsonStr);
+  if (!c.phones.length) { showToast('⚠️ Contact has no phone number', 'error'); return; }
+  try {
+    await addLeadToDB({
+      name: c.name || '',
+      phone: c.phones[0] || '',
+      email: c.emails[0] || '',
+      budget: '',
+      proptype: '',
+      location: '',
+      source: 'Google Contacts',
+      stage: 'New',
+      priority: 'Normal',
+      wa: c.phones[1] || c.phones[0] || '',
+      notes: c.company ? 'Company: ' + c.company : ''
+    });
+    showToast('✅ ' + (c.name||'Contact') + ' added as a lead!', 'success');
+    renderContactsPage(document.getElementById('contactsSearchInput')?.value || '');
+  } catch (e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+}
 </script>
 </body>
 </html>
